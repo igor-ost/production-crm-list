@@ -1,26 +1,48 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, EyeOff } from "lucide-react"
+import { Api } from "@/services/api-clients"
+import { useRouter } from "next/navigation"
+
+
 
 export function LoginForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [login,setLogin] = useState("")
+  const [password,setPassword] = useState("")
+  const [error,setError] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
     setIsLoading(true)
+    setError("")
+    try {
+      const data = {
+        login: login,
+        password:password
+      }
+      const response = await Api.auth.login(data)
+      if(response.token){
+        const token = response.token
+        const expires = new Date()
+        expires.setDate(expires.getDate() + 7)
 
-    setTimeout(() => {
+        document.cookie = `token=${token}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+        console.log(`token=${token}; expires=${expires.toUTCString()}; path=/; secure; SameSite=Lax`)
+        router.push("/orders")
+        setIsLoading(false)
+      }
+    } catch (error: unknown) {
+      console.log(error)
       setIsLoading(false)
-      console.log("[v0] Login form submitted")
-    }, 1500)
+      setError(error instanceof Error ? error.message : "Произошла ошибка")
+    }
   }
 
   return (
@@ -30,25 +52,21 @@ export function LoginForm() {
         <CardDescription className="text-base">Введите свои данные для входа в систему</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email">Логин</Label>
-            <Input id="email" type="email" placeholder="name@example.com" required className="h-11" />
+            <Input id="login" type="text" value={login} onChange={(e)=>setLogin(e.target.value)} placeholder="Введите логин" required className="h-11" />
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Пароль</Label>
-              <a href="#" className="text-sm text-primary hover:underline">
-                Забыли пароль?
-              </a>
-            </div>
             <div className="relative">
               <Input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Введите пароль"
                 required
+                value={password} 
+                onChange={(e)=>setPassword(e.target.value)}
                 className="h-11 pr-10"
               />
               <button
@@ -62,11 +80,17 @@ export function LoginForm() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isLoading}>
+          
+          {error && (
+            <div className="p-2">
+              <p className="text-red-600 font-bold text-sm">{error}</p>
+            </div>
+          )}
+          <Button onClick={handleSubmit} className="w-full h-11 text-base font-semibold" disabled={isLoading}>
             {isLoading ? "Вход..." : "Войти"}
           </Button>
          
-        </form>
+        </div>
       </CardContent>
     </Card>
   )
