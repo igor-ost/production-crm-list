@@ -1,23 +1,50 @@
 import { OrdersTable } from "@/components/orders/orders-table";
+import { Api } from "@/services/api-clients";
+import { cookies } from "next/headers";
 
-export default function Orders() {
-  const orders = [{
-    id: "121225_00001",
-    date: "12.12.2025",
-    customer: "Игорь Остапенко",
-    product: "Зимняя куртка",
-    size: "120cm",
-    quantity: 10,
-    buttons: 10,
-    cuttingCost: 1000,
-    sewingCost: 1000,
-    status: "new"
-  }]
+const getOrdersList = async () => {
+  const cookieStore = await cookies();  
+  const token = cookieStore.get('token')?.value;
 
+  const data = await Api.orders.getList(token);
+  return data;
+};
+
+const getTemplatesList = async () => {
+  const cookieStore = await cookies();  
+  const token = cookieStore.get('token')?.value;
+
+  const data = await Api.templates.getList(token);
+  return data;
+};
+
+const getCustomersList = async () => {
+  const cookieStore = await cookies();  
+  const token = cookieStore.get('token')?.value;
+
+  const data = await Api.customers.getList(token);
+  return data;
+};
+
+const getMaterialsList = async () => {
+  const cookieStore = await cookies();  
+  const token = cookieStore.get('token')?.value;
+
+  const data = await Api.materials.getList(token);
+  return data;
+};
+
+
+
+export default async function Orders() {
+  const ordersList = await getOrdersList();
+  const templatesList = await getTemplatesList();
+  const customersList = await getCustomersList();
+  const materialsList = await getMaterialsList();
   return (
     <div>
       <div className="bg-white rounded-md p-4">
-        {/* <OrdersTable orders={orders}/> */}
+        <OrdersTable materials={materialsList} customers={customersList} templates={templatesList} orders={ordersList}/>
       </div>
     </div>
   );

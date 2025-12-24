@@ -8,6 +8,10 @@ import * as buttons from "@/services/buttons"
 import * as accessories from "@/services/accessories"
 import * as velcro from "@/services/velcro"
 import * as materials from "@/services/materials"
+import * as templates from "@/services/templates"
+import * as template_items from "@/services/template-items"
+import * as orders from "@/services/orders"
+import * as order_materials from "@/services/order-materials"
 export const Api = {
   auth,
   customers,
@@ -18,5 +22,9 @@ export const Api = {
   buttons,
   accessories,
   velcro,
-  materials
+  materials,
+  templates,
+  template_items,
+  orders,
+  order_materials
 }

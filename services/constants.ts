@@ -10,5 +10,9 @@ const ApiRouter = {
     ACCESSORIES: "accessories",
     VELCRO: "velcro",
     MATERIALS: "materials",
+    TEMPLATES: "templates",
+    TEMPLATE_ITEMS: "template-items",
+    ORDERS: "orders",
+    ORDER_MATERIALS: "order-materials"
 }
 export default ApiRouter
