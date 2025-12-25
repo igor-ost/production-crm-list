@@ -14,11 +14,10 @@ import { Customers } from "../customers/customers-table";
 import { Templates } from "../templates/templates-table";
 import { MaterialsTableProps } from "../materials/materials-table";
 import OrdersCreateMaterials from "./orders-create-materials";
-import OrdersCreatePhoto from "./orders-create-photo";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 
 
-export default function OrdersCreateFullScreen({
+export default function OrdersCreateModal({
   children,
   templates,
   customers,
@@ -32,10 +31,9 @@ export default function OrdersCreateFullScreen({
   onSubmit: (id: string, response: Orders) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "materials" | "photo">("info");
+  const [activeTab, setActiveTab] = useState<"info" | "materials">("info");
   const [currentMaterials,setCurrentMaterials] = useState(materials)
   const [materialOrderList, setMaterialOrderList] = useState<TemplateItems[]>([])
-  const [photos,setPhotos] = useState<File[]>([])
   const [template_id, setTemplate] = useState("");
   const [customer_id, setCustomer] = useState("");
   const [size, setSize] = useState("");
@@ -47,7 +45,8 @@ export default function OrdersCreateFullScreen({
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  console.log(photos)
+
+  
   const handleSubmit = async () => {
     setIsLoading(true);
     if (!template_id){setError("Поле (Изделие) обязательно для заполнения.");setIsLoading(false);return}
@@ -75,23 +74,27 @@ export default function OrdersCreateFullScreen({
       if (response.id) {
         try {
           const response_materials = await Api.order_materials.create(response.id,materialOrderList)
-          console.log(response_materials)
+          if(response_materials.status){
+            const check = await Api.orders.findById(response.id);
+            if(check){
+              setTemplate("");
+              setCustomer("");
+              setSize("");
+              setStatus("new");
+              setQuantity(0);
+              setButtons(0);
+              setCuttingPrice(0);
+              setSewingPrice(0);
+              setNotes("");
+              onSubmit(response.id, check);
+              setOpen(false);
+            }
+          }
         } catch (error) {
           setError(error instanceof Error ? error.message : "Произошла ошибка");
         }finally{
           setIsLoading(false);
         }
-        setTemplate("");
-        setCustomer("");
-        setSize("");
-        setStatus("new");
-        setQuantity(0);
-        setButtons(0);
-        setCuttingPrice(0);
-        setSewingPrice(0);
-        setNotes("");
-        onSubmit(response.id, response);
-        setOpen(false);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Произошла ошибка");
@@ -141,16 +144,6 @@ export default function OrdersCreateFullScreen({
                 onClick={() => setActiveTab("materials")}
               >
                 Материалы
-              </button>
-              <button
-                className={`px-6 py-3 font-medium transition-colors ${
-                  activeTab === "photo"
-                    ? "border-b-4 border-blue-500 text-blue-500"
-                    : "text-gray-500 hover:text-blue-500"
-                }`}
-                onClick={() => setActiveTab("photo")}
-              >
-                Фото
               </button>
             </div>
 
@@ -257,15 +250,10 @@ export default function OrdersCreateFullScreen({
 
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
-                  <OrdersCreateMaterials currentMaterials={currentMaterials}  template_id={template_id} templates={templates}/>
+                  <OrdersCreateMaterials setTemplates={setMaterialOrderList} currentMaterials={currentMaterials}  templates={materialOrderList}/>
               </div>
             )}
 
-            {activeTab === "photo" && (
-              <div className="text-gray-500 text-center">
-                  <OrdersCreatePhoto photos={photos} setPhotos={setPhotos}/>
-              </div>
-            )}
 
             {/* Footer */}
             <div className="mt-6 flex justify-end gap-4">

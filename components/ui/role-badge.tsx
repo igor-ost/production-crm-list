@@ -29,6 +29,10 @@ export default function RoleBadge({ role }: { role: string }) {
             badgeClass = "bg-pink-100 text-pink-700 border-pink-200"
             roleName = "Закройщик"
             break
+        case "buttons":
+            badgeClass = "bg-green-100 text-green-700 border-green-200"
+            roleName = "Портной (Пуговицы)"
+            break
         default:
             badgeClass = "bg-gray-100 text-gray-700 border-gray-200"
             roleName = role

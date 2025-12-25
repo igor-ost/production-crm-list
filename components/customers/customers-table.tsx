@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, Eye } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,14 @@ import {
 import CustomerCreateModal from "./customer-create-modal"
 import { CustomerRemoveModal } from "./customer-remove-modal"
 import CustomerUpdateModal from "./customer-update-modal"
+import CustomersViewModal from "./customers-view-modal"
+import { Orders } from "../orders/orders-table"
 
 export interface Customers {
   id: string
   name: string
   bin: string
+  orders?: Orders[]
 }
 
 interface CustomersTableProps {
@@ -125,6 +128,15 @@ export function CustomersTable({ customers }: CustomersTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+               <div className="flex justify-end gap-2">
+                <CustomersViewModal
+                  orders={customer?.orders || []}
+                >
+                  <Button size="icon" variant="ghost">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </CustomersViewModal>
+
                 <CustomerUpdateModal
                   id={customer.id}
                   name={customer.name}
@@ -148,6 +160,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </CustomerRemoveModal>
+                </div>
             </TableCell>
           </TableRow>
         ))}

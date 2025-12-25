@@ -6,45 +6,43 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Staff } from "../staff/staff-table"
+import RoleBadge from "./role-badge"
 
-export type Materials = {
-  id: string
-  name?: string;
-  type?: string;
-  color?: string;
-}
 
-interface MaterialSelectProps {
+
+
+interface SelectStaffProps {
   value?: string
   onValueChange: (value: string) => void
   placeholder?: string
   disabled?: boolean
-  materials:Materials[]
+  staff:Staff[]
 }
 
 
-export default function SelectMaterials({
+export default function SelectStaff({
   value,
   onValueChange,
-  placeholder = "Выберите Материал...",
+  placeholder = "Выберите пользователя...",
   disabled = false,
-  materials
-}: MaterialSelectProps) {
+  staff,
+}: SelectStaffProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
-  const selectedMaterials = materials.find((unit) => unit.id === value)
+  const selectedStaff = staff.find((unit) => unit.id === value)
 
-  const filteredMaterials = React.useMemo(() => {
-    if (!searchQuery) return materials
+const filteredStaff = React.useMemo(() => {
+  const excludedRoles = ["admin", "manager", "accountant", "technologist"];
 
-    const query = searchQuery.toLowerCase()
-    return materials.filter(
-      (material) =>
-        material.name?.toLowerCase().includes(query) ||
-        material.color?.toLowerCase().includes(query) ||
-        material.type?.toLowerCase().includes(query) 
-    )
-  }, [searchQuery])
+  return staff
+    .filter(st => !excludedRoles.includes(st.role?.toLowerCase() || ""))
+    .filter(st => {
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      return st.login?.toLowerCase().includes(query) || st.role?.toLowerCase().includes(query);
+    });
+}, [staff, searchQuery]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,9 +54,9 @@ export default function SelectMaterials({
           disabled={disabled}
           className={cn("w-full justify-between font-normal", !value && "text-muted-foreground")}
         >
-          {selectedMaterials ? (
+          {selectedStaff ? (
             <div className="flex items-center gap-2">
-              <span className="font-medium">{selectedMaterials.name ? selectedMaterials.name : selectedMaterials.color + " - " + selectedMaterials.type}</span>
+              <span className="font-medium">{selectedStaff.login} - {selectedStaff.role}</span>
             </div>
           ) : (
             placeholder
@@ -70,12 +68,12 @@ export default function SelectMaterials({
         <Command shouldFilter={false}>
           <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
-            <CommandEmpty>Единица измерения не найдена.</CommandEmpty>
+            <CommandEmpty>Пользователь не найден.</CommandEmpty>
             <CommandGroup>
-              {filteredMaterials.map((material) => (
+              {filteredStaff.map((staff) => (
                 <CommandItem
-                  key={material.id}
-                  value={material.id}
+                  key={staff.id}
+                  value={staff.id}
                   onSelect={(currentValue) => {
                     onValueChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
@@ -84,10 +82,10 @@ export default function SelectMaterials({
                   className="flex items-center justify-between gap-2"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span className="font-medium">{material.name ? material.name : material.color + " - " + material.type}</span>
+                    <span className="font-medium">{staff.login} - <RoleBadge role={staff.role}/></span>
                    
                   </div>
-                  <Check className={cn("size-4 shrink-0", value === material.id ? "opacity-100" : "opacity-0")} />
+                  <Check className={cn("size-4 shrink-0", value === staff.id ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}
             </CommandGroup>

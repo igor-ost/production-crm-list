@@ -12,6 +12,8 @@ import * as templates from "@/services/templates"
 import * as template_items from "@/services/template-items"
 import * as orders from "@/services/orders"
 import * as order_materials from "@/services/order-materials"
+import * as journal from "@/services/journal"
+import * as photos from "@/services/photos"
 export const Api = {
   auth,
   customers,
@@ -26,5 +28,7 @@ export const Api = {
   templates,
   template_items,
   orders,
-  order_materials
+  order_materials,
+  journal,
+  photos,
 }

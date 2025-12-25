@@ -62,7 +62,7 @@ export default function SelectTemplates({
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) p-0" align="start">
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Поиск единицы измерения..." value={searchQuery} onValueChange={setSearchQuery} />
+          <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
             <CommandEmpty>Изделие не найдено.</CommandEmpty>
             <CommandGroup>

@@ -27,6 +27,11 @@ import OrdersRemoveModal from "./orders-remove-modal"
 import OrdersUpdateModal from "./orders-update-modal"
 import OrdersCreateModal from "./orders-create-modal"
 import { MaterialsTableProps } from "../materials/materials-table"
+import { TemplateItems } from "../templates/templates-add-items-modal"
+import OrdersViewModal from "./orders-view-modal"
+import { Journal } from "../journal/journal-table"
+import { Staff } from "../staff/staff-table"
+import { Photos } from "./orders-view-photo"
 
 export interface Orders {
   id: string
@@ -40,15 +45,18 @@ export interface Orders {
   notes: string;
   customer: Customers;
   template: Templates;
+  materials?: TemplateItems[]
+  journal?: Journal[]
+  photos?: Photos[]
 }
 
-const statusLabels: Record<Orders["status"], string> = {
+export const statusLabels: Record<Orders["status"], string> = {
   new: "Новый",
   "in-progress": "В работе",
   completed: "Готов",
 }
 
-const statusColors: Record<Orders["status"], string> = {
+export const statusColors: Record<Orders["status"], string> = {
   new: "bg-blue-300/20 text-blue-500 border-transparent",
   "in-progress": "bg-yellow-300/20 text-yellow-500 border-transparent",
   completed: "bg-green-300/20 text-green-500 border-transparent",
@@ -58,10 +66,11 @@ interface OrdersTableProps {
   orders: Orders[]
   templates: Templates[]
   customers: Customers[]
+  staff: Staff[]
   materials: MaterialsTableProps
 }
 
-export function OrdersTable({ orders,templates,customers,materials }: OrdersTableProps) {
+export function OrdersTable({ orders,templates,customers,materials,staff }: OrdersTableProps) {
   const [orderList,setOrderList] = useState<Orders[]>(orders)
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState<"all" | Orders["status"]>("all")
@@ -70,11 +79,11 @@ export function OrdersTable({ orders,templates,customers,materials }: OrdersTabl
     const update = orderList.filter(i => i.id != id)
     setOrderList(update)
   }
-  const handleUpdate = (id: string, status: "new" | "in-progress" | "completed", notes: string) => {
+  const handleUpdate = (id: string, size:string, status:"new" | "in-progress" | "completed",sewing_price:number,cutting_price:number,buttons:number,quantity:number,notes:string) => {
       setOrderList(prev =>
         prev.map(item =>
           item.id === id
-            ? { ...item, status, notes }
+            ? { ...item, size, status,sewing_price,cutting_price,buttons,quantity,notes }
             : item
         )
     )
@@ -92,7 +101,8 @@ export function OrdersTable({ orders,templates,customers,materials }: OrdersTabl
       sewing_price: response.sewing_price,
       notes: response.notes,
       customer: response.customer,
-      template: response.template
+      template: response.template,
+      materials: response.materials
     }
     setOrderList((prev) => [...prev, updated]);
   }
@@ -193,14 +203,24 @@ export function OrdersTable({ orders,templates,customers,materials }: OrdersTabl
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {}}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <OrdersUpdateModal status={order.status} notes={order.notes} onSubmit={handleUpdate} id={order.id}>
+                    <OrdersViewModal photos={order.photos || []} staff={staff} order={order} materials={materials}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {}}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </OrdersViewModal>
+                    <OrdersUpdateModal 
+                    size={order.size}
+                    sewing_price={order.sewing_price}
+                    cutting_price={order.cutting_price}
+                    buttons={order.buttons}
+                    quantity={order.quantity}
+                    status={order.status} 
+                    notes={order.notes} 
+                    onSubmit={handleUpdate} id={order.id}>
                       <Button
                         size="sm"
                         variant="ghost"

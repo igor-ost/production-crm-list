@@ -108,6 +108,7 @@ export default function StaffCreateModal({children,onSubmit}:{children:React.Rea
                       <SelectItem value="accountant">Бухгалтер</SelectItem>
                       <SelectItem value="seamstress">Швея</SelectItem>
                       <SelectItem value="cutter">Закройщик</SelectItem>
+                      <SelectItem value="buttons">Портной (Пуговицы)</SelectItem>
                 </SelectContent>
               </Select>
           </div>

@@ -13,6 +13,8 @@ const ApiRouter = {
     TEMPLATES: "templates",
     TEMPLATE_ITEMS: "template-items",
     ORDERS: "orders",
-    ORDER_MATERIALS: "order-materials"
+    ORDER_MATERIALS: "order-materials",
+    JOURNAL: "journal",
+    PHOTOS: "photos"
 }
 export default ApiRouter

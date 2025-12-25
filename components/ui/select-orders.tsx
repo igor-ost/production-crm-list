@@ -6,43 +6,37 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Orders } from "../orders/orders-table"
 
-export type Materials = {
-  id: string
-  name?: string;
-  type?: string;
-  color?: string;
-}
 
-interface MaterialSelectProps {
+interface OrdersSelectProps {
   value?: string
   onValueChange: (value: string) => void
   placeholder?: string
   disabled?: boolean
-  materials:Materials[]
+  orders:Orders[]
 }
 
 
-export default function SelectMaterials({
+export default function SelectOrders({
   value,
   onValueChange,
-  placeholder = "Выберите Материал...",
+  placeholder = "Выберите заказ...",
   disabled = false,
-  materials
-}: MaterialSelectProps) {
+  orders,
+}: OrdersSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
-  const selectedMaterials = materials.find((unit) => unit.id === value)
+  const selectedOrders = orders.find((unit) => unit.id === value)
 
-  const filteredMaterials = React.useMemo(() => {
-    if (!searchQuery) return materials
+  const filteredOrders = React.useMemo(() => {
+    if (!searchQuery) return orders
 
     const query = searchQuery.toLowerCase()
-    return materials.filter(
-      (material) =>
-        material.name?.toLowerCase().includes(query) ||
-        material.color?.toLowerCase().includes(query) ||
-        material.type?.toLowerCase().includes(query) 
+    return orders.filter(
+      (order) =>
+        order.order_number?.toLowerCase().includes(query) ||
+        order.template.name?.toLowerCase().includes(query)
     )
   }, [searchQuery])
 
@@ -56,9 +50,9 @@ export default function SelectMaterials({
           disabled={disabled}
           className={cn("w-full justify-between font-normal", !value && "text-muted-foreground")}
         >
-          {selectedMaterials ? (
+          {selectedOrders ? (
             <div className="flex items-center gap-2">
-              <span className="font-medium">{selectedMaterials.name ? selectedMaterials.name : selectedMaterials.color + " - " + selectedMaterials.type}</span>
+              <span className="font-medium">{selectedOrders.order_number} - {selectedOrders.template.name}</span>
             </div>
           ) : (
             placeholder
@@ -70,12 +64,12 @@ export default function SelectMaterials({
         <Command shouldFilter={false}>
           <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
-            <CommandEmpty>Единица измерения не найдена.</CommandEmpty>
+            <CommandEmpty>Заказ не найден.</CommandEmpty>
             <CommandGroup>
-              {filteredMaterials.map((material) => (
+              {filteredOrders.map((order) => (
                 <CommandItem
-                  key={material.id}
-                  value={material.id}
+                  key={order.id}
+                  value={order.id}
                   onSelect={(currentValue) => {
                     onValueChange(currentValue === value ? "" : currentValue)
                     setOpen(false)
@@ -84,10 +78,10 @@ export default function SelectMaterials({
                   className="flex items-center justify-between gap-2"
                 >
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span className="font-medium">{material.name ? material.name : material.color + " - " + material.type}</span>
+                    <span className="font-medium">{order.order_number} - {order.template.name}</span>
                    
                   </div>
-                  <Check className={cn("size-4 shrink-0", value === material.id ? "opacity-100" : "opacity-0")} />
+                  <Check className={cn("size-4 shrink-0", value === order.id ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}
             </CommandGroup>
