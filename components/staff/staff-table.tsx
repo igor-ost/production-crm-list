@@ -18,12 +18,14 @@ import StaffCreateModal from "./staff-create-modal"
 import StaffUpdateModal from "./staff-update-modal"
 import { StaffRemoveModal } from "./staff-remove-modal"
 import RoleBadge from "../ui/role-badge"
+import { Journal } from "../journal/journal-table"
 
 
 export interface Staff {
   id: string
   login: string
   role: string
+  journal?: Journal[]
 }
 
 interface StaffsTableProps {

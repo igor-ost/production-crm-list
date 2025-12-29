@@ -2,13 +2,25 @@
 import { Orders } from "@/components/orders/orders-table";
 import ApiRouter from "./constants";
 import { axiosInstance, axiosInstanceServer } from "./instance";
-export const getList = async (token:string | undefined): Promise<Orders[]> => {
-    const { data } = await axiosInstanceServer.get(ApiRouter.ORDERS,{
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-    return data as Orders[];
+import axios from "axios";
+import { redirect } from "next/navigation";
+
+export async function getList(token: string | undefined) {
+  try {
+    const { data } = await axiosInstanceServer.get(ApiRouter.ORDERS, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      redirect("/");
+    }
+
+    throw error;
+  }
 }
 
 export const findById = async (id:string): Promise<Orders> => {

@@ -28,6 +28,8 @@ export interface Journal {
   quantity: number
   order: Orders
   user: Staff
+  createdAt?: Date
+  updateAt?: Date
 }
 
 interface JournalTableProps {

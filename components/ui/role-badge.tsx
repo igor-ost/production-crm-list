@@ -1,5 +1,19 @@
 import { Badge } from "../ui/badge"
 
+const roleLabel: Record<string, string> = {
+  admin: "Админ",
+  manager: "Менеджер",
+  accountant: "Бухгалтер",
+  technologist: "Технолог",
+  seamstress: "Швея",
+  cutter: "Закройщик",
+  buttons: "Портной (Пуговицы)",
+}
+
+export function getRoleLabel(role: string): string {
+  return roleLabel[role] || role
+}
+
 export default function RoleBadge({ role }: { role: string }) {
     let badgeClass = ""
     let roleName = ""

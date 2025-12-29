@@ -1,13 +1,23 @@
+import { redirect } from "next/navigation";
 import ApiRouter from "./constants";
 import { axiosInstance, axiosInstanceServer } from "./instance";
+import axios from "axios";
 
 export const getList = async (token:string | undefined): Promise<{id:string;name:string;bin:string}[]> => {
-    const { data } = await axiosInstanceServer.get(ApiRouter.CUSTOMERS,{
+    try {
+        const { data } = await axiosInstanceServer.get(ApiRouter.CUSTOMERS,{
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
     return data as {id:string;name:string;bin:string}[];
+    } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+        redirect("/");
+        }
+
+        throw error;
+    }
 }
 
 export const create = async (req:{name:string;bin:string}): Promise<{id:string;name:string;bin:string}> => {

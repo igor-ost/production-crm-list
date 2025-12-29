@@ -1,15 +1,23 @@
-
-import { Orders } from "@/components/orders/orders-table";
+import axios from "axios";
 import ApiRouter from "./constants";
 import { axiosInstance, axiosInstanceServer } from "./instance";
 import { Journal } from "@/components/journal/journal-table";
+import { redirect } from "next/navigation";
 export const getList = async (token:string | undefined): Promise<Journal[]> => {
-    const { data } = await axiosInstanceServer.get(ApiRouter.JOURNAL,{
+    try {
+        const { data } = await axiosInstanceServer.get(ApiRouter.JOURNAL,{
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-    return data as Journal[];
+        return data as Journal[];
+    } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+            redirect("/");
+        }
+
+        throw error;
+    }
 }
 
 export const create = async (req:{order_id:string;user_id:string,type:string,quantity:number}): Promise<Journal> => {

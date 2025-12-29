@@ -1,13 +1,24 @@
+import axios from "axios";
 import ApiRouter from "./constants";
 import { axiosInstance, axiosInstanceServer } from "./instance";
+import { redirect } from "next/navigation";
+import { Staff } from "@/components/staff/staff-table";
 
-export const getList = async (token:string | undefined): Promise<{id:string;login:string;role:string}[]> => {
-    const { data } = await axiosInstanceServer.get(ApiRouter.USERS,{
+export const getList = async (token:string | undefined): Promise<Staff[]> => {
+    try{
+        const { data } = await axiosInstanceServer.get(ApiRouter.USERS,{
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-    return data as {id:string;login:string;role:string}[];
+        return data as Staff[];
+    } catch (error: any) {
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+            redirect("/");
+        }
+
+        throw error;
+    }
 }
 
 export const create = async (req:{login:string;role:string;password:string}): Promise<{login:string;role:string;password:string;id:string}> => {
