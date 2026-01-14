@@ -80,7 +80,7 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
 
   return (
 <div className="space-y-4">
-  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-background/60 p-4 shadow-sm backdrop-blur">
+  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
     <div className="relative w-full max-w-sm">
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
@@ -93,7 +93,7 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
 
     <div className="ml-auto">
       <ButtonsCreateModal onSubmit={handleNew}>
-        <Button className="rounded-lg">
+        <Button variant="yellow" className="rounded-lg">
           Добавить
         </Button>
       </ButtonsCreateModal>

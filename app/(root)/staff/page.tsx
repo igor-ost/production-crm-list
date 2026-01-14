@@ -20,7 +20,7 @@ export default async function Staff() {
 
   return (
     <div>
-      <div className="bg-white rounded-md p-4 min-h-screen">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
         <StaffTable staffs={staffList}/>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default async function Orders() {
 
   return (
     <div>
-      <div className="bg-white rounded-md p-4">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
         <MaterialsTable 
           velcro={materialList.velcro}
           accessories={materialList.accessories}

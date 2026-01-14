@@ -70,7 +70,7 @@ export default function SelectMaterials({
         <Command shouldFilter={false}>
           <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
-            <CommandEmpty>Единица измерения не найдена.</CommandEmpty>
+            <CommandEmpty>Материал не найден.</CommandEmpty>
             <CommandGroup>
               {filteredMaterials.map((material) => (
                 <CommandItem

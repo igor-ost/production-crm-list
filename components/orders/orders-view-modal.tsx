@@ -29,6 +29,24 @@ export default function OrdersViewModal({
   const [activeTab, setActiveTab] = useState<"info" | "materials" | "photo" | "journal">("info");
 
   const [orderPhotos,setPhotos] = useState(photos) 
+
+  const sewingQty = order.journal?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0
+  const cuttingQty = order.journal?.reduce((sum, i) => i.type === "cutting" ? sum + i.quantity : sum, 0) || 0
+  const buttonsQty = order.journal?.reduce((sum, i) => i.type === "buttons" ? sum + i.quantity : sum, 0) || 0
+
+  let status = ""
+  let color: "threads" | "fabrics" | "buttons"
+
+  if (sewingQty < order.quantity || cuttingQty < order.quantity || buttonsQty < order.buttons) {
+    status = "В работе";
+    color = "threads";
+  } else if (sewingQty > order.quantity || cuttingQty > order.quantity || buttonsQty > order.buttons) {
+    status = "Перевыполнено";
+    color = "buttons";
+  } else {
+    status = "Завершено";
+    color = "fabrics";
+  }
   
   return (
     <>
@@ -137,11 +155,37 @@ export default function OrdersViewModal({
                   </div>
 
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
-                    <Label className="text-xs text-blue-600">Пуговицы</Label>
+                    <Label className="text-xs text-blue-600">Кнопки</Label>
                     <p className="text-xl font-semibold mt-1">
                       {order.buttons}
                     </p>
                   </div>
+      
+                </div>
+
+                 <div className="grid grid-cols-3 gap-4">
+                  <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
+                    <Label className="text-xs text-blue-600">Изготовлено изделий (пошив/покрой)</Label>
+                    <p className="text-xl font-semibold mt-1">
+                          <Badge>{sewingQty}</Badge>/
+                          <Badge>{cuttingQty}</Badge>
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
+                    <Label className="text-xs text-blue-600">Изготовлено кнопок</Label>
+                    <p className="text-xl font-semibold mt-1">
+                     <Badge>{buttonsQty}</Badge>
+                    </p>
+                  </div>
+
+                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
+                    <Label className="text-xs text-blue-600">Готовность</Label>
+                    <p className="text-xl font-semibold mt-1">
+                      <Badge variant={color}>{status}</Badge>
+                    </p>
+                  </div>
+      
                 </div>
 
 
@@ -175,7 +219,7 @@ export default function OrdersViewModal({
 
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
-                  <OrdersViewMaterials currentMaterials={materials} materials={order?.materials}/>
+                  <OrdersViewMaterials order_id={order.id} currentMaterials={materials} materials={order?.materials}/>
               </div>
             )}
 

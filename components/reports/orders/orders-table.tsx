@@ -18,6 +18,7 @@ import SelectOrders from "@/components/ui/select-orders"
 import { Orders } from "@/components/orders/orders-table"
 import { Badge } from "@/components/ui/badge"
 import * as XLSX from "xlsx";
+import OrdersViewModal from "./orders-view-modal"
 interface OrdersReportTableProps {
   orders: Orders[]
 }
@@ -28,7 +29,7 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
   const [selectedOrder, setSelectedOrder] = useState("")
 
   const exportToExcel = () => {
-    const header = ["#", "Номер заказа", "Продукт", "Требуется изделий", "Требуется пуговок", "Пошив по заказу", "Крой по заказу", "Пуговицы", "Статус"];
+    const header = ["#", "Номер заказа", "Продукт", "Требуется изделий", "Требуется кнопок", "Пошив по заказу", "Крой по заказу", "Кнопки", "Статус"];
 
     const data = ordersList.map((order, index) => {
       const sewingQty = order.journal?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0;
@@ -90,7 +91,7 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-background/60 p-4 shadow-sm backdrop-blur">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
         <div>
           <label className="text-sm font-medium text-foreground mb-2 block">Поиск</label>
           <Input
@@ -129,12 +130,12 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
               <TableHead>Номер заказа</TableHead>
               <TableHead>Продукт</TableHead>
               <TableHead className="text-center">Требуется изделий</TableHead>
-              <TableHead className="text-center">Требуется пуговок</TableHead>
+              <TableHead className="text-center">Требуется кнопок</TableHead>
               <TableHead className="text-center">Пошив по заказу</TableHead>
               <TableHead className="text-center">Крой по заказу</TableHead>
-              <TableHead className="text-center">Пуговицы</TableHead>
+              <TableHead className="text-center">Кнопки</TableHead>
               <TableHead className="text-center">Статус</TableHead>
-            </TableRow>
+            </TableRow> 
           </TableHeader>
 
           <TableBody>
@@ -168,8 +169,16 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
                   <TableCell className="text-center"><Badge variant="default">{sewingQty}</Badge></TableCell>
                   <TableCell className="text-center"><Badge variant="default">{cuttingQty}</Badge></TableCell>
                   <TableCell className="text-center"><Badge variant="default">{buttonsQty}</Badge></TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-center flex justify-center gap-2">
                     <Badge variant={color}>{status}</Badge>
+                    <OrdersViewModal order={order}>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <Info className="h-4 w-4" />
+                      </Button>
+                  </OrdersViewModal>
                   </TableCell>
                 </TableRow>
               )

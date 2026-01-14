@@ -19,7 +19,7 @@ interface WorkTypeSelectProps {
 const workType = [
   {name: "Пошив",type: "sewing"},
   {name: "Крой",type: "cutting"},
-  {name: "Пуговицы",type: "buttons"},
+  {name: "Кнопки",type: "buttons"},
 ]
 
 export default function SelectWorkType({

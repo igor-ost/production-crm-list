@@ -29,10 +29,11 @@ export default function StaffCreateModal({children,onSubmit}:{children:React.Rea
 
   const handleSubmit = async () => {
     setIsLoading(true)
+
     const staff = {
       login,
       role,
-      password
+      password: role !== "manager" && role !== "technologist" && role !== "accountant" ? password : "g3N27b9idw"
     };
 
     if(password.length < 8 ){
@@ -113,6 +114,9 @@ export default function StaffCreateModal({children,onSubmit}:{children:React.Rea
               </Select>
           </div>
 
+          {role !== "seamstress" && role !== "cutter"  && role !== "buttons" && (
+
+
           <div className="grid gap-2">
             <Label htmlFor="name">Пароль</Label>
             <div className="relative">
@@ -135,6 +139,7 @@ export default function StaffCreateModal({children,onSubmit}:{children:React.Rea
               </button>
             </div>
           </div>
+        )}
 
         {error && (
             <div className="p-2">

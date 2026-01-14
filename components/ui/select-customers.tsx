@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Customers } from "../customers/customers-table"
+import CustomerCreateModal from "../customers/customer-create-modal"
 
 
 
@@ -16,6 +17,7 @@ interface CustomersSelectProps {
   placeholder?: string
   disabled?: boolean
   customers:Customers[]
+  onCreate?: (id: string, name: string, description: string) => void
 }
 
 
@@ -24,22 +26,30 @@ export default function SelectCustomers({
   onValueChange,
   placeholder = "Выберите заказчика...",
   disabled = false,
-  customers
+  customers,
+  onCreate,
 }: CustomersSelectProps) {
   const [open, setOpen] = React.useState(false)
+  const [customersList,setCustomersList] = React.useState(customers)
   const [searchQuery, setSearchQuery] = React.useState("")
-  const selectedCustomer = customers.find((unit) => unit.id === value)
+  const selectedCustomer = customersList.find((unit) => unit.id === value)
 
   const filteredCustomers = React.useMemo(() => {
-    if (!searchQuery) return customers
+    if (!searchQuery) return customersList
 
     const query = searchQuery.toLowerCase()
-    return customers.filter(
+    return customersList.filter(
       (customer) =>
         customer.name?.toLowerCase().includes(query) ||
         customer.bin?.toLowerCase().includes(query)
     )
   }, [searchQuery])
+
+  React.useEffect(()=>{
+    setCustomersList(customers)
+    setSearchQuery("")
+  },[customers])
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -65,7 +75,14 @@ export default function SelectCustomers({
         <Command shouldFilter={false}>
           <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
-            <CommandEmpty>Заказчик не найден.</CommandEmpty>
+            <CommandEmpty>
+              Заказчик не найден.
+              {onCreate && (
+              <CustomerCreateModal defaultName={searchQuery} onSubmit={onCreate}>
+                <Button variant="link" className="cursor-pointer">Создать нового заказчика ({searchQuery})</Button>
+              </CustomerCreateModal>
+              )}
+            </CommandEmpty>
             <CommandGroup>
               {filteredCustomers.map((customer) => (
                 <CommandItem

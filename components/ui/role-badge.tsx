@@ -7,7 +7,7 @@ const roleLabel: Record<string, string> = {
   technologist: "Технолог",
   seamstress: "Швея",
   cutter: "Закройщик",
-  buttons: "Портной (Пуговицы)",
+  buttons: "Портной (Кнопки)",
 }
 
 export function getRoleLabel(role: string): string {
@@ -45,7 +45,7 @@ export default function RoleBadge({ role }: { role: string }) {
             break
         case "buttons":
             badgeClass = "bg-green-100 text-green-700 border-green-200"
-            roleName = "Портной (Пуговицы)"
+            roleName = "Портной (Кнопки)"
             break
         default:
             badgeClass = "bg-gray-100 text-gray-700 border-gray-200"

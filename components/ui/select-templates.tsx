@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Templates } from "../templates/templates-table"
+import TemplatesCreateModal from "../templates/templates-create-modal"
 
 
 interface TemplatesSelectProps {
@@ -15,6 +16,7 @@ interface TemplatesSelectProps {
   placeholder?: string
   disabled?: boolean
   templates:Templates[]
+  onCreate?: (id: string, name: string, description: string)=>void
 }
 
 
@@ -23,10 +25,12 @@ export default function SelectTemplates({
   onValueChange,
   placeholder = "Выберите изделие...",
   disabled = false,
-  templates
+  templates,
+  onCreate,
 }: TemplatesSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
+  const [templatesList,setTemplatesList] = React.useState(templates)
   const selectedTemplates = templates.find((unit) => unit.id === value)
 
   const filteredTemplates = React.useMemo(() => {
@@ -39,6 +43,11 @@ export default function SelectTemplates({
         template.description.toLowerCase().includes(query)
     )
   }, [searchQuery])
+
+  React.useEffect(()=>{
+    setTemplatesList(templates)
+    setSearchQuery("")
+  },[templates])
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,7 +73,14 @@ export default function SelectTemplates({
         <Command shouldFilter={false}>
           <CommandInput placeholder="Поиск..." value={searchQuery} onValueChange={setSearchQuery} />
           <CommandList>
-            <CommandEmpty>Изделие не найдено.</CommandEmpty>
+            <CommandEmpty>
+              Изделие не найдено.
+              {onCreate && (
+                <TemplatesCreateModal defaultName={searchQuery} onSubmit={onCreate}>
+                  <Button variant="link" className="cursor-pointer">Создать новое изделие ({searchQuery})</Button>
+                </TemplatesCreateModal>
+              )}
+            </CommandEmpty>
             <CommandGroup>
               {filteredTemplates.map((template) => (
                 <CommandItem

@@ -77,7 +77,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
   return (
 <div className="space-y-4">
   {/* Верхняя панель */}
-  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-background/60 p-4 shadow-sm backdrop-blur">
+  <div className="flex flex-wrap items-center gap-3 rounded-xl border p-4 shadow-sm bg-white">
     <div className="relative w-full max-w-sm">
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
@@ -90,7 +90,7 @@ export function CustomersTable({ customers }: CustomersTableProps) {
 
     <div className="ml-auto">
       <CustomerCreateModal onSubmit={handleNewCustomer}>
-        <Button className="rounded-lg">
+        <Button variant="yellow" className="rounded-lg">
           Создать заказчика
         </Button>
       </CustomerCreateModal>

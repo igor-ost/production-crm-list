@@ -42,8 +42,7 @@ export default function OrdersCreateMaterials({
 
     setTemplates(prev => prev.filter(item => item.id !== id));
   };
-
-const findMaterialWithType = (id: string) => {
+ const findMaterialWithType = (id: string) => {
   for (const { key } of materialTypes) {
     const list = currentMaterials[key as keyof MaterialsTableProps];
     const material = list?.find(item => item.id === id);
@@ -113,7 +112,7 @@ const findMaterialWithType = (id: string) => {
 
         return (
           <div key={key} className="border rounded-lg p-3 bg-white shadow-sm">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-start gap-4 mb-2">
               <h3 className="text-sm font-semibold">{label}</h3>
               <div className="flex gap-2">
                 <SelectMaterials
@@ -122,15 +121,17 @@ const findMaterialWithType = (id: string) => {
                   onValueChange={setSelectedMaterial}
                   materials={items}
                 />
-                <Input
-                  type="number"
-                  min={1}
-                  className="w-20"
-                  value={qty}
-                  onChange={e => setQty(Number(e.target.value))}
-                  placeholder="Кол-во"
-                />
-                <Button size="sm" onClick={handleAdd}>+</Button>
+                <div>
+                  <Input
+                    type="number"
+                    min={1}
+                    className="w-15"
+                    value={qty}
+                    onChange={e => setQty(Number(e.target.value))}
+                    placeholder="Кол-во"
+                  />
+                </div>
+                <Button size="sm" onClick={handleAdd}>Добавить</Button>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">

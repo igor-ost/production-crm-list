@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Api } from "@/services/api-clients";
 
 
-export default function CustomerCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(name:string,bin:string,id:string)=>void}) {
+export default function CustomerCreateModal({children,onSubmit,defaultName = ""}:{defaultName?:string,children:React.ReactNode,onSubmit:(name:string,bin:string,id:string)=>void}) {
   const [name, setName] = useState("");
   const [bin, setBin] = useState("");
   const [error,setError] = useState("");
@@ -50,6 +50,8 @@ export default function CustomerCreateModal({children,onSubmit}:{children:React.
     }
 
   };
+
+  useEffect(()=>{setName(defaultName)},[defaultName])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

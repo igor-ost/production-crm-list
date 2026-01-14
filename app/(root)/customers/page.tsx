@@ -19,7 +19,7 @@ export default async function Customers() {
 
   return (
     <div>
-      <div className="bg-white rounded-md p-4 min-h-screen">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
         <CustomersTable customers={customeList}/>
       </div>
     </div>

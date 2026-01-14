@@ -42,7 +42,7 @@ interface JournalTableProps {
 export const workTypeLabel = (type: string) => {
     if (type === "sewing") return "Пошив"
     if (type === "cutting") return "Крой"
-    if (type === "buttons") return "Пуговницы"  
+    if (type === "buttons") return "Кнопки"  
     return "Неизвестно"
   }
 
@@ -105,7 +105,7 @@ export function JournalTable({ journal,orders,staff,order_id }: JournalTableProp
   return (
 <div className="space-y-4">
 
-  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-background/60 p-4 shadow-sm backdrop-blur">
+  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
     <div className="relative w-full max-w-sm">
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       <Input
@@ -118,7 +118,7 @@ export function JournalTable({ journal,orders,staff,order_id }: JournalTableProp
 
     <div className="ml-auto">
       <JournalCreateModal order_id={order_id} staff={staff} orders={orders} onSubmit={handleNew}>
-        <Button className="rounded-lg">
+        <Button variant="yellow" className="rounded-lg">
           Создать запись
         </Button>
       </JournalCreateModal>

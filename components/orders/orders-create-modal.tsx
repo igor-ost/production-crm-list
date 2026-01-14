@@ -31,6 +31,8 @@ export default function OrdersCreateModal({
   onSubmit: (id: string, response: Orders) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [templatesList,setTemplatesList] = useState(templates)
+  const [customersList,setCustomersList] = useState(customers)
   const [activeTab, setActiveTab] = useState<"info" | "materials">("info");
   const [currentMaterials,setCurrentMaterials] = useState(materials)
   const [materialOrderList, setMaterialOrderList] = useState<TemplateItems[]>([])
@@ -46,6 +48,25 @@ export default function OrdersCreateModal({
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const createCustomer = (name:string,bin:string,id:string) => {
+    const updated = {
+      name:name,
+      bin:bin,
+      id:id
+    }
+    setCustomersList((prev) => [...prev, updated]);
+  }
+
+  const createTemplate = (id:string,name:string,description:string) => {
+    const updated = {
+      id:id,
+      name:name,
+      description:description,
+      materials: []
+    }
+    setTemplatesList((prev) => [...prev, updated]);
+  }
+
   
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -55,7 +76,7 @@ export default function OrdersCreateModal({
     if (!sewing_price){setError("Поле (Цена пошива) обязательно для заполнения.");setIsLoading(false);return}
     if (!cutting_price){setError("Поле (Цена кроя) обязательно для заполнения.");setIsLoading(false);return}
     if (!quantity){setError("Поле (Кол-во) обязательно для заполнения.");setIsLoading(false);return}
-    if (!buttons){setError("Поле (Кол-во пуговиц) обязательно для заполнения.");setIsLoading(false);return}
+    if (!buttons){setError("Поле (Кол-во кнопок) обязательно для заполнения.");setIsLoading(false);return}
 
     const order = {
       template_id,
@@ -73,7 +94,7 @@ export default function OrdersCreateModal({
       const response = await Api.orders.create(order);
       if (response.id) {
         try {
-          const response_materials = await Api.order_materials.create(response.id,materialOrderList)
+          const response_materials = await Api.order_materials.createMany(response.id,materialOrderList)
           if(response_materials.status){
             const check = await Api.orders.findById(response.id);
             if(check){
@@ -152,7 +173,7 @@ export default function OrdersCreateModal({
               <div className="grid gap-6">
                 <div className="grid gap-2">
                   <Label>Изделие</Label>
-                  <SelectTemplates value={template_id} onValueChange={setTemplate} templates={templates} />
+                  <SelectTemplates onCreate={createTemplate} value={template_id} onValueChange={setTemplate} templates={templatesList} />
                   <p className="text-sm text-gray-500">
                     {templates.find((t) => t.id === template_id)?.description}
                   </p>
@@ -160,7 +181,7 @@ export default function OrdersCreateModal({
 
                 <div className="grid gap-2">
                   <Label>Заказчик</Label>
-                  <SelectCustomers value={customer_id} onValueChange={setCustomer} customers={customers} />
+                  <SelectCustomers onCreate={createCustomer} value={customer_id} onValueChange={setCustomer} customers={customersList} />
                   {customers.find((c) => c.id === customer_id)?.bin && (
                     <p className="text-sm text-gray-500">
                       БИН: {customers.find((c) => c.id === customer_id)?.bin}
@@ -189,7 +210,7 @@ export default function OrdersCreateModal({
                     />
                   </div>
                   <div>
-                    <Label>Кол-во (Пуговицы)</Label>
+                    <Label>Кол-во (Кнопки)</Label>
                     <Input
                       type="number"
                       value={buttons}

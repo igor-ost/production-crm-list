@@ -27,7 +27,7 @@ export default async function Templates() {
 
   return (
     <div>
-      <div className="bg-white rounded-md p-4">
+      <div className="bg-[#63adff] rounded-md p-4  min-h-screen">
         <TemplatesTable materials={materialList} templates={templatesList}/>
       </div>
     </div>

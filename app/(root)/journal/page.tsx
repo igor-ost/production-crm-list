@@ -38,7 +38,7 @@ export default async function Journal() {
   const journalList = await getJournalList();
   return (
     <div>
-      <div className="bg-white rounded-md p-4 min-h-screen">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
         <JournalTable staff={staffList} orders={ordersList} journal={journalList}/>
       </div>
     </div>

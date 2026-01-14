@@ -24,7 +24,7 @@ export default async function Reports() {
   const ordersList = await getOrdersList();
   return (
     <div>
-      <div className="bg-white rounded-md p-4">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
         <ReportsTable orders={ordersList} staffs={staffList}/>
       </div>
     </div>

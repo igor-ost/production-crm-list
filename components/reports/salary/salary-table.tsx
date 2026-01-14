@@ -165,7 +165,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-background/60 p-4 shadow-sm backdrop-blur">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
         <div>
           <label className="text-sm font-medium text-foreground mb-2 block">Поиск</label>
           <div className="relative w-full max-w-sm">

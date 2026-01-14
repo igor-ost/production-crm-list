@@ -12,10 +12,16 @@ export const getList = async (token:string | undefined): Promise<{id:string;mate
     return data as {id:string;material_id: string;order_id : string;material_type: string;qty: number;}[];
 }
 
-export const create = async (id:string,req:TemplateItems[]): Promise<{status:boolean}> => {
+export const createMany = async (id:string,req:TemplateItems[]): Promise<{status:boolean}> => {
     const { data } = await axiosInstance.post(ApiRouter.ORDER_MATERIALS + "/" + id,req);
     return data as {status:boolean};
 }
+
+export const create = async (req:{material_id:string;material_type:string;order_id:string;qty:number}): Promise<{id:string;material_id:string;material_type:string;order_id:string;qty:number}> => {
+    const { data } = await axiosInstance.post(ApiRouter.ORDER_MATERIALS,req);
+    return data as {id:string;material_id:string;material_type:string;order_id:string;qty:number};
+}
+
 
 
 export const update = async (id:string,req:{material_id: string;order_id : string;material_type: string;qty: number;}): Promise<{id:string;material_id: string;order_id : string;material_type: string;qty: number;}> => {

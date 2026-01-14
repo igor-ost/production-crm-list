@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Api } from "@/services/api-clients";
-import SelectUnit from "@/components/ui/select-unit";
 import { Textarea } from "../ui/textarea";
 
 
-export default function TemplatesCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,description:string)=>void}) {
+export default function TemplatesCreateModal({children,onSubmit,defaultName = ""}:{defaultName?:string,children:React.ReactNode,onSubmit:(id:string,name:string,description:string)=>void}) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error,setError] = useState("");
@@ -58,6 +57,8 @@ export default function TemplatesCreateModal({children,onSubmit}:{children:React
     }
 
   };
+
+  useEffect(()=>{setName(defaultName)},[defaultName])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

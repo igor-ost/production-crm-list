@@ -125,33 +125,33 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
 
   return (
     <div className="space-y-4">
-      <div className="mr-auto text-sm text-black/50">
-          <OrdersCreateModal materials={materials} templates={templates} customers={customers} onSubmit={handleCreate}>
-            <Button>Создать новый заказ</Button>
-          </OrdersCreateModal>
-      </div>
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border p-4 backdrop-blur">
-        <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
-          <Input
-            placeholder="Поиск"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
+      <div className="flex justify-between items-center gap-3 rounded-lg border p-4 bg-white">
+        <div className="flex gap-3">
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
+            <Input
+              placeholder="Поиск"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
 
-        <Select value={status} onValueChange={(v) => setStatus(v as any)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Статус" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Все статусы</SelectItem>
-            <SelectItem value="new">Новый</SelectItem>
-            <SelectItem value="in-progress">В работе</SelectItem>
-            <SelectItem value="completed">Готов</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={status} onValueChange={(v) => setStatus(v as any)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Статус" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Все статусы</SelectItem>
+              <SelectItem value="new">Новый</SelectItem>
+              <SelectItem value="in-progress">В работе</SelectItem>
+              <SelectItem value="completed">Готов</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <OrdersCreateModal materials={materials} templates={templates} customers={customers} onSubmit={handleCreate}>
+            <Button variant="yellow">Создать новый заказ</Button>
+        </OrdersCreateModal>
       </div>
 
       {/* Таблица */}

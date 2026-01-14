@@ -54,8 +54,8 @@ export default function OrdersUpdateModal({
   const [open, setOpen] = useState(false);
   const [newsize, setSize] = useState(size);
   const [newstatus, setStatus] = useState<Status>(status);
-  const [newsewing_price, setSewingPrice] = useState(sewing_price);
-  const [newcutting_price, setCuttingPrice] = useState(cutting_price);
+  const [newsewing_price, setSewingPrice] = useState<number>(sewing_price);
+  const [newcutting_price, setCuttingPrice] = useState<number>(cutting_price);
   const [newbuttons, setButtons] = useState(buttons);
   const [newquantity, setQuantity] = useState(quantity);
   const [newnotes, setNotes] = useState(notes);
@@ -67,10 +67,12 @@ export default function OrdersUpdateModal({
     setError("");
 
     try {
+      const sewing = Number(newsewing_price);
+      const cutting = Number(newcutting_price);
       const response = await Api.orders.update(id, {
         size: newsize,
-        sewing_price: newsewing_price,
-        cutting_price: newcutting_price,
+        sewing_price: sewing,
+        cutting_price: cutting,
         buttons: newbuttons,
         quantity: newquantity,
         status: newstatus,
