@@ -28,10 +28,12 @@ export default function OrdersViewMaterials({
   materials,
   currentMaterials,
   order_id,
+  setMaterials
 }: {
   order_id: string;
   materials?: TemplateItems[];
-  currentMaterials: MaterialsTableProps
+  currentMaterials: MaterialsTableProps,
+  setMaterials?: (materials: TemplateItems[]) => void
 }) {
 
   const [materialsList,setMaterialsList] = useState<TemplateItems[]>([])
@@ -62,7 +64,11 @@ export default function OrdersViewMaterials({
       })
       
       if(response){
-        setMaterialsList(prev=> [...prev, response]);
+        const newArray = [...materialsList,response]
+        setMaterialsList(newArray);
+        if(setMaterials){
+          setMaterials(newArray)
+        }
         setSelectedMaterial("");
         setQty(1);
       }
@@ -75,7 +81,11 @@ export default function OrdersViewMaterials({
     try {
       const response = await Api.order_materials.remove(id)
       if(response.status){
-        setMaterialsList((prev)=> prev?.filter(i=>i.id !== id))
+        const updatedArray = materialsList.filter(i=>i.id !== id)
+        setMaterialsList(updatedArray)
+        if(setMaterials){
+          setMaterials(updatedArray)
+        }
       }  
     } catch (error) {
       console.log(error)

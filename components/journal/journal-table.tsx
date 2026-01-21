@@ -37,6 +37,7 @@ interface JournalTableProps {
   orders: Orders[]
   staff: Staff[]
   order_id?: string
+  setJournal?: (journal: Journal[])=> void
 }
 
 export const workTypeLabel = (type: string) => {
@@ -54,7 +55,7 @@ export const workTypeColor = (type: string) => {
     return "bg-gray-100 text-gray-800"
   }
 
-export function JournalTable({ journal,orders,staff,order_id }: JournalTableProps) {
+export function JournalTable({ journal,orders,staff,order_id,setJournal}: JournalTableProps) {
   const [search, setSearch] = useState("")
   const [journalList,setJournalList] = useState(journal)
   const handleNew = (id:string,order:Orders,user:Staff,type:string,quantity:number) => {
@@ -67,12 +68,20 @@ export function JournalTable({ journal,orders,staff,order_id }: JournalTableProp
       id:id
     }
 
+    const newArray = [...journalList, updated];
     setJournalList((prev) => [...prev, updated]);
+    if(setJournal){
+      setJournal(newArray)
+    }
+
   }
 
   const handleDelete = (id:string) => {
     const updated = journalList.filter(item => item.id != id)
     setJournalList(updated)
+    if(setJournal){
+       setJournal(updated)
+    }
   }
   const handleUpdate = (id:string,quantity:number)=>{
     setJournalList((prev) =>

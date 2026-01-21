@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Trash2, Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
 import { Api } from "@/services/api-clients";
 import { PHOTO_URL } from "@/services/config";
 

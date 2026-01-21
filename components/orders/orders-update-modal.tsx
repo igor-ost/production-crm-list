@@ -27,6 +27,7 @@ interface Props {
   buttons: number;
   quantity: number;
   notes: string;
+  deadline: string;
   onSubmit: (
     id: string,
     size: string,
@@ -35,7 +36,8 @@ interface Props {
     cutting_price: number,
     buttons: number,
     quantity: number,
-    notes: string
+    notes: string,
+    deadline: string
   ) => void;
 }
 
@@ -49,6 +51,7 @@ export default function OrdersUpdateModal({
   buttons,
   quantity,
   notes,
+  deadline,
   onSubmit,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -59,6 +62,7 @@ export default function OrdersUpdateModal({
   const [newbuttons, setButtons] = useState(buttons);
   const [newquantity, setQuantity] = useState(quantity);
   const [newnotes, setNotes] = useState(notes);
+  const [newdeadline, setDeadline] = useState(deadline);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -77,6 +81,7 @@ export default function OrdersUpdateModal({
         quantity: newquantity,
         status: newstatus,
         notes: newnotes,
+        deadline: newdeadline
       });
 
       if (response?.id) {
@@ -88,7 +93,8 @@ export default function OrdersUpdateModal({
           newcutting_price,
           newbuttons,
           newquantity,
-          newnotes
+          newnotes,
+          newdeadline
         );
         setOpen(false);
       }
@@ -127,6 +133,17 @@ export default function OrdersUpdateModal({
 
 
               <div className="grid gap-6">
+                <div className="grid gap-2">
+                  <Label>Срок исполнения</Label>
+                  <Input
+                    type="date"
+                    placeholder="Введите срок исполнения"
+                    value={newdeadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    className="p-3 text-lg"
+                  />
+                </div>
+
                 <div className="grid gap-2">
                   <Label>Размер</Label>
                   <Input

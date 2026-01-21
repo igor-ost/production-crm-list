@@ -15,6 +15,7 @@ const ApiRouter = {
     ORDERS: "orders",
     ORDER_MATERIALS: "order-materials",
     JOURNAL: "journal",
-    PHOTOS: "photos"
+    PHOTOS: "photos",
+    ORDER_STAFFS: "order-staffs"
 }
 export default ApiRouter

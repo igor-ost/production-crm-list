@@ -145,17 +145,17 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
               const buttonsQty = order.journal?.reduce((sum, i) => i.type === "buttons" ? sum + i.quantity : sum, 0) || 0
 
               let status = ""
-              let color: "threads" | "fabrics" | "buttons"
+              let color: "yellow" | "destructive" | "green"
 
               if (sewingQty < order.quantity || cuttingQty < order.quantity || buttonsQty < order.buttons) {
                 status = "В работе";
-                color = "threads";
+                color = "yellow";
               } else if (sewingQty > order.quantity || cuttingQty > order.quantity || buttonsQty > order.buttons) {
                 status = "Перевыполнено";
-                color = "buttons";
+                color = "destructive";
               } else {
                 status = "Завершено";
-                color = "fabrics";
+                color = "green";
               }
               
 
@@ -166,9 +166,9 @@ export function OrdersReportTable({ orders }: OrdersReportTableProps) {
                   <TableCell>{order.template.name}</TableCell>
                   <TableCell className="text-center"><Badge variant="outline">{order.quantity}</Badge></TableCell>
                   <TableCell className="text-center"><Badge variant="outline">{order.buttons}</Badge></TableCell>
-                  <TableCell className="text-center"><Badge variant="default">{sewingQty}</Badge></TableCell>
-                  <TableCell className="text-center"><Badge variant="default">{cuttingQty}</Badge></TableCell>
-                  <TableCell className="text-center"><Badge variant="default">{buttonsQty}</Badge></TableCell>
+                  <TableCell className="text-center"><Badge variant={sewingQty > order.quantity ? "destructive" : sewingQty == order.quantity ? "green" : "yellow"}>{sewingQty}</Badge></TableCell>
+                  <TableCell className="text-center"><Badge variant={cuttingQty > order.quantity ? "destructive" : cuttingQty == order.quantity ? "green" : "yellow"}>{cuttingQty}</Badge></TableCell>
+                  <TableCell className="text-center"><Badge variant={buttonsQty > order.buttons ? "destructive" : buttonsQty == order.buttons ? "green" : "yellow"}>{buttonsQty}</Badge></TableCell>
                   <TableCell className="text-center flex justify-center gap-2">
                     <Badge variant={color}>{status}</Badge>
                     <OrdersViewModal order={order}>

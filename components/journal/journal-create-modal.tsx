@@ -28,7 +28,6 @@ export default function JournalCreateModal({children,staff,orders,onSubmit,order
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
-
   const handleSubmit = async () => {
     setIsLoading(true)
     const journal = {

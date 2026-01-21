@@ -28,13 +28,13 @@ export const findById = async (id:string): Promise<Orders> => {
     return data as Orders;
 }
 
-export const create = async (req:{template_id: string;customer_id: string;size:string;status:  "new" | "in-progress" | "completed";sewing_price: number;cutting_price: number;buttons: number;quantity: number;notes: string}): Promise<Orders> => {
+export const create = async (req:{template_id: string;customer_id: string;size:string;status:  "new" | "in-progress" | "completed";sewing_price: number;cutting_price: number;buttons: number;quantity: number;notes: string,deadline:string}): Promise<Orders> => {
     const { data } = await axiosInstance.post(ApiRouter.ORDERS,req);
     return data as Orders;
 }
 
 
-export const update = async (id:string,req:{size: string, status: string, sewing_price: number, cutting_price: number, buttons: number, quantity: number, notes: string}): Promise<Orders> => {
+export const update = async (id:string,req:{size: string, status: string, sewing_price: number, cutting_price: number, buttons: number, quantity: number, notes: string,deadline:string}): Promise<Orders> => {
     const { data } = await axiosInstance.patch(ApiRouter.ORDERS + "/" + id,req);
     return data as Orders;
 }

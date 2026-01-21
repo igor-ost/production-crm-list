@@ -45,6 +45,7 @@ export default function OrdersCreateModal({
   const [buttons, setButtons] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [notes, setNotes] = useState("");
+  const [deadline, setDeadline] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,7 +77,6 @@ export default function OrdersCreateModal({
     if (!sewing_price){setError("Поле (Цена пошива) обязательно для заполнения.");setIsLoading(false);return}
     if (!cutting_price){setError("Поле (Цена кроя) обязательно для заполнения.");setIsLoading(false);return}
     if (!quantity){setError("Поле (Кол-во) обязательно для заполнения.");setIsLoading(false);return}
-    if (!buttons){setError("Поле (Кол-во кнопок) обязательно для заполнения.");setIsLoading(false);return}
 
     const order = {
       template_id,
@@ -88,6 +88,7 @@ export default function OrdersCreateModal({
       buttons,
       quantity,
       notes,
+      deadline: deadline
     };
 
     try {
@@ -107,6 +108,7 @@ export default function OrdersCreateModal({
               setCuttingPrice(0);
               setSewingPrice(0);
               setNotes("");
+              setDeadline("")
               onSubmit(response.id, check);
               setOpen(false);
             }
@@ -171,11 +173,17 @@ export default function OrdersCreateModal({
             {/* Tab content */}
             {activeTab === "info" && (
               <div className="grid gap-6">
-                <div className="grid gap-2">
-                  <Label>Изделие</Label>
-                  <SelectTemplates onCreate={createTemplate} value={template_id} onValueChange={setTemplate} templates={templatesList} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <Label>Изделие</Label>
+                    <SelectTemplates onCreate={createTemplate} value={template_id} onValueChange={setTemplate} templates={templatesList} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label>Срок исполнения</Label>
+                    <Input value={deadline} onChange={(e) => setDeadline(e.target.value)} type="date"/>
+                  </div>
                   <p className="text-sm text-gray-500">
-                    {templates.find((t) => t.id === template_id)?.description}
+                      {templates.find((t) => t.id === template_id)?.description}
                   </p>
                 </div>
 

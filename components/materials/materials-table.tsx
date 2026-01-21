@@ -1,10 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { Search } from "lucide-react"
+import { Download } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Tabs,
   TabsList,
@@ -17,6 +15,7 @@ import { Threads, ThreadsTable } from "./threads/threads-table"
 import { Buttons, ButtonsTable } from "./buttons/buttons-table"
 import { Accessories, AccessoriesTable } from "./accessories/accessories-table"
 import { Velcro, VelcroTable } from "./velcro/velcro-table"
+import * as XLSX from "xlsx"
 
 export interface MaterialsTableProps{
   zippers: Zippers[]
@@ -28,9 +27,131 @@ export interface MaterialsTableProps{
 }
 
 export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro}:MaterialsTableProps) {
+
+  function createSheet<T>(
+    title: string,
+    columns: {
+      key: string
+      title: string
+      width?: number
+    }[],
+    rows: T[]
+  ) {
+    const header = columns.map(c => c.title)
+
+    const data = rows.map((row: any, index) =>
+      columns.map(c =>
+        c.key === "#" ? index + 1 : row[c.key] ?? ""
+      )
+    )
+
+    data.unshift(header)
+
+    const ws = XLSX.utils.aoa_to_sheet(data)
+
+    ws["!cols"] = columns.map(c => ({
+      wch: c.width ?? Math.max(14, c.title.length + 2),
+    }))
+
+    header.forEach((_, i) => {
+      const cell = ws[XLSX.utils.encode_cell({ r: 0, c: i })]
+      if (cell) {
+        cell.s = {
+          font: { bold: true },
+          alignment: { horizontal: "center" },
+        }
+      }
+    })
+
+    return ws
+  }
+
+  const handleDownload = () => {
+    const wb = XLSX.utils.book_new()
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Молнии", [
+        { key: "#", title: "#" },
+        { key: "color", title: "Цвет" },
+        { key: "type", title: "Тип" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], zippers),
+      "Молнии"
+    )
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Ткани", [
+        { key: "#", title: "#" },
+        { key: "name", title: "Название" },
+        { key: "color", title: "Цвет" },
+        { key: "type", title: "Тип" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], fabrics),
+      "Ткани"
+    )
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Нитки", [
+        { key: "#", title: "#" },
+        { key: "color", title: "Цвет" },
+        { key: "type", title: "Тип" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], threads),
+      "Нитки"
+    )
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Пуговицы", [
+        { key: "#", title: "#" },
+        { key: "color", title: "Цвет" },
+        { key: "type", title: "Тип" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], buttons),
+      "Пуговицы"
+    )
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Аксессуары", [
+        { key: "#", title: "#" },
+        { key: "name", title: "Название" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], accessories),
+      "Аксессуары"
+    )
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      createSheet("Велькро", [
+        { key: "#", title: "#" },
+        { key: "name", title: "Название" },
+        { key: "unit", title: "Ед." },
+        { key: "qty", title: "Кол-во" },
+        { key: "price", title: "Цена" },
+      ], velcro),
+      "Велькро"
+    )
+
+    XLSX.writeFile(wb, `Материалы_${new Date().toISOString().slice(0,10)}.xlsx`)
+  }
   return (
     <div className="space-y-6">
       <Tabs defaultValue="zippers" className="space-y-4">
+        <div className="flex gap-2">
         <TabsList className="flex flex-wrap gap-2 bg-gray-100 rounded-lg p-1">
           {[
             { value: "zippers", label: "Молнии" },
@@ -50,6 +171,11 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
           ))}
         </TabsList>
 
+        <Button onClick={handleDownload} className="bg-green-600 hover:bg-green-700 cursor-pointer">
+            Скачать отчёт<Download />
+        </Button>
+
+        </div>
         <TabsContent value="zippers">
           <ZippersTable zippers={zippers}/>
         </TabsContent>

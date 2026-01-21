@@ -7,9 +7,10 @@ import { MaterialsTableProps } from "../materials/materials-table";
 import OrdersViewMaterials from "./orders-view-materials";
 import { createPortal } from "react-dom";
 import { Badge } from "../ui/badge";
-import { JournalTable } from "../journal/journal-table";
+import { Journal, JournalTable } from "../journal/journal-table";
 import { Staff } from "../staff/staff-table";
 import OrdersViewPhoto, { Photos } from "./orders-view-photo";
+import OrdersViewStaff from "./orders-view-staff";
 
 
 export default function OrdersViewModal({
@@ -26,8 +27,9 @@ export default function OrdersViewModal({
   photos: Photos[]
 }) {
   const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"info" | "materials" | "photo" | "journal">("info");
-
+  const [activeTab, setActiveTab] = useState<"info" | "materials" | "photo" | "journal" | "staff">("info");
+  const [journalList, setJournalList] = useState<Journal[]>(order.journal || []);
+  const [materialList, setMaterialList] = useState(order.materials)
   const [orderPhotos,setPhotos] = useState(photos) 
 
   const sewingQty = order.journal?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0
@@ -35,17 +37,17 @@ export default function OrdersViewModal({
   const buttonsQty = order.journal?.reduce((sum, i) => i.type === "buttons" ? sum + i.quantity : sum, 0) || 0
 
   let status = ""
-  let color: "threads" | "fabrics" | "buttons"
+  let color: "yellow" | "destructive" | "green"
 
   if (sewingQty < order.quantity || cuttingQty < order.quantity || buttonsQty < order.buttons) {
     status = "В работе";
-    color = "threads";
+    color = "yellow";
   } else if (sewingQty > order.quantity || cuttingQty > order.quantity || buttonsQty > order.buttons) {
     status = "Перевыполнено";
-    color = "buttons";
+    color = "destructive";
   } else {
     status = "Завершено";
-    color = "fabrics";
+    color = "green";
   }
   
   return (
@@ -97,6 +99,16 @@ export default function OrdersViewModal({
               </button>
               <button
                 className={`px-6 py-3 font-medium transition-colors ${
+                  activeTab === "staff"
+                    ? "border-b-4 border-blue-500 text-blue-500"
+                    : "text-gray-500 hover:text-blue-500"
+                }`}
+                onClick={() => setActiveTab("staff")}
+              >
+                Исполнители
+              </button>
+              <button
+                className={`px-6 py-3 font-medium transition-colors ${
                   activeTab === "journal"
                     ? "border-b-4 border-blue-500 text-blue-500"
                     : "text-gray-500 hover:text-blue-500"
@@ -109,17 +121,26 @@ export default function OrdersViewModal({
 
             {activeTab === "info" && (
               <div className="space-y-6">
-
-                <div className="rounded-lg border p-4 bg-gray-50">
-                  <Label className="text-xs text-muted-foreground">Заказ №</Label>
-                  <div className="flex gap-2 items-center">
-                    <p className="text-base font-medium mt-1">
-                      {order.order_number} 
-                    </p>
-                    <Badge className={`${statusColors[order.status]} border`}>
-                        {statusLabels[order.status]}
-                    </Badge>
-                  </div>  
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-lg border p-4 bg-gray-50">
+                    <Label className="text-xs text-muted-foreground">Заказ №</Label>
+                    <div className="flex gap-2 items-center">
+                      <p className="text-base font-medium mt-1">
+                        {order.order_number} 
+                      </p>
+                      <Badge className={`${statusColors[order.status]} border`}>
+                          {statusLabels[order.status]}
+                      </Badge>
+                    </div>  
+                  </div>
+                 <div className="rounded-lg border p-4 bg-gray-50">
+                    <Label className="text-xs text-muted-foreground">Срок исполнения</Label>
+                    <div className="flex gap-2 items-center">
+                      <p className="text-base font-medium mt-1">
+                        {order.deadline ? order.deadline.toString() : "Не указан"} 
+                      </p>
+                    </div>  
+                  </div>
                 </div>
 
                 <div className="rounded-lg border p-4 bg-gray-50">
@@ -167,15 +188,15 @@ export default function OrdersViewModal({
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Изготовлено изделий (пошив/покрой)</Label>
                     <p className="text-xl font-semibold mt-1">
-                          <Badge>{sewingQty}</Badge>/
-                          <Badge>{cuttingQty}</Badge>
+                          <Badge variant={sewingQty > order.quantity ? "destructive" : sewingQty == order.quantity ? "green" : "yellow"}>{sewingQty}</Badge>/
+                          <Badge variant={cuttingQty > order.quantity ? "destructive" : cuttingQty == order.quantity ? "green" : "yellow"}>{cuttingQty}</Badge>
                     </p>
                   </div>
 
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Изготовлено кнопок</Label>
                     <p className="text-xl font-semibold mt-1">
-                     <Badge>{buttonsQty}</Badge>
+                     <Badge variant={buttonsQty > order.buttons ? "destructive" : buttonsQty == order.buttons ? "green" : "yellow"}>{buttonsQty}</Badge>
                     </p>
                   </div>
 
@@ -219,7 +240,7 @@ export default function OrdersViewModal({
 
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
-                  <OrdersViewMaterials order_id={order.id} currentMaterials={materials} materials={order?.materials}/>
+                  <OrdersViewMaterials order_id={order.id} currentMaterials={materials} materials={materialList} setMaterials={setMaterialList}/>
               </div>
             )}
 
@@ -231,7 +252,13 @@ export default function OrdersViewModal({
 
             {activeTab === "journal" && (
               <div className="text-gray-500 text-center">
-                  <JournalTable order_id={order.id} orders={Array(order)} staff={staff} journal={order?.journal || []}/>
+                  <JournalTable order_id={order.id} orders={Array(order)} staff={staff} journal={journalList || []} setJournal={setJournalList}/>
+              </div>
+            )}
+
+            {activeTab === "staff" && (
+              <div className="text-gray-500 text-center">
+                  <OrdersViewStaff order_id={order.id} staffs={order.staffs || []}/>
               </div>
             )}
 

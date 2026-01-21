@@ -1,7 +1,7 @@
 "use client"
 
 import { Eye, Trash2, Search, Edit3 } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,6 +32,15 @@ import OrdersViewModal from "./orders-view-modal"
 import { Journal } from "../journal/journal-table"
 import { Staff } from "../staff/staff-table"
 import { Photos } from "./orders-view-photo"
+import { staffsStore } from "@/store/staff-store"
+import { ordersStore } from "@/store/order-store"
+
+export interface OrderStaffs {
+  id:string;
+  order_id:string;
+  staff_id:string;
+  user:Staff,
+}
 
 export interface Orders {
   id: string
@@ -43,11 +52,13 @@ export interface Orders {
   sewing_price:number;
   cutting_price:number;
   notes: string;
+  deadline: string;
   customer: Customers;
   template: Templates;
   materials?: TemplateItems[]
   journal?: Journal[]
   photos?: Photos[]
+  staffs?: OrderStaffs[] 
 }
 
 export const statusLabels: Record<Orders["status"], string> = {
@@ -71,22 +82,22 @@ interface OrdersTableProps {
 }
 
 export function OrdersTable({ orders,templates,customers,materials,staff }: OrdersTableProps) {
-  const [orderList,setOrderList] = useState<Orders[]>(orders)
+  const { setStaff,staff:staffList } = staffsStore();
+  const { setOrders, orders: orderList } = ordersStore()
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState<"all" | Orders["status"]>("all")
-
   const handleDelete = (id:string) => {
     const update = orderList.filter(i => i.id != id)
-    setOrderList(update)
+    setOrders(update)
   }
-  const handleUpdate = (id: string, size:string, status:"new" | "in-progress" | "completed",sewing_price:number,cutting_price:number,buttons:number,quantity:number,notes:string) => {
-      setOrderList(prev =>
-        prev.map(item =>
-          item.id === id
-            ? { ...item, size, status,sewing_price,cutting_price,buttons,quantity,notes }
-            : item
-        )
-    )
+  const handleUpdate = (id: string, size:string, status:"new" | "in-progress" | "completed",sewing_price:number,cutting_price:number,buttons:number,quantity:number,notes:string,deadline:string) => {
+    const newOrders = orderList.map(item =>
+        item.id === id
+          ? { ...item, size, status, sewing_price, cutting_price, buttons, quantity, notes, deadline }
+          : item
+      );
+
+    setOrders(newOrders);
   }
 
   const handleCreate = (id:string,response:Orders)=>{
@@ -100,11 +111,13 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
       cutting_price: response.cutting_price,
       sewing_price: response.sewing_price,
       notes: response.notes,
+      deadline: response.deadline,
       customer: response.customer,
       template: response.template,
       materials: response.materials
     }
-    setOrderList((prev) => [...prev, updated]);
+    const newOrders = [...orderList, updated];
+    setOrders(newOrders);
   }
 
   const filteredOrders = useMemo(() => {
@@ -122,6 +135,14 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
       return matchesSearch && matchesStatus
     })
   }, [orderList, search, status])
+
+  useEffect(()=>{
+    setStaff(staff)
+  },[staff])
+
+  useEffect(()=>{
+    setOrders(orders)
+  },[orders])
 
   return (
     <div className="space-y-4">
@@ -163,6 +184,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
               <TableHead>№</TableHead>
               <TableHead>Изделие</TableHead>
               <TableHead>Заказчик</TableHead>
+              <TableHead>Срок Исп.</TableHead>
               <TableHead>Размер</TableHead>
               <TableHead>Кол-во</TableHead>
               <TableHead>Пошив</TableHead>
@@ -181,6 +203,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
                 <TableCell>{order.order_number}</TableCell>
                <TableCell className="font-bold text-xs text-black">{order.template.name}</TableCell>
                 <TableCell className="font-bold text-xs text-black">{order.customer.name}</TableCell>
+                <TableCell className="font-bold text-xs text-black">{order.deadline ? order.deadline : "---"}</TableCell>
                 <TableCell>
                   <Badge>{order.size}</Badge>
                 </TableCell>
@@ -203,7 +226,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center gap-2">
-                    <OrdersViewModal photos={order.photos || []} staff={staff} order={order} materials={materials}>
+                    <OrdersViewModal photos={order.photos || []} staff={staffList} order={order} materials={materials}>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -220,6 +243,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
                     quantity={order.quantity}
                     status={order.status} 
                     notes={order.notes} 
+                    deadline={order.deadline ? order.deadline : ""}
                     onSubmit={handleUpdate} id={order.id}>
                       <Button
                         size="sm"
