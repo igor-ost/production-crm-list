@@ -7,6 +7,7 @@ import { Api } from "@/services/api-clients";
 import { ordersStore } from "@/store/order-store";
 import { OrderStaffs } from "../orders/orders-table";
 import { Staff } from "../staff/staff-table";
+import { Input } from "../ui/input";
 
 
 interface OrderStaffsModalProps {
@@ -22,7 +23,7 @@ export default function OrderStaffsCreate({
 }: OrderStaffsModalProps) {
   const {orders,setOrders} = ordersStore()
   const [open,setOpen] = useState(false)
-  const [query, setQuery] = useState("");
+  const [qty,setQty] = useState(0)
   const [selected, setSelected] = useState("");
   const [isLoading,setIsLoading] = useState(false)
 
@@ -31,6 +32,7 @@ export default function OrderStaffsCreate({
     try {
       const response = await Api.order_staffs.create({
         order_id,
+        qty: qty,
         staff_id:selected
       })
       if(response.id){
@@ -67,6 +69,11 @@ export default function OrderStaffsCreate({
           <div className="grid gap-2">
             <Label htmlFor="name">Персонал</Label>
             <SelectStaff staff={staff} onValueChange={setSelected} value={selected}/>
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="name">Нужно изготовить</Label>
+            <Input onChange={(e)=>setQty(Number(e.target.value))} type="number" value={qty}/>
           </div>
     
         </div>

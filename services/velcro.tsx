@@ -16,7 +16,7 @@ export const create = async (req:{name:string,unit:string,qty:number,price:numbe
 }
 
 
-export const update = async (id:string,req:{name:string,unit:string,qty:number,price:number}): Promise<{id:string;name:string,unit:string,qty:number,price:number}> => {
+export const update = async (id:string,req:{name?:string,unit?:string,qty?:number,price?:number}): Promise<{id:string;name:string,unit:string,qty:number,price:number}> => {
     const { data } = await axiosInstance.patch(ApiRouter.VELCRO + "/" + id,req);
     return data as {id:string;name:string,unit:string,qty:number,price:number};
 }

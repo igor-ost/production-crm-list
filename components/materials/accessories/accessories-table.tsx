@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import AccessoriesRemoveModal from "./accessories-remove-modal"
 import AccessoriesUpdateModal from "./accessories-update-modal"
 import AccessoriesCreateModal from "./accessories-create-modal"
+import UpdateQtyModal from "../update-qty-materials"
 
 export interface Accessories {
   id: string;
@@ -49,6 +50,15 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
   const handleDelete = (id:string) => {
     const updated = accessoriesList.filter(item => item.id != id)
     setAccessoriesList(updated)
+  }
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setAccessoriesList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
   }
   const handleUpdate = (id:string,name:string,unit:string,qty:number,price:number)=>{
     setAccessoriesList((prev) =>
@@ -137,6 +147,16 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                  <UpdateQtyModal
+                    id={accessories.id}
+                    qty={accessories.qty}
+                    type="accessories"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
                 <AccessoriesUpdateModal
                   id={accessories.id}
                   name={accessories.name}

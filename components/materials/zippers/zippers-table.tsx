@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import ZippersCreateModal from "./zipper-create-modal"
 import ZippersUpdateModal from "./zipper-update-modal"
 import ZippersRemoveModal from "./zipper-remove-modal"
 import { Badge } from "@/components/ui/badge"
+import UpdateQtyModal from "../update-qty-materials"
 
 export interface Zippers {
   id: string;
@@ -52,6 +53,17 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
     const updated = zippersList.filter(item => item.id != id)
     setZippersList(updated)
   }
+
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setZippersList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
+  }
+
   const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
     setZippersList((prev) =>
       prev.map((item) =>
@@ -145,6 +157,17 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                <UpdateQtyModal
+                    id={zipper.id}
+                    qty={zipper.qty}
+                    type="zippers"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
+
                 <ZippersUpdateModal
                   id={zipper.id}
                   color={zipper.color}

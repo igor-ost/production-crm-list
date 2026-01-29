@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import ThreadsCreateModal from "./thread-create-modal"
 import ThreadsUpdateModal from "./thread-update-modal"
 import ThreadsRemoveModal from "./thread-remove-modal"
+import UpdateQtyModal from "../update-qty-materials"
 
 export interface Threads {
   id: string;
@@ -52,6 +53,17 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
     const updated = threadsList.filter(item => item.id != id)
     setThreadsList(updated)
   }
+
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setThreadsList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
+  }
+
   const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
     setThreadsList((prev) =>
       prev.map((item) =>
@@ -144,6 +156,17 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                <UpdateQtyModal
+                    id={thread.id}
+                    qty={thread.qty}
+                    type="threads"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
+
                 <ThreadsUpdateModal
                   id={thread.id}
                   color={thread.color}

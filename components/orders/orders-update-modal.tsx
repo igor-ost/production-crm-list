@@ -154,7 +154,7 @@ export default function OrdersUpdateModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
+                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50 hidden">
                   <div>
                     <Label>Кол-во</Label>
                     <Input
@@ -175,7 +175,7 @@ export default function OrdersUpdateModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
+                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50 hidden">
                   <div>
                     <Label>Цена кроя</Label>
                     <Input

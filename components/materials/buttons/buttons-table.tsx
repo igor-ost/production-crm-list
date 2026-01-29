@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import ButtonsUpdateModal from "./button-update-modal"
 import ButtonsRemoveModal from "./button-remove-modal"
 import ButtonsCreateModal from "./button-create-modal"
+import UpdateQtyModal from "../update-qty-materials"
 
 export interface Buttons {
   id: string;
@@ -51,6 +52,15 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
   const handleDelete = (id:string) => {
     const updated = buttonsList.filter(item => item.id != id)
     setButtonsList(updated)
+  }
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setButtonsList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
   }
   const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
     setButtonsList((prev) =>
@@ -145,6 +155,16 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                <UpdateQtyModal
+                    id={button.id}
+                    qty={button.qty}
+                    type="buttons"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
                 <ButtonsUpdateModal
                   id={button.id}
                   color={button.color}

@@ -31,6 +31,17 @@ export default function OrdersViewModal({
   const [journalList, setJournalList] = useState<Journal[]>(order.journal || []);
   const [materialList, setMaterialList] = useState(order.materials)
   const [orderPhotos,setPhotos] = useState(photos) 
+  const [sewing_price, setSewingPrice] = useState(order.sewing_price);
+  const [cutting_price, setCuttingPrice] = useState(order.cutting_price);
+  const [buttons, setButtons] = useState(order.buttons);
+  const [quantity, setQuantity] = useState(order.quantity);
+
+  const handleUpdatePriceQuantity = (quantity:number,buttons:number,sewing_price:number,cutting_price:number) => {
+    setSewingPrice(sewing_price)
+    setQuantity(quantity)
+    setButtons(buttons)
+    setCuttingPrice(cutting_price)
+  }
 
   const sewingQty = order.journal?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0
   const cuttingQty = order.journal?.reduce((sum, i) => i.type === "cutting" ? sum + i.quantity : sum, 0) || 0
@@ -240,7 +251,7 @@ export default function OrdersViewModal({
 
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
-                  <OrdersViewMaterials order_id={order.id} currentMaterials={materials} materials={materialList} setMaterials={setMaterialList}/>
+                  <OrdersViewMaterials onUpdate={handleUpdatePriceQuantity} buttons={buttons} quantity={quantity} cutting_price={cutting_price} sewing_price={sewing_price} order_id={order.id} currentMaterials={materials} materials={materialList} setMaterials={setMaterialList}/>
               </div>
             )}
 

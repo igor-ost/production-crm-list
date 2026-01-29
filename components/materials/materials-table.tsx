@@ -197,7 +197,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         </TabsContent>
 
         <TabsContent value="velcro">
-         <VelcroTable velcro={velcro}/>
+          <VelcroTable velcro={velcro}/>
         </TabsContent>
       </Tabs>
     </div>

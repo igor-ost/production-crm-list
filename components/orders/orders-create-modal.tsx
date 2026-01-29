@@ -74,10 +74,7 @@ export default function OrdersCreateModal({
     if (!template_id){setError("Поле (Изделие) обязательно для заполнения.");setIsLoading(false);return}
     if (!customer_id){setError("Поле (Заказчик) обязательно для заполнения.");setIsLoading(false);return}
     if (!size){setError("Поле (Размер) обязательно для заполнения.");setIsLoading(false);return}
-    if (!sewing_price){setError("Поле (Цена пошива) обязательно для заполнения.");setIsLoading(false);return}
-    if (!cutting_price){setError("Поле (Цена кроя) обязательно для заполнения.");setIsLoading(false);return}
-    if (!quantity){setError("Поле (Кол-во) обязательно для заполнения.");setIsLoading(false);return}
-
+    
     const order = {
       template_id,
       customer_id,
@@ -207,48 +204,6 @@ export default function OrdersCreateModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
-                  <div>
-                    <Label>Кол-во</Label>
-                    <Input
-                      type="number"
-                      value={quantity}
-                      onChange={(e) => setQuantity(Number(e.target.value))}
-                      className="p-3 text-lg bg-white"
-                    />
-                  </div>
-                  <div>
-                    <Label>Кол-во (Кнопки)</Label>
-                    <Input
-                      type="number"
-                      value={buttons}
-                      onChange={(e) => setButtons(Number(e.target.value))}
-                      className="p-3 text-lg bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
-                  <div>
-                    <Label>Цена кроя</Label>
-                    <Input
-                      type="number"
-                      value={cutting_price}
-                      onChange={(e) => setCuttingPrice(Number(e.target.value))}
-                      className="p-3 text-lg bg-white"
-                    />
-                  </div>
-                  <div>
-                    <Label>Цена пошива</Label>
-                    <Input
-                      type="number"
-                      value={sewing_price}
-                      onChange={(e) => setSewingPrice(Number(e.target.value))}
-                      className="p-3 text-lg bg-white"
-                    />
-                  </div>
-                </div>
-
                 <div className="grid gap-2">
                   <Label>Статус</Label>
                   <Select value={status} onValueChange={(v: "new" | "in-progress" | "completed") => setStatus(v)}>
@@ -279,7 +234,10 @@ export default function OrdersCreateModal({
 
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
-                  <OrdersCreateMaterials setTemplates={setMaterialOrderList} currentMaterials={currentMaterials}  templates={materialOrderList}/>
+                  <OrdersCreateMaterials 
+                  quantity={quantity} buttons={buttons} sewing_price={sewing_price} cutting_price={cutting_price} 
+                  setQuantity={setQuantity} setButtons={setButtons} setSewingPrice={setSewingPrice} setCuttingPrice={setCuttingPrice} 
+                  setTemplates={setMaterialOrderList} currentMaterials={currentMaterials}  templates={materialOrderList}/>
               </div>
             )}
 

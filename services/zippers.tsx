@@ -16,7 +16,7 @@ export const create = async (req:{color:string;type:string,unit:string,qty:numbe
 }
 
 
-export const update = async (id:string,req:{color:string;type:string,unit:string,qty:number,price:number}): Promise<{id:string;color:string;type:string,unit:string,qty:number,price:number}> => {
+export const update = async (id:string,req:{color?:string;type?:string,unit?:string,qty?:number,price?:number}): Promise<{id:string;color:string;type:string,unit:string,qty:number,price:number}> => {
     const { data } = await axiosInstance.patch(ApiRouter.ZIPPERS + "/" + id,req);
     return data as {id:string;color:string;type:string,unit:string,qty:number,price:number};
 }

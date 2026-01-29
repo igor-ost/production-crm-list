@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import FabricsCreateModal from "./fabric-create-modal"
 import FabricsUpdateModal from "./fabric-update-modal"
 import FabricsRemoveModal from "./fabric-remove-modal"
+import UpdateQtyModal from "../update-qty-materials"
 
 export interface Fabrics {
   id: string;
@@ -54,6 +55,17 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
     const updated = fabricsList.filter(item => item.id != id)
     setFabricsList(updated)
   }
+
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setFabricsList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
+  }
+
   const handleUpdate = (id:string,name:string,color:string,type:string,unit:string,qty:number,price:number)=>{
     setFabricsList((prev) =>
       prev.map((item) =>
@@ -153,6 +165,17 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                <UpdateQtyModal
+                    id={fabric.id}
+                    qty={fabric.qty}
+                    type="fabrics"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
+                
                 <FabricsUpdateModal
                   id={fabric.id}
                   name={fabric.name}

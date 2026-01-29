@@ -37,6 +37,7 @@ import { ordersStore } from "@/store/order-store"
 
 export interface OrderStaffs {
   id:string;
+  qty:number;
   order_id:string;
   staff_id:string;
   user:Staff,

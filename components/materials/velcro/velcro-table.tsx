@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import VelcroCreateModal from "./velcro-create-modal"
 import VelcroUpdateModal from "./velcro-update-modal"
 import VelcroRemoveModal from "./velcro-remove-modal"
+import UpdateQtyModal from "../update-qty-materials"
 
 
 export interface Velcro {
@@ -51,6 +52,17 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
     const updated = VelcroList.filter(item => item.id != id)
     setVelcroList(updated)
   }
+
+  const handleQtyUpdate = (id:string,qty:number)=>{
+      setVelcroList((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? { ...item, qty }
+          : item
+      )
+    );
+  }
+
   const handleUpdate = (id:string,name:string,unit:string,qty:number,price:number)=>{
     setVelcroList((prev) =>
       prev.map((item) =>
@@ -138,6 +150,17 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
             </TableCell>
 
             <TableCell className="text-right">
+                <UpdateQtyModal
+                    id={velcro.id}
+                    qty={velcro.qty}
+                    type="velcro"
+                    onSubmit={handleQtyUpdate}
+                  >
+                  <Button size="icon" variant="ghost">
+                    <PlusSquare className="h-4 w-4" />
+                  </Button>
+                </UpdateQtyModal>
+
                 <VelcroUpdateModal
                   id={velcro.id}
                   name={velcro.name}

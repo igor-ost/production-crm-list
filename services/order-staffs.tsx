@@ -11,7 +11,7 @@ export const getList = async (token:string | undefined): Promise<Templates[]> =>
     return data as Templates[];
 }
 
-export const create = async (req:{order_id:string;staff_id:string}): Promise<Templates> => {
+export const create = async (req:{order_id:string;staff_id:string,qty:number}): Promise<Templates> => {
     const { data } = await axiosInstance.post(ApiRouter.ORDER_STAFFS,req);
     return data as Templates;
 }

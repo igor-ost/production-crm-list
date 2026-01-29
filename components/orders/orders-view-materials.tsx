@@ -7,6 +7,7 @@ import { Api } from "@/services/api-clients";
 import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 
 const materialTypes = [
   { key: "zippers", label: "Молнии", variant: "zippers" },
@@ -18,39 +19,56 @@ const materialTypes = [
 ];
 
 type MaterialItem = MaterialsTableProps["zippers"][0] |
-                    MaterialsTableProps["fabrics"][0] |
-                    MaterialsTableProps["threads"][0] |
-                    MaterialsTableProps["buttons"][0] |
-                    MaterialsTableProps["accessories"][0] |
-                    MaterialsTableProps["velcro"][0];
+  MaterialsTableProps["fabrics"][0] |
+  MaterialsTableProps["threads"][0] |
+  MaterialsTableProps["buttons"][0] |
+  MaterialsTableProps["accessories"][0] |
+  MaterialsTableProps["velcro"][0];
 
 export default function OrdersViewMaterials({
   materials,
   currentMaterials,
   order_id,
-  setMaterials
+  setMaterials,
+  sewing_price,
+  cutting_price,
+  buttons,
+  quantity,
+  onUpdate
 }: {
   order_id: string;
   materials?: TemplateItems[];
   currentMaterials: MaterialsTableProps,
   setMaterials?: (materials: TemplateItems[]) => void
+  sewing_price: number;
+  cutting_price: number;
+  buttons: number;
+  quantity: number;
+  onUpdate?: (quantity:number,buttons:number,sewing_price:number,cuttin_price:number)=>void
 }) {
 
-  const [materialsList,setMaterialsList] = useState<TemplateItems[]>([])
+  const [materialsList, setMaterialsList] = useState<TemplateItems[]>([])
 
   const [selectedMaterial, setSelectedMaterial] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
 
+  const [isUpdated,setIsUpdated] = useState(false)
+  const [newsewing_price, setSewingPrice] = useState<number>(sewing_price);
+  const [newcutting_price, setCuttingPrice] = useState<number>(cutting_price);
+  const [newbuttons, setButtons] = useState(buttons);
+  const [newquantity, setQuantity] = useState(quantity);
+
+
   const findMaterialWithType = (id: string) => {
     for (const { key } of materialTypes) {
-        const list = currentMaterials[key as keyof MaterialsTableProps];
-        const material = list?.find(item => item.id === id);
-        if (material) return { material, material_type: key };
+      const list = currentMaterials[key as keyof MaterialsTableProps];
+      const material = list?.find(item => item.id === id);
+      if (material) return { material, material_type: key };
     }
   }
 
   const handleAdd = async () => {
-     if (!selectedMaterial || qty < 1) return;
+    if (!selectedMaterial || qty < 1) return;
 
     const materialInfo = findMaterialWithType(selectedMaterial);
     if (!materialInfo) return;
@@ -62,38 +80,59 @@ export default function OrdersViewMaterials({
         material_type: materialInfo.material_type,
         qty: qty
       })
-      
-      if(response){
-        const newArray = [...materialsList,response]
+
+      if (response) {
+        const newArray = [...materialsList, response]
         setMaterialsList(newArray);
-        if(setMaterials){
+        if (setMaterials) {
           setMaterials(newArray)
         }
         setSelectedMaterial("");
         setQty(1);
       }
     } catch (error) {
-      
+
     }
   }
 
-  const handleRemove = async (id:string) => {
+  const handleRemove = async (id: string) => {
     try {
       const response = await Api.order_materials.remove(id)
-      if(response.status){
-        const updatedArray = materialsList.filter(i=>i.id !== id)
+      if (response.status) {
+        const updatedArray = materialsList.filter(i => i.id !== id)
         setMaterialsList(updatedArray)
-        if(setMaterials){
+        if (setMaterials) {
           setMaterials(updatedArray)
         }
-      }  
+      }
     } catch (error) {
       console.log(error)
     }
-    
+
+  }
+  
+  const handleUpdate = async () => {
+    try {
+      const data = {
+        quantity: newquantity,
+        buttons: newbuttons,
+        cutting_price: Number(newcutting_price),
+        sewing_price: Number(newsewing_price)
+      }
+      const response = await Api.orders.update(order_id,data)
+      if(response){
+        onUpdate?.(newquantity,newbuttons,newsewing_price,newcutting_price);
+        setIsUpdated(true)
+        setTimeout(()=>{
+          setIsUpdated(false)
+        },2000)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
-  useEffect(()=>{if(materials)setMaterialsList(materials)},[materials])
+  useEffect(() => { if (materials) setMaterialsList(materials) }, [materials])
 
   const renderMaterial = (materialItem: any, typeKey: string, variant: string) => {
     const templateMaterials = materialsList?.filter(m => m.material_id === materialItem.id) || [];
@@ -101,16 +140,16 @@ export default function OrdersViewMaterials({
     return templateMaterials.map((mat, idx) => (
       <Badge
         key={`${mat.id}_${idx}`}
-        variant={variant as  "zippers" | "fabrics" | "threads" | "buttons" | "accessories" | "velcro" }
+        variant={variant as "zippers" | "fabrics" | "threads" | "buttons" | "accessories" | "velcro"}
         className="group flex items-center gap-2 text-[12px] p-2 border rounded-md shadow-sm hover:shadow-md transition"
       >
         {typeKey === "fabrics"
           ? `${materialItem.name} – ${materialItem.color} ${materialItem.type} (${mat.qty} ${materialItem.unit})`
           : typeKey === "accessories" || typeKey === "velcro"
-          ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
-          : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
+            ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
+            : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
         – {mat.qty * materialItem.price} тг.
-         <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
+        <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
           <Trash2
             className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"
           />
@@ -121,6 +160,51 @@ export default function OrdersViewMaterials({
 
   return (
     <div className="flex flex-col gap-4">
+
+      <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
+        <div>
+          <Label>Кол-во</Label>
+          <Input
+            type="number"
+            value={newquantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+        <div>
+          <Label>Кол-во (Пуговицы)</Label>
+          <Input
+            type="number"
+            value={newbuttons}
+            onChange={(e) => setButtons(Number(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
+        <div>
+          <Label>Цена кроя</Label>
+          <Input
+            type="number"
+            value={newcutting_price}
+            onChange={(e) => setCuttingPrice(parseFloat(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+        <div>
+          <Label>Цена пошива</Label>
+          <Input
+            type="number"
+            value={newsewing_price}
+            onChange={(e) => setSewingPrice(parseFloat(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+      </div>
+
+      <Button disabled={isUpdated} onClick={handleUpdate} variant="yellow" className={`${isUpdated == true ? "bg-green-700 " : null} transition-all duration-75`}>{isUpdated ? "Успех!" : "Обновить кол-во/цену"}</Button>
+
       {materialTypes.map(({ key, label, variant }) => {
         const items = (currentMaterials as any)[key]?.filter((item: any) =>
           materialsList?.some(m => m.material_id === item.id)
@@ -129,7 +213,7 @@ export default function OrdersViewMaterials({
 
         return (
           <div key={key} className="border rounded-lg p-3 bg-white shadow-sm">
-           <div className="flex items-center justify-start gap-4 mb-2">
+            <div className="flex items-center justify-start gap-4 mb-2">
               <h3 className="text-sm font-semibold">{label}</h3>
               <div className="flex gap-2">
                 <SelectMaterials
@@ -152,7 +236,7 @@ export default function OrdersViewMaterials({
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-                {items.flatMap((item: MaterialItem) => renderMaterial(item, key, variant))}
+              {items.flatMap((item: MaterialItem) => renderMaterial(item, key, variant))}
             </div>
           </div>
         );

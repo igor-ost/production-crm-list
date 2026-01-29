@@ -6,6 +6,7 @@ import { Api } from "@/services/api-clients";
 import OrderStaffsCreate from "../order-staffs/order-staffs-create";
 import { ordersStore } from "@/store/order-store";
 import { staffsStore } from "@/store/staff-store";
+import { Badge } from "../ui/badge";
 
 interface OrdersViewStaff {
   order_id: string;
@@ -63,6 +64,12 @@ export default function OrdersViewStaff({ order_id,staffs }: OrdersViewStaff) {
                   {i.user.login}
                 </div>
                 <RoleBadge role={i.user.role}/>
+
+                <div className="flex items-center gap-2">
+                  <span> Нужно изготовить - </span>
+                  <Badge>{i.qty}</Badge>
+
+                </div>
               </div>
 
               <button
