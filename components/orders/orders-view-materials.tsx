@@ -172,7 +172,7 @@ export default function OrdersViewMaterials({
           />
         </div>
         <div>
-          <Label>Кол-во (Пуговицы)</Label>
+          <Label>Кол-во (Пуговицы) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={newbuttons}

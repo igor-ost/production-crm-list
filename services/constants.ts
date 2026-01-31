@@ -16,6 +16,12 @@ const ApiRouter = {
     ORDER_MATERIALS: "order-materials",
     JOURNAL: "journal",
     PHOTOS: "photos",
-    ORDER_STAFFS: "order-staffs"
+    ORDER_STAFFS: "order-staffs",
+    ZIPPERS_INVOICE: "zipper-invoices",
+    FABRICS_INVOICE: "fabric-invoices",
+    THREADS_INVOICE: "thread-invoices",
+    BUTTONS_INVOICE: "button-invoices",
+    ACCESSORIES_INVOICE: "accessories-invoices",
+    VELCRO_INVOICE: "velcro-invoices",
 }
 export default ApiRouter

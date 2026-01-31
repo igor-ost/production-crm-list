@@ -16,10 +16,9 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function AccessoriesCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,unit:string,qty:number,price:number,)=>void}) {
+export default function AccessoriesCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,unit:string,price:number,)=>void}) {
   const [name, setName] = useState("");
   const [unit, setUnit] = useState("шт");
-  const [qty, setQty] = useState(0);
   const [price, setPrice] = useState(0);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
@@ -30,7 +29,6 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
     const accessories = {
       name,
       unit,
-      qty,
       price
     };
 
@@ -51,9 +49,8 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
         if(response.id){
             setName("");
             setUnit("");
-            setQty(0);
             setPrice(0);
-            onSubmit(response.id,name,unit,qty,price)
+            onSubmit(response.id,name,unit,price)
             setIsLoading(false)
             setOpen(false)
         }
@@ -93,16 +90,6 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
             <SelectUnit value={unit} onValueChange={setUnit}/>
           </div>
 
-          <div className="grid gap-2">
-            <Label htmlFor="qty">Кол-во</Label>
-            <Input
-              id="qty"
-              placeholder="Введите Кол-во"
-              type="number"
-              value={qty}
-              onChange={(e) => setQty(Number(e.target.value))}
-            />
-          </div>
 
           <div className="grid gap-2">
             <Label htmlFor="price">Цена</Label>

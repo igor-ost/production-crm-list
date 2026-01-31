@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +19,8 @@ import FabricsCreateModal from "./fabric-create-modal"
 import FabricsUpdateModal from "./fabric-update-modal"
 import FabricsRemoveModal from "./fabric-remove-modal"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 export interface Fabrics {
   id: string;
@@ -26,26 +28,25 @@ export interface Fabrics {
   color: string;
   type: string;
   unit: string;
-  qty: number;
   price: number;
+  invoices?: InvoiceList[]
 }
 
 interface FabricsTableProps {
-  fabrics: Fabrics[]
+  fabricsList: Fabrics[]
+  setFabricsList: React.Dispatch<SetStateAction<Fabrics[]>>
 }
 
-export function FabricsTable({ fabrics }: FabricsTableProps) {
+export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) {
   const [search, setSearch] = useState("")
-  const [fabricsList,setFabricsList] = useState(fabrics)
 
-  const handleNew = (id:string,name:string,color:string,type:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,name:string,color:string,type:string,unit:string,price:number) => {
     const updated = {
       id:id,
       name:name,
       color:color,
       type:type,
       unit:unit,
-      qty:qty,
       price,
     }
     setFabricsList((prev) => [...prev, updated]);
@@ -56,21 +57,24 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
     setFabricsList(updated)
   }
 
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setFabricsList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setFabricsList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
+  };
 
-  const handleUpdate = (id:string,name:string,color:string,type:string,unit:string,qty:number,price:number)=>{
+  const handleUpdate = (id:string,name:string,color:string,type:string,unit:string,price:number)=>{
     setFabricsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item , name, color, type,unit,qty,price }
+          ? { ...item , name, color, type,unit,price }
           : item
       )
     );
@@ -89,9 +93,6 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
     })
   }, [fabricsList, search])
 
-  useEffect(() => {
-      setFabricsList(fabrics);
-   }, [fabrics]);
 
   return (
 <div className="space-y-4">
@@ -154,7 +155,7 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {fabric.qty} {fabric.unit}
+                {fabric.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {fabric.unit}
               </Badge>
             </TableCell>
 
@@ -167,7 +168,6 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
             <TableCell className="text-right">
                 <UpdateQtyModal
                     id={fabric.id}
-                    qty={fabric.qty}
                     type="fabrics"
                     onSubmit={handleQtyUpdate}
                   >
@@ -175,6 +175,12 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
                     <PlusSquare className="h-4 w-4" />
                   </Button>
                 </UpdateQtyModal>
+
+                <ViewInvoicesList data={fabric.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
                 
                 <FabricsUpdateModal
                   id={fabric.id}
@@ -182,7 +188,6 @@ export function FabricsTable({ fabrics }: FabricsTableProps) {
                   color={fabric.color}
                   type={fabric.type}
                   unit={fabric.unit}
-                  qty={fabric.qty}
                   price={fabric.price}
                   onSubmit={handleUpdate}
                 >

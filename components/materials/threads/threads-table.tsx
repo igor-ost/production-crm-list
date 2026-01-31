@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,31 +19,32 @@ import ThreadsCreateModal from "./thread-create-modal"
 import ThreadsUpdateModal from "./thread-update-modal"
 import ThreadsRemoveModal from "./thread-remove-modal"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 export interface Threads {
   id: string;
   color: string;
   type: string;
   unit: string;
-  qty: number;
   price: number;
+  invoices?: InvoiceList[]
 }
 
 interface ThreadsTableProps {
-  threads: Threads[]
+  threadsList: Threads[]
+  setThreadsList: React.Dispatch<SetStateAction<Threads[]>>
 }
 
-export function ThreadsTable({ threads }: ThreadsTableProps) {
+export function ThreadsTable({ threadsList, setThreadsList}: ThreadsTableProps) {
   const [search, setSearch] = useState("")
-  const [threadsList,setThreadsList] = useState(threads)
 
-  const handleNew = (id:string,color:string,type:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,color:string,type:string,unit:string,price:number) => {
     const updated = {
       id:id,
       color:color,
       type:type,
       unit:unit,
-      qty:qty,
       price,
     }
     setThreadsList((prev) => [...prev, updated]);
@@ -54,21 +55,24 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
     setThreadsList(updated)
   }
 
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setThreadsList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setThreadsList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
+  };
 
-  const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
+  const handleUpdate = (id:string,color:string,type:string,unit:string,price:number)=>{
     setThreadsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, color, type,unit,qty,price }
+          ? { ...item, color, type,unit,price }
           : item
       )
     );
@@ -86,9 +90,6 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
     })
   }, [threadsList, search])
 
-  useEffect(() => {
-      setThreadsList(threads);
-   }, [threads]);
 
   return (
 <div className="space-y-4">
@@ -145,7 +146,7 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {thread.qty} {thread.unit}
+                 {thread.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{thread.unit}
               </Badge>
             </TableCell>
 
@@ -158,7 +159,6 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
             <TableCell className="text-right">
                 <UpdateQtyModal
                     id={thread.id}
-                    qty={thread.qty}
                     type="threads"
                     onSubmit={handleQtyUpdate}
                   >
@@ -167,12 +167,17 @@ export function ThreadsTable({ threads }: ThreadsTableProps) {
                   </Button>
                 </UpdateQtyModal>
 
+                <ViewInvoicesList data={thread.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
+
                 <ThreadsUpdateModal
                   id={thread.id}
                   color={thread.color}
                   type={thread.type}
                   unit={thread.unit}
-                  qty={thread.qty}
                   price={thread.price}
                   onSubmit={handleUpdate}
                 >

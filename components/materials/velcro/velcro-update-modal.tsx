@@ -16,10 +16,9 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function VelcroUpdateModal({children,onSubmit,name,unit,qty,price,id}:{children:React.ReactNode,id:string,name:string,unit:string,qty:number,price:number,onSubmit:(id:string,name:string,unit:string,qty:number,price:number)=>void}) {
+export default function VelcroUpdateModal({children,onSubmit,name,unit,price,id}:{children:React.ReactNode,id:string,name:string,unit:string,price:number,onSubmit:(id:string,name:string,unit:string,price:number)=>void}) {
   const [newname, setName] = useState(name);
   const [newunit, setUnit] = useState(unit);
-  const [newqty, setQty] = useState(qty);
   const [newprice, setPrice] = useState(price);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
@@ -30,7 +29,6 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,qty,price
     const velcro = {
       name:newname,
       unit:newunit,
-      qty:newqty,
       price:newprice
     };
 
@@ -49,7 +47,7 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,qty,price
     try {
         const response = await Api.velcro.update(id,velcro)
         if(response.id){
-            onSubmit(id,newname,newunit,newqty,newprice)
+            onSubmit(id,newname,newunit,newprice)
             setIsLoading(false)
             setOpen(false)
         }
@@ -85,17 +83,6 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,qty,price
           <div className="grid gap-2">
             <Label htmlFor="unit">Ед. Изм.</Label>
             <SelectUnit value={newunit} onValueChange={setUnit}/>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="qty">Кол-во</Label>
-            <Input
-              id="qty"
-              placeholder="Введите Кол-во"
-              type="number"
-              value={newqty}
-              onChange={(e) => setQty(Number(e.target.value))}
-            />
           </div>
 
           <div className="grid gap-2">

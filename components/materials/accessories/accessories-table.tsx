@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,29 +19,30 @@ import AccessoriesRemoveModal from "./accessories-remove-modal"
 import AccessoriesUpdateModal from "./accessories-update-modal"
 import AccessoriesCreateModal from "./accessories-create-modal"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 export interface Accessories {
   id: string;
   name: string;
   unit: string;
-  qty: number;
   price: number;
+  invoices?: InvoiceList[]
 }
 
 interface AccessoriesTableProps {
-  accessories: Accessories[]
+  accessoriesList: Accessories[]
+  setAccessoriesList: React.Dispatch<SetStateAction<Accessories[]>>
 }
 
-export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
+export function AccessoriesTable({ accessoriesList,setAccessoriesList }: AccessoriesTableProps) {
   const [search, setSearch] = useState("")
-  const [accessoriesList,setAccessoriesList] = useState(accessories)
 
-  const handleNew = (id:string,name:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,name:string,unit:string,price:number) => {
     const updated = {
       id:id,
       name:name,
       unit:unit,
-      qty:qty,
       price,
     }
     setAccessoriesList((prev) => [...prev, updated]);
@@ -51,20 +52,23 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
     const updated = accessoriesList.filter(item => item.id != id)
     setAccessoriesList(updated)
   }
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setAccessoriesList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setAccessoriesList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
-  const handleUpdate = (id:string,name:string,unit:string,qty:number,price:number)=>{
+  };
+  const handleUpdate = (id:string,name:string,unit:string,price:number)=>{
     setAccessoriesList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name,unit,qty,price }
+          ? { ...item, name,unit,price }
           : item
       )
     );
@@ -80,10 +84,6 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
       return matchesSearch 
     })
   }, [accessoriesList, search])
-
-  useEffect(() => {
-      setAccessoriesList(accessories);
-   }, [accessories]);
 
   return (
 <div className="space-y-4">
@@ -136,7 +136,7 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {accessories.qty} {accessories.unit}
+                {accessories.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{accessories.unit}
               </Badge>
             </TableCell>
 
@@ -149,7 +149,6 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
             <TableCell className="text-right">
                   <UpdateQtyModal
                     id={accessories.id}
-                    qty={accessories.qty}
                     type="accessories"
                     onSubmit={handleQtyUpdate}
                   >
@@ -157,11 +156,17 @@ export function AccessoriesTable({ accessories }: AccessoriesTableProps) {
                     <PlusSquare className="h-4 w-4" />
                   </Button>
                 </UpdateQtyModal>
+
+                <ViewInvoicesList data={accessories.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
+
                 <AccessoriesUpdateModal
                   id={accessories.id}
                   name={accessories.name}
                   unit={accessories.unit}
-                  qty={accessories.qty}
                   price={accessories.price}
                   onSubmit={handleUpdate}
                 >

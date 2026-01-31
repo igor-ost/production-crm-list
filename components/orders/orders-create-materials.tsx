@@ -32,11 +32,9 @@ export default function OrdersCreateMaterials({
   templates,
   setTemplates,
   currentMaterials,
-  quantity,
   buttons,
   sewing_price,
   cutting_price,
-  setQuantity,
   setButtons,
   setSewingPrice,
   setCuttingPrice
@@ -44,11 +42,9 @@ export default function OrdersCreateMaterials({
   templates: TemplateItems[];
   setTemplates: React.Dispatch<React.SetStateAction<TemplateItems[]>>;
   currentMaterials: MaterialsTableProps;
-  quantity: number
   buttons:number
   sewing_price:number
   cutting_price:number
-  setQuantity: (quantity:number)=>void
   setButtons: (buttons:number)=>void
   setSewingPrice: (sewing_price:number)=>void
   setCuttingPrice: (cuttin_price:number)=>void
@@ -126,16 +122,7 @@ export default function OrdersCreateMaterials({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
         <div>
-          <Label>Кол-во</Label>
-          <Input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="p-3 text-lg bg-white"
-          />
-        </div>
-        <div>
-          <Label>Кол-во (Пуговицы)</Label>
+          <Label>Кол-во (Пуговицы) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={buttons}

@@ -16,6 +16,7 @@ import { Buttons, ButtonsTable } from "./buttons/buttons-table"
 import { Accessories, AccessoriesTable } from "./accessories/accessories-table"
 import { Velcro, VelcroTable } from "./velcro/velcro-table"
 import * as XLSX from "xlsx"
+import { useState } from "react"
 
 export interface MaterialsTableProps{
   zippers: Zippers[]
@@ -26,7 +27,20 @@ export interface MaterialsTableProps{
   velcro: Velcro[]
 }
 
+export interface InvoiceList {
+  id:string;
+  dateArrived: string
+  qty:number
+}
+
 export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro}:MaterialsTableProps) {
+
+  const [zippersList,setZippersList] = useState(zippers);
+  const [fabricsList,setFabricsList] = useState(fabrics);
+  const [threadsList,setThreadsList] = useState(threads);
+  const [buttonsList,setButtonsList] = useState(buttons);
+  const [accessoriesList,setAccessoriesList] = useState(accessories);
+  const [VelcroList,setVelcroList] = useState(velcro);
 
   function createSheet<T>(
     title: string,
@@ -177,27 +191,27 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
 
         </div>
         <TabsContent value="zippers">
-          <ZippersTable zippers={zippers}/>
+          <ZippersTable zippersList={zippersList} setZippersList={setZippersList}/>
         </TabsContent>
 
         <TabsContent value="fabrics">
-           <FabricsTable fabrics={fabrics}/>
+           <FabricsTable fabricsList={fabricsList} setFabricsList={setFabricsList}/>
         </TabsContent>
 
         <TabsContent value="threads">
-          <ThreadsTable threads={threads}/>
+          <ThreadsTable threadsList={threadsList} setThreadsList={setThreadsList}/>
         </TabsContent>
 
         <TabsContent value="buttons">
-          <ButtonsTable buttons={buttons}/>
+          <ButtonsTable buttonsList={buttonsList} setButtonsList={setButtonsList}/>
         </TabsContent>
 
         <TabsContent value="accessories">
-          <AccessoriesTable accessories={accessories}/>
+          <AccessoriesTable accessoriesList={accessoriesList} setAccessoriesList={setAccessoriesList}/>
         </TabsContent>
 
         <TabsContent value="velcro">
-          <VelcroTable velcro={velcro}/>
+          <VelcroTable VelcroList={VelcroList} setVelcroList={setVelcroList}/>
         </TabsContent>
       </Tabs>
     </div>

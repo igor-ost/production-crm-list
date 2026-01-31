@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,31 +19,32 @@ import ButtonsUpdateModal from "./button-update-modal"
 import ButtonsRemoveModal from "./button-remove-modal"
 import ButtonsCreateModal from "./button-create-modal"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 export interface Buttons {
   id: string;
   color: string;
   type: string;
   unit: string;
-  qty: number;
   price: number;
+  invoices?: InvoiceList[]
 }
 
 interface ButtonsTableProps {
-  buttons: Buttons[]
+  buttonsList: Buttons[]
+  setButtonsList: React.Dispatch<SetStateAction<Buttons[]>>
 }
 
-export function ButtonsTable({ buttons }: ButtonsTableProps) {
+export function ButtonsTable({ buttonsList,setButtonsList}: ButtonsTableProps) {
   const [search, setSearch] = useState("")
-  const [buttonsList,setButtonsList] = useState(buttons)
 
-  const handleNew = (id:string,color:string,type:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,color:string,type:string,unit:string,price:number) => {
     const updated = {
       id:id,
       color:color,
       type:type,
       unit:unit,
-      qty:qty,
       price,
     }
     setButtonsList((prev) => [...prev, updated]);
@@ -53,20 +54,24 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
     const updated = buttonsList.filter(item => item.id != id)
     setButtonsList(updated)
   }
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setButtonsList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setButtonsList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
-  const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
+  };
+
+  const handleUpdate = (id:string,color:string,type:string,unit:string,price:number)=>{
     setButtonsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, color, type,unit,qty,price }
+          ? { ...item, color, type,unit,price }
           : item
       )
     );
@@ -84,9 +89,6 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
     })
   }, [buttonsList, search])
 
-  useEffect(() => {
-      setButtonsList(buttons);
-   }, [buttons]);
 
   return (
 <div className="space-y-4">
@@ -144,7 +146,7 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {button.qty} {button.unit}
+              {button.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{button.unit}
               </Badge>
             </TableCell>
 
@@ -157,7 +159,6 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
             <TableCell className="text-right">
                 <UpdateQtyModal
                     id={button.id}
-                    qty={button.qty}
                     type="buttons"
                     onSubmit={handleQtyUpdate}
                   >
@@ -165,12 +166,18 @@ export function ButtonsTable({ buttons }: ButtonsTableProps) {
                     <PlusSquare className="h-4 w-4" />
                   </Button>
                 </UpdateQtyModal>
+
+                <ViewInvoicesList data={button.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
+                
                 <ButtonsUpdateModal
                   id={button.id}
                   color={button.color}
                   type={button.type}
                   unit={button.unit}
-                  qty={button.qty}
                   price={button.price}
                   onSubmit={handleUpdate}
                 >

@@ -182,14 +182,14 @@ export default function OrdersViewModal({
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Кол-во изделий</Label>
                     <p className="text-xl font-semibold mt-1">
-                      {order.quantity}
+                      {quantity}
                     </p>
                   </div>
 
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Кнопки</Label>
                     <p className="text-xl font-semibold mt-1">
-                      {order.buttons}
+                      {buttons}
                     </p>
                   </div>
       
@@ -199,15 +199,15 @@ export default function OrdersViewModal({
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Изготовлено изделий (пошив/покрой)</Label>
                     <p className="text-xl font-semibold mt-1">
-                          <Badge variant={sewingQty > order.quantity ? "destructive" : sewingQty == order.quantity ? "green" : "yellow"}>{sewingQty}</Badge>/
-                          <Badge variant={cuttingQty > order.quantity ? "destructive" : cuttingQty == order.quantity ? "green" : "yellow"}>{cuttingQty}</Badge>
+                          <Badge variant={sewingQty > quantity ? "destructive" : sewingQty == quantity ? "green" : "yellow"}>{sewingQty}</Badge>/
+                          <Badge variant={cuttingQty > quantity ? "destructive" : cuttingQty == quantity ? "green" : "yellow"}>{cuttingQty}</Badge>
                     </p>
                   </div>
 
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
                     <Label className="text-xs text-blue-600">Изготовлено кнопок</Label>
                     <p className="text-xl font-semibold mt-1">
-                     <Badge variant={buttonsQty > order.buttons ? "destructive" : buttonsQty == order.buttons ? "green" : "yellow"}>{buttonsQty}</Badge>
+                     <Badge variant={buttonsQty > buttons ? "destructive" : buttonsQty == buttons ? "green" : "yellow"}>{buttonsQty}</Badge>
                     </p>
                   </div>
 
@@ -225,14 +225,14 @@ export default function OrdersViewModal({
                   <div className="rounded-lg bg-green-50 border border-green-100 p-4">
                     <Label className="text-xs text-green-700">Цена кроя</Label>
                     <p className="text-lg font-semibold mt-1">
-                      {order.cutting_price} ₸
+                      {cutting_price} ₸
                     </p>
                   </div>
 
                   <div className="rounded-lg bg-green-50 border border-green-100 p-4">
                     <Label className="text-xs text-green-700">Цена пошива</Label>
                     <p className="text-lg font-semibold mt-1">
-                      {order.sewing_price} ₸
+                      {sewing_price} ₸
                     </p>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,30 +19,31 @@ import VelcroCreateModal from "./velcro-create-modal"
 import VelcroUpdateModal from "./velcro-update-modal"
 import VelcroRemoveModal from "./velcro-remove-modal"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 
 export interface Velcro {
   id: string;
   name: string;
   unit: string;
-  qty: number;
   price: number;
+  invoices?: InvoiceList[]
 }
 
 interface VelcroTableProps {
-  velcro: Velcro[]
+  VelcroList: Velcro[]
+  setVelcroList: React.Dispatch<SetStateAction<Velcro[]>>
 }
 
-export function VelcroTable({ velcro }: VelcroTableProps) {
+export function VelcroTable({ VelcroList,setVelcroList }: VelcroTableProps) {
   const [search, setSearch] = useState("")
-  const [VelcroList,setVelcroList] = useState(velcro)
 
-  const handleNew = (id:string,name:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,name:string,unit:string,price:number) => {
     const updated = {
       id:id,
       name:name,
       unit:unit,
-      qty:qty,
       price,
     }
     setVelcroList((prev) => [...prev, updated]);
@@ -53,21 +54,24 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
     setVelcroList(updated)
   }
 
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setVelcroList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setVelcroList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
+  };
 
-  const handleUpdate = (id:string,name:string,unit:string,qty:number,price:number)=>{
+  const handleUpdate = (id:string,name:string,unit:string,price:number)=>{
     setVelcroList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name,unit,qty,price }
+          ? { ...item, name,unit,price }
           : item
       )
     );
@@ -84,9 +88,6 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
     })
   }, [VelcroList, search])
 
-  useEffect(() => {
-      setVelcroList(velcro);
-   }, [velcro]);
 
   return (
 <div className="space-y-4">
@@ -139,7 +140,7 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {velcro.qty} {velcro.unit}
+                 {velcro.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {velcro.unit}
               </Badge>
             </TableCell>
 
@@ -152,7 +153,6 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
             <TableCell className="text-right">
                 <UpdateQtyModal
                     id={velcro.id}
-                    qty={velcro.qty}
                     type="velcro"
                     onSubmit={handleQtyUpdate}
                   >
@@ -161,11 +161,16 @@ export function VelcroTable({ velcro }: VelcroTableProps) {
                   </Button>
                 </UpdateQtyModal>
 
+                <ViewInvoicesList data={velcro.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
+
                 <VelcroUpdateModal
                   id={velcro.id}
                   name={velcro.name}
                   unit={velcro.unit}
-                  qty={velcro.qty}
                   price={velcro.price}
                   onSubmit={handleUpdate}
                 >

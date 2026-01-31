@@ -1,7 +1,7 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare } from "lucide-react"
-import { useEffect, useMemo, useState } from "react"
+import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,31 +19,32 @@ import ZippersUpdateModal from "./zipper-update-modal"
 import ZippersRemoveModal from "./zipper-remove-modal"
 import { Badge } from "@/components/ui/badge"
 import UpdateQtyModal from "../update-qty-materials"
+import { InvoiceList } from "../materials-table"
+import { ViewInvoicesList } from "../view-invoices-list"
 
 export interface Zippers {
   id: string;
   color: string;
   type: string;
   unit: string;
-  qty: number;
+  invoices?: InvoiceList[]
   price: number;
 }
 
 interface ZippersTableProps {
-  zippers: Zippers[]
+  zippersList: Zippers[]
+  setZippersList: React.Dispatch<SetStateAction<Zippers[]>>
 }
 
-export function ZippersTable({ zippers }: ZippersTableProps) {
+export function ZippersTable({ zippersList,setZippersList }: ZippersTableProps) {
   const [search, setSearch] = useState("")
-  const [zippersList,setZippersList] = useState(zippers)
 
-  const handleNew = (id:string,color:string,type:string,unit:string,qty:number,price:number) => {
+  const handleNew = (id:string,color:string,type:string,unit:string,price:number) => {
     const updated = {
       id:id,
       color:color,
       type:type,
       unit:unit,
-      qty:qty,
       price,
     }
     setZippersList((prev) => [...prev, updated]);
@@ -54,21 +55,24 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
     setZippersList(updated)
   }
 
-  const handleQtyUpdate = (id:string,qty:number)=>{
-      setZippersList((prev) =>
-      prev.map((item) =>
+  const handleQtyUpdate = (id: string, newInvoice: InvoiceList) => {
+    setZippersList(prev =>
+      prev.map(item =>
         item.id === id
-          ? { ...item, qty }
+          ? { 
+              ...item, 
+              invoices: [...item.invoices || [], newInvoice] 
+            }
           : item
       )
     );
-  }
+  };
 
-  const handleUpdate = (id:string,color:string,type:string,unit:string,qty:number,price:number)=>{
+  const handleUpdate = (id:string,color:string,type:string,unit:string,price:number)=>{
     setZippersList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, color, type,unit,qty,price }
+          ? { ...item, color, type,unit,price }
           : item
       )
     );
@@ -86,9 +90,6 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
     })
   }, [zippersList, search])
 
-  useEffect(() => {
-      setZippersList(zippers);
-   }, [zippers]);
 
   return (
 <div className="space-y-4">
@@ -146,7 +147,8 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
 
             <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
-                {zipper.qty} {zipper.unit}
+                 {zipper.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}
+                 {zipper.unit} 
               </Badge>
             </TableCell>
 
@@ -159,7 +161,6 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
             <TableCell className="text-right">
                 <UpdateQtyModal
                     id={zipper.id}
-                    qty={zipper.qty}
                     type="zippers"
                     onSubmit={handleQtyUpdate}
                   >
@@ -168,12 +169,17 @@ export function ZippersTable({ zippers }: ZippersTableProps) {
                   </Button>
                 </UpdateQtyModal>
 
+                <ViewInvoicesList data={zipper.invoices || []}>
+                  <Button size="icon" variant="ghost">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </ViewInvoicesList>
+
                 <ZippersUpdateModal
                   id={zipper.id}
                   color={zipper.color}
                   type={zipper.type}
                   unit={zipper.unit}
-                  qty={zipper.qty}
                   price={zipper.price}
                   onSubmit={handleUpdate}
                 >
