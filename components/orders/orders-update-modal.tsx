@@ -165,7 +165,7 @@ export default function OrdersUpdateModal({
                     />
                   </div>
                   <div>
-                    <Label>Кол-во (Пуговицы)</Label>
+                    <Label>Кол-во (кнопок-бочек)</Label>
                     <Input
                       type="number"
                       value={newbuttons}

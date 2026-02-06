@@ -32,6 +32,7 @@ export default function OrdersViewMaterials({
   setMaterials,
   sewing_price,
   cutting_price,
+  buttonsPrice,
   buttons,
   quantity,
   onUpdate
@@ -42,9 +43,10 @@ export default function OrdersViewMaterials({
   setMaterials?: (materials: TemplateItems[]) => void
   sewing_price: number;
   cutting_price: number;
+  buttonsPrice: number;
   buttons: number;
   quantity: number;
-  onUpdate?: (quantity:number,buttons:number,sewing_price:number,cuttin_price:number)=>void
+  onUpdate?: (quantity:number,buttons:number,sewing_price:number,cuttin_price:number,buttonsPrice:number)=>void
 }) {
 
   const [materialsList, setMaterialsList] = useState<TemplateItems[]>([])
@@ -55,6 +57,7 @@ export default function OrdersViewMaterials({
   const [isUpdated,setIsUpdated] = useState(false)
   const [newsewing_price, setSewingPrice] = useState<number>(sewing_price);
   const [newcutting_price, setCuttingPrice] = useState<number>(cutting_price);
+  const [newButtonsPrice, setButtonsPrice] = useState<number>(buttonsPrice);
   const [newbuttons, setButtons] = useState(buttons);
   const [newquantity, setQuantity] = useState(quantity);
 
@@ -68,7 +71,7 @@ export default function OrdersViewMaterials({
   }
 
   const handleAdd = async () => {
-    if (!selectedMaterial || qty < 1) return;
+    if (!selectedMaterial || qty <= 0) return;
 
     const materialInfo = findMaterialWithType(selectedMaterial);
     if (!materialInfo) return;
@@ -117,11 +120,12 @@ export default function OrdersViewMaterials({
         quantity: newquantity,
         buttons: newbuttons,
         cutting_price: Number(newcutting_price),
-        sewing_price: Number(newsewing_price)
+        sewing_price: Number(newsewing_price),
+        buttonsPrice: Number(newButtonsPrice)
       }
       const response = await Api.orders.update(order_id,data)
       if(response){
-        onUpdate?.(newquantity,newbuttons,newsewing_price,newcutting_price);
+        onUpdate?.(newquantity,newbuttons,newsewing_price,newcutting_price,newButtonsPrice);
         setIsUpdated(true)
         setTimeout(()=>{
           setIsUpdated(false)
@@ -144,7 +148,7 @@ export default function OrdersViewMaterials({
         className="group flex items-center gap-2 text-[12px] p-2 border rounded-md shadow-sm hover:shadow-md transition"
       >
         {typeKey === "fabrics"
-          ? `${materialItem.name} – ${materialItem.color} ${materialItem.type} (${mat.qty} ${materialItem.unit})`
+          ? `${materialItem.name} – ${materialItem.color} (${mat.qty} ${materialItem.unit})`
           : typeKey === "accessories" || typeKey === "velcro"
             ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
             : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
@@ -172,7 +176,7 @@ export default function OrdersViewMaterials({
           />
         </div>
         <div>
-          <Label>Кол-во (Пуговицы) <span className="text-black">необязательное поле*</span></Label>
+          <Label>Кол-во (бочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={newbuttons}
@@ -198,6 +202,15 @@ export default function OrdersViewMaterials({
             type="number"
             value={newsewing_price}
             onChange={(e) => setSewingPrice(parseFloat(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+        <div>
+          <Label>Цена бочек-кнопок</Label>
+          <Input
+            type="number"
+            value={newButtonsPrice}
+            onChange={(e) => setButtonsPrice(parseFloat(e.target.value))}
             className="p-3 text-lg bg-white"
           />
         </div>

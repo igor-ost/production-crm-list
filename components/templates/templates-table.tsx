@@ -27,6 +27,9 @@ export interface Templates {
   id: string;
   name: string;
   description:string
+  cuttingPrice:number;
+  sewingPrice:number;
+  buttonsPrice:number
   materials: TemplateItems[]
 }
 
@@ -41,11 +44,14 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
   const [search, setSearch] = useState("")
   const [templatesList,setTemplatesList] = useState(templates)
 
-  const handleNew = (id:string,name:string,description:string) => {
+  const handleNew = (id:string,name:string,description:string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number) => {
     const updated = {
       id:id,
       name:name,
       description:description,
+      cuttingPrice:cuttingPrice,
+      sewingPrice:sewingPrice,
+      buttonsPrice:buttonsPrice,
       materials: []
     }
     setTemplatesList((prev) => [...prev, updated]);
@@ -90,11 +96,11 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
     const updated = templatesList.filter(item => item.id != id)
     setTemplatesList(updated)
   }
-  const handleUpdate = (id:string,name:string,description:string)=>{
+  const handleUpdate = (id:string,name:string,description:string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number)=>{
     setTemplatesList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name, description}
+          ? { ...item, name, description,cuttingPrice,sewingPrice,buttonsPrice}
           : item
       )
     );
@@ -166,6 +172,9 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
           <TableHead className="w-[80px]">#</TableHead>
           <TableHead className="text-xs">Название</TableHead>
           <TableHead className="text-xs">Описание</TableHead>
+          <TableHead className="text-xs">Цена кроя</TableHead>
+          <TableHead className="text-xs">Цена пошива</TableHead>
+          <TableHead className="text-xs">Цена бочек-кнопок</TableHead>
           <TableHead className="text-center text-xs">Молнии</TableHead>
           <TableHead className="text-center text-xs">Ткани</TableHead>
           <TableHead className="text-center text-xs">Нитки</TableHead>
@@ -194,6 +203,25 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
             <TableCell className="font-mono text-xs text-muted-foreground">
               {template.description}
             </TableCell>
+
+            <TableCell className="font-mono text-xs text-muted-foreground">
+              <Badge>
+                {template.cuttingPrice}
+              </Badge>
+            </TableCell>
+
+            <TableCell className="font-mono text-xs text-muted-foreground">
+              <Badge>
+              {template.sewingPrice}
+              </Badge>
+            </TableCell>
+
+            <TableCell className="font-mono text-xs text-muted-foreground">
+              <Badge>
+              {template.buttonsPrice}
+              </Badge>
+            </TableCell>
+
 
             <TableCell className="font-medium">
               <div className="text-center">
@@ -356,6 +384,9 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                   id={template.id}
                   name={template.name}
                   description={template.description}
+                  cuttingPrice={template.cuttingPrice}
+                  sewingPrice={template.sewingPrice}
+                  buttonsPrice={template.buttonsPrice}
                   onSubmit={handleUpdate}
                 >
                   <Button size="icon" variant="ghost">

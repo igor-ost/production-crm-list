@@ -11,13 +11,13 @@ export const getList = async (token:string | undefined): Promise<Templates[]> =>
     return data as Templates[];
 }
 
-export const create = async (req:{name:string;description:string}): Promise<Templates> => {
+export const create = async (req:{name:string;description:string,cuttingPrice:number;sewingPrice:number;buttonsPrice:number}): Promise<Templates> => {
     const { data } = await axiosInstance.post(ApiRouter.TEMPLATES,req);
     return data as Templates;
 }
 
 
-export const update = async (id:string,req:{name:string;description:string}): Promise<Templates> => {
+export const update = async (id:string,req:{name:string;description:string,cuttingPrice:number;sewingPrice:number;buttonsPrice:number}): Promise<Templates> => {
     const { data } = await axiosInstance.patch(ApiRouter.TEMPLATES + "/" + id,req);
     return data as Templates;
 }

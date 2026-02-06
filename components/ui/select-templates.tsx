@@ -16,7 +16,7 @@ interface TemplatesSelectProps {
   placeholder?: string
   disabled?: boolean
   templates:Templates[]
-  onCreate?: (id: string, name: string, description: string)=>void
+  onCreate?: (id: string, name: string, description: string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number)=>void
 }
 
 

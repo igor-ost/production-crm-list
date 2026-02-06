@@ -42,6 +42,7 @@ export default function OrdersCreateModal({
   const [status, setStatus] = useState<"new" | "in-progress" | "completed">("new");
   const [sewing_price, setSewingPrice] = useState(0);
   const [cutting_price, setCuttingPrice] = useState(0);
+  const [buttonsPrice, setButtonsPrice] = useState(0);
   const [buttons, setButtons] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [notes, setNotes] = useState("");
@@ -58,11 +59,14 @@ export default function OrdersCreateModal({
     setCustomersList((prev) => [...prev, updated]);
   }
 
-  const createTemplate = (id:string,name:string,description:string) => {
+  const createTemplate = (id:string,name:string,description:string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number) => {
     const updated = {
       id:id,
       name:name,
       description:description,
+      cuttingPrice,
+      sewingPrice,
+      buttonsPrice,
       materials: []
     }
     setTemplatesList((prev) => [...prev, updated]);
@@ -81,6 +85,7 @@ export default function OrdersCreateModal({
       size,
       status,
       sewing_price,
+      buttonsPrice,
       cutting_price,
       buttons,
       quantity,
@@ -124,10 +129,17 @@ export default function OrdersCreateModal({
   };
 
   useEffect(() => {
-    setMaterialOrderList(
-      templates.find(i => i.id === template_id)?.materials || []
-    );
-  }, [template_id]);
+    const template = templatesList.find(i => i.id === template_id);
+
+    setMaterialOrderList(template?.materials || []);
+
+    if (!template) return;
+
+    setCuttingPrice(template.cuttingPrice);
+    setSewingPrice(template.sewingPrice);
+    setButtonsPrice(template.buttonsPrice);
+
+  }, [template_id, templatesList]);
   return (
     <>
       <div onClick={() => setOpen(true)}>{children}</div>
@@ -247,8 +259,8 @@ export default function OrdersCreateModal({
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
                   <OrdersCreateMaterials 
-                    buttons={buttons} sewing_price={sewing_price} cutting_price={cutting_price} 
-                    setButtons={setButtons} setSewingPrice={setSewingPrice} setCuttingPrice={setCuttingPrice} 
+                    buttons={buttons} sewing_price={sewing_price} cutting_price={cutting_price} buttonsPrice={buttonsPrice}
+                    setButtons={setButtons} setSewingPrice={setSewingPrice} setCuttingPrice={setCuttingPrice} setButtonsPrice={setButtonsPrice}
                     setTemplates={setMaterialOrderList} currentMaterials={currentMaterials}  templates={materialOrderList}/>
               </div>
             )}

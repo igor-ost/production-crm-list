@@ -17,9 +17,12 @@ import SelectUnit from "@/components/ui/select-unit";
 import { Textarea } from "../ui/textarea";
 
 
-export default function TemplatesUpdateModal({children,onSubmit,name,description,id}:{children:React.ReactNode,id:string,name:string,description:string,onSubmit:(id:string,name:string,description:string)=>void}) {
+export default function TemplatesUpdateModal({children,onSubmit,name,description,cuttingPrice,sewingPrice,buttonsPrice,id}:{children:React.ReactNode,id:string,name:string,description:string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number,onSubmit:(id:string,name:string,description:string,cuttingPrice:number,sewingPrice:number,buttonsPrice:number)=>void}) {
   const [newname, setName] = useState(name);
   const [newdescription, setDescription] = useState(description);
+  const [newCuttingPrice, setCuttingPrice] = useState(cuttingPrice);
+  const [newSewingPrice, setSewingPrice] = useState(sewingPrice);
+  const [newButtonsPrice, setButtonsPrice] = useState(buttonsPrice);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
@@ -29,6 +32,9 @@ export default function TemplatesUpdateModal({children,onSubmit,name,description
     const template = {
       name:newname,
       description:newdescription,
+      cuttingPrice: newCuttingPrice,
+      buttonsPrice: newButtonsPrice,
+      sewingPrice: newSewingPrice
     };
 
     if(newname == ""){
@@ -46,7 +52,7 @@ export default function TemplatesUpdateModal({children,onSubmit,name,description
     try {
         const response = await Api.templates.update(id,template)
         if(response.id){
-            onSubmit(id,newname,newdescription)
+            onSubmit(id,newname,newdescription,newCuttingPrice,newSewingPrice,newButtonsPrice)
             setIsLoading(false)
             setOpen(false)
         }
@@ -90,6 +96,38 @@ export default function TemplatesUpdateModal({children,onSubmit,name,description
 
             </Textarea>
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="cutting_price">Цена кроя</Label>
+            <Input
+              type="number"
+              id="cutting_price"
+              placeholder="Введите цену кроя"
+              value={newCuttingPrice}
+              onChange={(e) => setCuttingPrice(Number(e.target.value))}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="sewing_price">Цена пошива</Label>
+            <Input
+              type="number"
+              id="sewing_price"
+              placeholder="Введите цену пошива"
+              value={newSewingPrice}
+              onChange={(e) => setSewingPrice(Number(e.target.value))}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="buttons_price">Цена бочек-кнопок</Label>
+            <Input
+              type="number"
+              id="buttons_price"
+              placeholder="Введите цену пошива"
+              value={newButtonsPrice}
+              onChange={(e) => setButtonsPrice(Number(e.target.value))}
+            />
+          </div>
+
 
   
 

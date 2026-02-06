@@ -35,9 +35,11 @@ export default function OrdersCreateMaterials({
   buttons,
   sewing_price,
   cutting_price,
+  buttonsPrice,
   setButtons,
   setSewingPrice,
-  setCuttingPrice
+  setCuttingPrice,
+  setButtonsPrice
 }: {
   templates: TemplateItems[];
   setTemplates: React.Dispatch<React.SetStateAction<TemplateItems[]>>;
@@ -45,9 +47,11 @@ export default function OrdersCreateMaterials({
   buttons:number
   sewing_price:number
   cutting_price:number
+  buttonsPrice:number
   setButtons: (buttons:number)=>void
   setSewingPrice: (sewing_price:number)=>void
   setCuttingPrice: (cuttin_price:number)=>void
+  setButtonsPrice: (buttonsPrice:number)=>void
 }) {
   const [selectedMaterial, setSelectedMaterial] = useState<string>("");
   const [qty, setQty] = useState<number>(1);
@@ -66,7 +70,7 @@ export default function OrdersCreateMaterials({
   };
 
   const handleAdd = () => {
-    if (!selectedMaterial || qty < 1) return;
+    if (!selectedMaterial || qty <= 0) return;
 
     const materialInfo = findMaterialWithType(selectedMaterial);
     if (!materialInfo) return;
@@ -103,7 +107,7 @@ export default function OrdersCreateMaterials({
           className="group flex items-center gap-2 text-[12px] p-2 border rounded-md shadow-sm hover:shadow-md transition"
         >
           {typeKey === "fabrics"
-            ? `${name} – ${color} ${type} (${mat.qty} ${unit})`
+            ? `${name} – ${color} (${mat.qty} ${unit})`
             : typeKey === "accessories" || typeKey === "velcro"
               ? `${name} (${mat.qty} ${unit})`
               : `${color} – ${type} (${mat.qty} ${unit})`}
@@ -122,7 +126,7 @@ export default function OrdersCreateMaterials({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
         <div>
-          <Label>Кол-во (Пуговицы) <span className="text-black">необязательное поле*</span></Label>
+          <Label>Кол-во (бочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={buttons}
@@ -148,6 +152,15 @@ export default function OrdersCreateMaterials({
             type="number"
             value={sewing_price}
             onChange={(e) => setSewingPrice(Number(e.target.value))}
+            className="p-3 text-lg bg-white"
+          />
+        </div>
+        <div>
+          <Label>Цена бочек-кнопок</Label>
+          <Input
+            type="number"
+            value={buttonsPrice}
+            onChange={(e) => setButtonsPrice(parseFloat(e.target.value))}
             className="p-3 text-lg bg-white"
           />
         </div>

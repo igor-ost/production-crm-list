@@ -52,6 +52,7 @@ export interface Orders {
   buttons: number;
   sewing_price:number;
   cutting_price:number;
+  buttonsPrice:number;
   notes: string;
   deadline: string;
   customer: Customers;
@@ -110,6 +111,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
       quantity: response.quantity,
       buttons: response.buttons,
       cutting_price: response.cutting_price,
+      buttonsPrice: response.buttonsPrice,
       sewing_price: response.sewing_price,
       notes: response.notes,
       deadline: response.deadline,
@@ -190,6 +192,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
               <TableHead>Кол-во</TableHead>
               <TableHead>Пошив</TableHead>
               <TableHead>Крой</TableHead>
+              <TableHead>Бочки-Кнопки</TableHead>
               <TableHead>Статус</TableHead>
               <TableHead className="text-center">Действия</TableHead>
             </TableRow>
@@ -219,6 +222,9 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
                 </TableCell>
                <TableCell>
                   <Badge variant="fabrics">{order.cutting_price}тг.</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="fabrics">{order.buttonsPrice}тг.</Badge>
                 </TableCell>
                 <TableCell>
                   <Badge className={`${statusColors[order.status]} border`}>
