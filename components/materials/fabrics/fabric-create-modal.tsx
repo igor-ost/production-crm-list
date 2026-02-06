@@ -16,7 +16,7 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function FabricsCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,color:string,type:string,unit:string,price:number,)=>void}) {
+export default function FabricsCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,color:string,unit:string,price:number)=>void}) {
   const [name, setName] = useState("")
   const [color, setColor] = useState("");
   const [type, setType] = useState("");
@@ -66,7 +66,7 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
             setType("");
             setUnit("");
             setPrice(0);
-            onSubmit(response.id,name,color,type,unit,price)
+            onSubmit(response.id,name,color,unit,price)
             setIsLoading(false)
             setOpen(false)
         }
@@ -105,16 +105,6 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
               placeholder="Введите цвет"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="type">Тип</Label>
-            <Input
-              id="type"
-              placeholder="Введите Тип"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
             />
           </div>
 

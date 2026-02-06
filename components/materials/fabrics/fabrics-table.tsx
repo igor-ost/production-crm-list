@@ -26,7 +26,6 @@ export interface Fabrics {
   id: string;
   name: string;
   color: string;
-  type: string;
   unit: string;
   price: number;
   invoices?: InvoiceList[]
@@ -40,12 +39,11 @@ interface FabricsTableProps {
 export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) {
   const [search, setSearch] = useState("")
 
-  const handleNew = (id:string,name:string,color:string,type:string,unit:string,price:number) => {
+  const handleNew = (id:string,name:string,color:string,unit:string,price:number) => {
     const updated = {
       id:id,
       name:name,
       color:color,
-      type:type,
       unit:unit,
       price,
     }
@@ -70,11 +68,11 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
     );
   };
 
-  const handleUpdate = (id:string,name:string,color:string,type:string,unit:string,price:number)=>{
+  const handleUpdate = (id:string,name:string,color:string,unit:string,price:number)=>{
     setFabricsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item , name, color, type,unit,price }
+          ? { ...item , name, color,unit,price }
           : item
       )
     );
@@ -85,7 +83,6 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
       const matchesSearch =
         fabric.name.toLowerCase().includes(search.toLowerCase()) ||
         fabric.color.toLowerCase().includes(search.toLowerCase()) ||
-        fabric.type.toLowerCase().includes(search.toLowerCase()) ||
         fabric.id.toString().includes(search)
 
 
@@ -150,10 +147,6 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
             </TableCell>
 
             <TableCell className="font-mono text-sm text-muted-foreground">
-              {fabric.type}
-            </TableCell>
-
-            <TableCell className="font-mono text-sm text-muted-foreground">
               <Badge>
                 {fabric.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {fabric.unit}
               </Badge>
@@ -186,7 +179,6 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
                   id={fabric.id}
                   name={fabric.name}
                   color={fabric.color}
-                  type={fabric.type}
                   unit={fabric.unit}
                   price={fabric.price}
                   onSubmit={handleUpdate}

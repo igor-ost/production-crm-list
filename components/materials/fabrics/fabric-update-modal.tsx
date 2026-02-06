@@ -16,10 +16,9 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function FabricsUpdateModal({children,onSubmit,name,color,type,unit,price,id}:{children:React.ReactNode,id:string,name:string,color:string,type:string,unit:string,price:number,onSubmit:(id:string,name:string,color:string,type:string,unit:string,price:number)=>void}) {
+export default function FabricsUpdateModal({children,onSubmit,name,color,unit,price,id}:{children:React.ReactNode,id:string,name:string,color:string,unit:string,price:number,onSubmit:(id:string,name:string,color:string,unit:string,price:number)=>void}) {
   const [newname, setName] = useState(name)
   const [newcolor, setColor] = useState(color);
-  const [newtype, setType] = useState(type);
   const [newunit, setUnit] = useState(unit);
   const [newprice, setPrice] = useState(price);
   const [error,setError] = useState("");
@@ -31,7 +30,6 @@ export default function FabricsUpdateModal({children,onSubmit,name,color,type,un
     const fabric = {
       name:newname,
       color:newcolor,
-      type:newtype,
       unit:newunit,
       price:newprice
     };
@@ -46,11 +44,6 @@ export default function FabricsUpdateModal({children,onSubmit,name,color,type,un
         setIsLoading(false)
         return
     }
-    if(newtype == ""){
-        setError("Поле (Тип) обязательно для заполнения.")
-        setIsLoading(false)
-        return
-    }
     if(newunit == ""){
         setError("Поле (Ед. Изм.) обязательно для заполнения.")
         setIsLoading(false)
@@ -61,7 +54,7 @@ export default function FabricsUpdateModal({children,onSubmit,name,color,type,un
     try {
         const response = await Api.fabrics.update(id,fabric)
         if(response.id){
-            onSubmit(id,newname,newcolor,newtype,newunit,newprice)
+            onSubmit(id,newname,newcolor,newunit,newprice)
             setIsLoading(false)
             setOpen(false)
         }
@@ -101,16 +94,6 @@ export default function FabricsUpdateModal({children,onSubmit,name,color,type,un
               placeholder="Введите цвет"
               value={newcolor}
               onChange={(e) => setColor(e.target.value)}
-            />
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="type">Тип</Label>
-            <Input
-              id="type"
-              placeholder="Введите Тип"
-              value={newtype}
-              onChange={(e) => setType(e.target.value)}
             />
           </div>
 
