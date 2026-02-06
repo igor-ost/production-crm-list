@@ -236,7 +236,7 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         ?.filter(m => m.material_id === fabric.id)
                         .map((material,index) => (
                           <Badge className="group flex items-center gap-2 text-[11px]" variant="fabrics" key={`${material.id}_${index}`}>
-                            {fabric.name} – {fabric.color} {fabric.type}
+                            {fabric.name} – {fabric.color}
                             {" "}({material.qty} {fabric.unit}) –{" "}
                             {material.qty * fabric.price} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
