@@ -136,6 +136,34 @@ export default function OrdersViewMaterials({
     }
   }
 
+   const getTypeDetails = (typeKey: string) => {
+    const items = materialsList
+      .map(m => {
+        const info = findMaterialWithType(m.material_id) as any;
+        if (!info || info.material_type !== typeKey) return null;
+
+        const usedQty =
+          typeKey === "buttons" ? m.qty * newbuttons : m.qty * newquantity;
+
+        return {
+          name:
+            typeKey === "fabrics"
+              ? `${info.material.name} – ${info.material.color}`
+              : typeKey === "accessories" || typeKey === "velcro"
+              ? info.material.name
+              : `${info.material.color} – ${info.material.type}`,
+          qty: usedQty,
+          price: usedQty * info.material.price,
+        };
+      })
+      .filter(Boolean);
+
+    const totalQty = items.reduce((acc, i) => acc + i!.qty, 0);
+    const totalPrice = items.reduce((acc, i) => acc + i!.price, 0);
+
+    return { items, totalQty, totalPrice };
+  };
+
   useEffect(() => { if (materials) setMaterialsList(materials) }, [materials])
 
   const renderMaterial = (materialItem: any, typeKey: string, variant: string) => {
@@ -223,33 +251,70 @@ export default function OrdersViewMaterials({
           materialsList?.some(m => m.material_id === item.id)
         );
 
+        const summary = getTypeDetails(key);
+
 
         return (
-          <div key={key} className="border rounded-lg p-3 bg-white shadow-sm">
-            <div className="flex items-center justify-start gap-4 mb-2">
-              <h3 className="text-sm font-semibold">{label}</h3>
-              <div className="flex gap-2">
+          <div
+            key={key}
+            className="grid grid-cols-[1fr_180px] gap-4 border rounded-lg p-4 bg-white"
+          >
+            {/* Левая часть */}
+            <div>
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <h3 className="text-sm font-semibold">{label}</h3>
                 <SelectMaterials
-                  placeholder="Выберите материал"
                   value={selectedMaterial}
                   onValueChange={setSelectedMaterial}
                   materials={currentMaterials[key as keyof MaterialsTableProps]}
                 />
-                <div>
-                  <Input
-                    type="number"
-                    min={1}
-                    className="w-15"
-                    value={qty}
-                    onChange={e => setQty(Number(e.target.value))}
-                    placeholder="Кол-во"
-                  />
-                </div>
-                <Button size="sm" onClick={handleAdd}>Добавить</Button>
+                <Input
+                  type="number"
+                  className="w-16"
+                  value={qty}
+                  onChange={e => setQty(Number(e.target.value))}
+                />
+                <Button size="sm" onClick={handleAdd}>
+                  Добавить
+                </Button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {items.flatMap((item: MaterialItem) =>
+                  renderMaterial(item, key, variant)
+                )}
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {items.flatMap((item: MaterialItem) => renderMaterial(item, key, variant))}
+
+            {/* Правая сводка */}
+            <div className="border-l pl-4 text-sm flex flex-col justify-start space-y-1">
+              {summary.items.length > 0 ? (
+                <>
+                  {summary.items.map((i, idx) => (
+                    <div key={idx} className="flex justify-between text-[12px]">
+                      <span className="truncate">{i!.name}</span>
+                      <span>
+                        {i!.qty} шт. – {i!.price} тг
+                      </span>
+                    </div>
+                  ))}
+                  <div className="border-t mt-1 pt-1 flex justify-between font-semibold text-xs">
+                    <span>Итого</span>
+                    <span>
+                      {summary.totalQty} шт. – {summary.totalPrice} тг
+                    </span>
+                  </div>
+                  {key === "buttons" && (
+                    <div className="text-[10px] text-muted-foreground mt-1">
+                      × кол-во пуговиц
+                    </div>
+                  )}
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  Нет расхода
+                </span>
+              )}
             </div>
           </div>
         );

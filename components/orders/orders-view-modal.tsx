@@ -45,9 +45,9 @@ export default function OrdersViewModal({
     setCuttingPrice(cutting_price)
   }
 
-  const sewingQty = order.journal?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0
-  const cuttingQty = order.journal?.reduce((sum, i) => i.type === "cutting" ? sum + i.quantity : sum, 0) || 0
-  const buttonsQty = order.journal?.reduce((sum, i) => i.type === "buttons" ? sum + i.quantity : sum, 0) || 0
+  const sewingQty = journalList?.reduce((sum, i) => i.type === "sewing" ? sum + i.quantity : sum, 0) || 0
+  const cuttingQty = journalList?.reduce((sum, i) => i.type === "cutting" ? sum + i.quantity : sum, 0) || 0
+  const buttonsQty = journalList?.reduce((sum, i) => i.type === "buttons" ? sum + i.quantity : sum, 0) || 0
 
   let status = ""
   let color: "yellow" | "destructive" | "green"
@@ -223,7 +223,7 @@ export default function OrdersViewModal({
                 </div>
 
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="rounded-lg bg-green-50 border border-green-100 p-4">
                     <Label className="text-xs text-green-700">Цена кроя</Label>
                     <p className="text-lg font-semibold mt-1">
@@ -235,6 +235,13 @@ export default function OrdersViewModal({
                     <Label className="text-xs text-green-700">Цена пошива</Label>
                     <p className="text-lg font-semibold mt-1">
                       {sewing_price} ₸
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg bg-green-50 border border-green-100 p-4">
+                    <Label className="text-xs text-green-700">Цена Боцен-кнопок</Label>
+                    <p className="text-lg font-semibold mt-1">
+                      {buttonsPrice} ₸
                     </p>
                   </div>
                 </div>
@@ -271,7 +278,7 @@ export default function OrdersViewModal({
 
             {activeTab === "staff" && (
               <div className="text-gray-500 text-center">
-                  <OrdersViewStaff order_id={order.id} staffs={order.staffs || []}/>
+                  <OrdersViewStaff journal={journalList || []} order_id={order.id} staffs={order.staffs || []} setJournal={setJournalList}/>
               </div>
             )}
 

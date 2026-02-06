@@ -1,8 +1,8 @@
 "use client"
 
 import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
-import { SetStateAction, useEffect, useMemo, useState } from "react"
-
+import { SetStateAction, useMemo, useState } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -36,21 +36,22 @@ interface FabricsTableProps {
   setFabricsList: React.Dispatch<SetStateAction<Fabrics[]>>
 }
 
-export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) {
+export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps) {
   const [search, setSearch] = useState("")
+  const [colorFilter,setColorFilter] = useState("")
 
-  const handleNew = (id:string,name:string,color:string,unit:string,price:number) => {
+  const handleNew = (id: string, name: string, color: string, unit: string, price: number) => {
     const updated = {
-      id:id,
-      name:name,
-      color:color,
-      unit:unit,
+      id: id,
+      name: name,
+      color: color,
+      unit: unit,
       price,
     }
     setFabricsList((prev) => [...prev, updated]);
   }
 
-  const handleDelete = (id:string) => {
+  const handleDelete = (id: string) => {
     const updated = fabricsList.filter(item => item.id != id)
     setFabricsList(updated)
   }
@@ -59,164 +60,189 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
     setFabricsList(prev =>
       prev.map(item =>
         item.id === id
-          ? { 
-              ...item, 
-              invoices: [...item.invoices || [], newInvoice] 
-            }
+          ? {
+            ...item,
+            invoices: [...item.invoices || [], newInvoice]
+          }
           : item
       )
     );
   };
 
-  const handleUpdate = (id:string,name:string,color:string,unit:string,price:number)=>{
+  const handleUpdate = (id: string, name: string, color: string, unit: string, price: number) => {
     setFabricsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item , name, color,unit,price }
+          ? { ...item, name, color, unit, price }
           : item
       )
     );
   }
 
+  const uniqueColors = useMemo(() => [...new Set(fabricsList.map(z => z.color))], [fabricsList])
+
   const filteredFabrics = useMemo(() => {
-    return fabricsList.filter((fabric) => {
+    return fabricsList.filter(z => {
       const matchesSearch =
-        fabric.name.toLowerCase().includes(search.toLowerCase()) ||
-        fabric.color.toLowerCase().includes(search.toLowerCase()) ||
-        fabric.id.toString().includes(search)
+        z.color.toLowerCase().includes(search.toLowerCase()) ||
+        z.id.toString().includes(search)
 
+      const matchesColor = colorFilter ? z.color === colorFilter : true
 
-      return matchesSearch 
+      return matchesSearch && matchesColor
     })
-  }, [fabricsList, search])
+  }, [fabricsList, search, colorFilter])
 
 
   return (
-<div className="space-y-4">
-  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
-    <div className="relative w-full max-w-sm">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        placeholder="Поиск"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="pl-9"
-      />
-    </div>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Поиск"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
 
-    <div className="ml-auto">
-      <FabricsCreateModal onSubmit={handleNew}>
-        <Button variant="yellow" className="rounded-lg">
-          Добавить
+
+        <Select value={colorFilter} onValueChange={setColorFilter}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Все цвета" />
+          </SelectTrigger>
+          <SelectContent>
+            {uniqueColors.map(color => (
+              <SelectItem key={color} value={color}>{color}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSearch("")
+            setColorFilter("")
+          }}
+        >
+          Очистить фильтры
         </Button>
-      </FabricsCreateModal>
-    </div>
-  </div>
 
-  {/* Таблица */}
-  <div className="overflow-hidden rounded-xl border bg-background/60 shadow-sm backdrop-blur">
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/50">
-          <TableHead className="w-[80px]">#</TableHead>
-          <TableHead>Название</TableHead>
-          <TableHead>Цвет</TableHead>
-          <TableHead>Кол-во</TableHead>
-          <TableHead>Цена</TableHead>
-          <TableHead className="text-right px-4">Действия</TableHead>
-        </TableRow>
-      </TableHeader>
+        <div className="ml-auto">
+          <FabricsCreateModal onSubmit={handleNew}>
+            <Button variant="yellow" className="rounded-lg">
+              Добавить
+            </Button>
+          </FabricsCreateModal>
+        </div>
+      </div>
 
-      <TableBody>
-        {filteredFabrics.map((fabric, index) => (
-          <TableRow
-            key={fabric.id}
-            className="transition-colors hover:bg-muted/40 even:bg-muted/20"
-          >
-            <TableCell className="font-medium text-muted-foreground">
-              {index + 1}
-            </TableCell>
+      {/* Таблица */}
+      <div className="overflow-hidden rounded-xl border bg-background/60 shadow-sm backdrop-blur">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[80px]">#</TableHead>
+              <TableHead>Название</TableHead>
+              <TableHead>Цвет</TableHead>
+              <TableHead>Кол-во</TableHead>
+              <TableHead>Цена</TableHead>
+              <TableHead className="text-right px-4">Действия</TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableCell className="font-medium">
-              {fabric.name}
-            </TableCell>
+          <TableBody>
+            {filteredFabrics.map((fabric, index) => (
+              <TableRow
+                key={fabric.id}
+                className="transition-colors hover:bg-muted/40 even:bg-muted/20"
+              >
+                <TableCell className="font-medium text-muted-foreground">
+                  {index + 1}
+                </TableCell>
 
-            <TableCell className="font-medium">
-              {fabric.color}
-            </TableCell>
+                <TableCell className="font-medium">
+                  {fabric.name}
+                </TableCell>
 
-            <TableCell className="font-mono text-sm text-muted-foreground">
-              <Badge>
-                {fabric.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {fabric.unit}
-              </Badge>
-            </TableCell>
+                <TableCell className="font-medium">
+                  {fabric.color}
+                </TableCell>
 
-            <TableCell className="font-mono text-sm text-muted-foreground">
-              <Badge variant="outline">
-                {fabric.price} тг.
-              </Badge>
-            </TableCell>
+                <TableCell className="font-mono text-sm text-muted-foreground">
+                  <Badge>
+                    {fabric.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {fabric.unit}
+                  </Badge>
+                </TableCell>
 
-            <TableCell className="text-right">
-                <UpdateQtyModal
+                <TableCell className="font-mono text-sm text-muted-foreground">
+                  <Badge variant="outline">
+                    {fabric.price} тг.
+                  </Badge>
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <UpdateQtyModal
                     id={fabric.id}
                     type="fabrics"
                     onSubmit={handleQtyUpdate}
                   >
-                  <Button size="icon" variant="ghost">
-                    <PlusSquare className="h-4 w-4" />
-                  </Button>
-                </UpdateQtyModal>
+                    <Button size="icon" variant="ghost">
+                      <PlusSquare className="h-4 w-4" />
+                    </Button>
+                  </UpdateQtyModal>
 
-                <ViewInvoicesList data={fabric.invoices || []}>
-                  <Button size="icon" variant="ghost">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </ViewInvoicesList>
-                
-                <FabricsUpdateModal
-                  id={fabric.id}
-                  name={fabric.name}
-                  color={fabric.color}
-                  unit={fabric.unit}
-                  price={fabric.price}
-                  onSubmit={handleUpdate}
-                >
-                  <Button size="icon" variant="ghost">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </FabricsUpdateModal>
+                  <ViewInvoicesList data={fabric.invoices || []}>
+                    <Button size="icon" variant="ghost">
+                      <Info className="h-4 w-4" />
+                    </Button>
+                  </ViewInvoicesList>
 
-                <FabricsRemoveModal
-                  id={fabric.id}
-                  onSubmit={handleDelete}
-                >
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-destructive hover:text-destructive"
+                  <FabricsUpdateModal
+                    id={fabric.id}
+                    name={fabric.name}
+                    color={fabric.color}
+                    unit={fabric.unit}
+                    price={fabric.price}
+                    onSubmit={handleUpdate}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </FabricsRemoveModal>
-            </TableCell>
-          </TableRow>
-        ))}
+                    <Button size="icon" variant="ghost">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </FabricsUpdateModal>
 
-        {filteredFabrics.length === 0 && (
-          <TableRow>
-            <TableCell
-              colSpan={8}
-              className="py-10 text-center text-muted-foreground"
-            >
-              Ничего не найдено
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
-</div>
+                  <FabricsRemoveModal
+                    id={fabric.id}
+                    onSubmit={handleDelete}
+                  >
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </FabricsRemoveModal>
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {filteredFabrics.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  Ничего не найдено
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
 
   )
 }

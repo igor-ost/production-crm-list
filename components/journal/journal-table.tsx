@@ -58,14 +58,15 @@ export const workTypeColor = (type: string) => {
 export function JournalTable({ journal,orders,staff,order_id,setJournal}: JournalTableProps) {
   const [search, setSearch] = useState("")
   const [journalList,setJournalList] = useState(journal)
-  const handleNew = (id:string,order:Orders,user:Staff,type:string,quantity:number) => {
+  const handleNew = (id:string,order:Orders,user:Staff,type:string,quantity:number,createdAt:Date) => {
 
     const updated = {
       order:order,
       user:user,
       type: type,
       quantity: quantity,
-      id:id
+      id:id,
+      createdAt
     }
 
     const newArray = [...journalList, updated];

@@ -36,20 +36,20 @@ interface VelcroTableProps {
   setVelcroList: React.Dispatch<SetStateAction<Velcro[]>>
 }
 
-export function VelcroTable({ VelcroList,setVelcroList }: VelcroTableProps) {
+export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
   const [search, setSearch] = useState("")
 
-  const handleNew = (id:string,name:string,unit:string,price:number) => {
+  const handleNew = (id: string, name: string, unit: string, price: number) => {
     const updated = {
-      id:id,
-      name:name,
-      unit:unit,
+      id: id,
+      name: name,
+      unit: unit,
       price,
     }
     setVelcroList((prev) => [...prev, updated]);
   }
 
-  const handleDelete = (id:string) => {
+  const handleDelete = (id: string) => {
     const updated = VelcroList.filter(item => item.id != id)
     setVelcroList(updated)
   }
@@ -58,20 +58,20 @@ export function VelcroTable({ VelcroList,setVelcroList }: VelcroTableProps) {
     setVelcroList(prev =>
       prev.map(item =>
         item.id === id
-          ? { 
-              ...item, 
-              invoices: [...item.invoices || [], newInvoice] 
-            }
+          ? {
+            ...item,
+            invoices: [...item.invoices || [], newInvoice]
+          }
           : item
       )
     );
   };
 
-  const handleUpdate = (id:string,name:string,unit:string,price:number)=>{
+  const handleUpdate = (id: string, name: string, unit: string, price: number) => {
     setVelcroList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name,unit,price }
+          ? { ...item, name, unit, price }
           : item
       )
     );
@@ -84,131 +84,132 @@ export function VelcroTable({ VelcroList,setVelcroList }: VelcroTableProps) {
         zipper.id.toString().includes(search)
 
 
-      return matchesSearch 
+      return matchesSearch
     })
   }, [VelcroList, search])
 
 
   return (
-<div className="space-y-4">
-  <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
-    <div className="relative w-full max-w-sm">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      <Input
-        placeholder="Поиск"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="pl-9"
-      />
-    </div>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm backdrop-blur">
+        <div className="relative w-full max-w-sm">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Поиск"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
 
-    <div className="ml-auto">
-      <VelcroCreateModal onSubmit={handleNew}>
-        <Button variant="yellow" className="rounded-lg">
-          Добавить
-        </Button>
-      </VelcroCreateModal>
-    </div>
-  </div>
 
-  {/* Таблица */}
-  <div className="overflow-hidden rounded-xl border bg-background/60 shadow-sm backdrop-blur">
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/50">
-          <TableHead className="w-[80px]">#</TableHead>
-          <TableHead>Название</TableHead>
-          <TableHead>Кол-во</TableHead>
-          <TableHead>Цена</TableHead>
-          <TableHead className="text-right px-4">Действия</TableHead>
-        </TableRow>
-      </TableHeader>
+        <div className="ml-auto">
+          <VelcroCreateModal onSubmit={handleNew}>
+            <Button variant="yellow" className="rounded-lg">
+              Добавить
+            </Button>
+          </VelcroCreateModal>
+        </div>
+      </div>
 
-      <TableBody>
-        {filteredVelcro.map((velcro, index) => (
-          <TableRow
-            key={velcro.id}
-            className="transition-colors hover:bg-muted/40 even:bg-muted/20"
-          >
-            <TableCell className="font-medium text-muted-foreground">
-              {index + 1}
-            </TableCell>
+      {/* Таблица */}
+      <div className="overflow-hidden rounded-xl border bg-background/60 shadow-sm backdrop-blur">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[80px]">#</TableHead>
+              <TableHead>Название</TableHead>
+              <TableHead>Кол-во</TableHead>
+              <TableHead>Цена</TableHead>
+              <TableHead className="text-right px-4">Действия</TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableCell className="font-medium">
-              {velcro.name}
-            </TableCell>
+          <TableBody>
+            {filteredVelcro.map((velcro, index) => (
+              <TableRow
+                key={velcro.id}
+                className="transition-colors hover:bg-muted/40 even:bg-muted/20"
+              >
+                <TableCell className="font-medium text-muted-foreground">
+                  {index + 1}
+                </TableCell>
 
-            <TableCell className="font-mono text-sm text-muted-foreground">
-              <Badge>
-                 {velcro.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {velcro.unit}
-              </Badge>
-            </TableCell>
+                <TableCell className="font-medium">
+                  {velcro.name}
+                </TableCell>
 
-            <TableCell className="font-mono text-sm text-muted-foreground">
-              <Badge variant="outline">
-                {velcro.price} тг.
-              </Badge>
-            </TableCell>
+                <TableCell className="font-mono text-sm text-muted-foreground">
+                  <Badge>
+                    {velcro.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {velcro.unit}
+                  </Badge>
+                </TableCell>
 
-            <TableCell className="text-right">
-                <UpdateQtyModal
+                <TableCell className="font-mono text-sm text-muted-foreground">
+                  <Badge variant="outline">
+                    {velcro.price} тг.
+                  </Badge>
+                </TableCell>
+
+                <TableCell className="text-right">
+                  <UpdateQtyModal
                     id={velcro.id}
                     type="velcro"
                     onSubmit={handleQtyUpdate}
                   >
-                  <Button size="icon" variant="ghost">
-                    <PlusSquare className="h-4 w-4" />
-                  </Button>
-                </UpdateQtyModal>
+                    <Button size="icon" variant="ghost">
+                      <PlusSquare className="h-4 w-4" />
+                    </Button>
+                  </UpdateQtyModal>
 
-                <ViewInvoicesList data={velcro.invoices || []}>
-                  <Button size="icon" variant="ghost">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </ViewInvoicesList>
+                  <ViewInvoicesList data={velcro.invoices || []}>
+                    <Button size="icon" variant="ghost">
+                      <Info className="h-4 w-4" />
+                    </Button>
+                  </ViewInvoicesList>
 
-                <VelcroUpdateModal
-                  id={velcro.id}
-                  name={velcro.name}
-                  unit={velcro.unit}
-                  price={velcro.price}
-                  onSubmit={handleUpdate}
-                >
-                  <Button size="icon" variant="ghost">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </VelcroUpdateModal>
-
-                <VelcroRemoveModal
-                  id={velcro.id}
-                  onSubmit={handleDelete}
-                >
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="text-destructive hover:text-destructive"
+                  <VelcroUpdateModal
+                    id={velcro.id}
+                    name={velcro.name}
+                    unit={velcro.unit}
+                    price={velcro.price}
+                    onSubmit={handleUpdate}
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </VelcroRemoveModal>
-            </TableCell>
-          </TableRow>
-        ))}
+                    <Button size="icon" variant="ghost">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </VelcroUpdateModal>
 
-        {filteredVelcro.length === 0 && (
-          <TableRow>
-            <TableCell
-              colSpan={7}
-              className="py-10 text-center text-muted-foreground"
-            >
-              Ничего не найдено
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  </div>
-</div>
+                  <VelcroRemoveModal
+                    id={velcro.id}
+                    onSubmit={handleDelete}
+                  >
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </VelcroRemoveModal>
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {filteredVelcro.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  Ничего не найдено
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
 
   )
 }

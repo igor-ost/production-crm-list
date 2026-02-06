@@ -259,6 +259,7 @@ export default function OrdersCreateModal({
             {activeTab === "materials" && (
               <div className="text-gray-500 text-center">
                   <OrdersCreateMaterials 
+                    quantity={quantity}
                     buttons={buttons} sewing_price={sewing_price} cutting_price={cutting_price} buttonsPrice={buttonsPrice}
                     setButtons={setButtons} setSewingPrice={setSewingPrice} setCuttingPrice={setCuttingPrice} setButtonsPrice={setButtonsPrice}
                     setTemplates={setMaterialOrderList} currentMaterials={currentMaterials}  templates={materialOrderList}/>

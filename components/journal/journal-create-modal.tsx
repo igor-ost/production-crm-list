@@ -20,10 +20,10 @@ import { Staff } from "../staff/staff-table";
 import SelectStaff from "../ui/select-staff";
 
 
-export default function JournalCreateModal({children,staff,orders,onSubmit,order_id = ""}:{order_id?:string,staff:Staff[],orders:Orders[],children:React.ReactNode,onSubmit:(id:string,order:Orders,user:Staff,type:string,quantity:number)=>void}) {
+export default function JournalCreateModal({children,staff,orders,onSubmit,order_id = "",staff_id = "", type_id="", afterClear = true}:{afterClear?:boolean,type_id?:string,staff_id?:string,order_id?:string,staff:Staff[],orders:Orders[],children:React.ReactNode,onSubmit:(id:string,order:Orders,user:Staff,type:string,quantity:number,createdAt:Date)=>void}) {
   const [quantity, setQuantity] = useState(0);
-  const [type, setType] = useState("");
-  const [user, setUser] = useState("");
+  const [type, setType] = useState(type_id);
+  const [user, setUser] = useState(staff_id);
   const [order, setOrder] = useState(order_id);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
@@ -61,11 +61,13 @@ export default function JournalCreateModal({children,staff,orders,onSubmit,order
     try {
         const response = await Api.journal.create(journal)
         if(response.id){
+          if(afterClear){
             setQuantity(0);
             setType("");
             setUser("");
             setOrder("");
-            onSubmit(response.id,response.order,response.user,type,quantity)
+          }
+            onSubmit(response.id,response.order,response.user,type,quantity,response.createdAt || new Date())
             setIsLoading(false)
             setOpen(false)
         }
