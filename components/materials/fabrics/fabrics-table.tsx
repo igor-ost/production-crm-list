@@ -121,7 +121,6 @@ export function FabricsTable({ fabricsList,setFabricsList }: FabricsTableProps) 
           <TableHead className="w-[80px]">#</TableHead>
           <TableHead>Название</TableHead>
           <TableHead>Цвет</TableHead>
-          <TableHead>Тип</TableHead>
           <TableHead>Кол-во</TableHead>
           <TableHead>Цена</TableHead>
           <TableHead className="text-right px-4">Действия</TableHead>
