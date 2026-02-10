@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare, Info, Calendar } from "lucide-react"
 import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,8 @@ import AccessoriesCreateModal from "./accessories-create-modal"
 import UpdateQtyModal from "../update-qty-materials"
 import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
+import { ViewConsumptionsList } from "../view-consumptions-list"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface Accessories {
   id: string;
@@ -35,6 +37,7 @@ interface AccessoriesTableProps {
 }
 
 export function AccessoriesTable({ accessoriesList, setAccessoriesList }: AccessoriesTableProps) {
+  const {materialConsumptions} = materialConsumptionsStore()
   const [search, setSearch] = useState("")
 
   const handleNew = (id: string, name: string, unit: string) => {
@@ -141,9 +144,24 @@ export function AccessoriesTable({ accessoriesList, setAccessoriesList }: Access
                   </TableCell>
 
                   <TableCell className="font-mono text-sm text-muted-foreground">
-                    <Badge>
-                      {accessories.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{accessories.unit}
-                    </Badge>
+                    {materialConsumptions && (
+                      <Badge>
+                        {(
+                          (accessories.invoices?.reduce(
+                            (sum, item) => sum + (item.qty ?? 0),
+                            0
+                          ) ?? 0)
+                          -
+                          materialConsumptions
+                            .filter(i => i.material_id === accessories.id)
+                            .reduce(
+                              (sum, item) => sum + (Number(item.qty) || 0),
+                              0
+                            )
+                        )}
+                        {accessories.unit}
+                      </Badge>
+                    )}
                   </TableCell>
 
                   <TableCell className="font-mono text-sm text-muted-foreground">
@@ -168,6 +186,10 @@ export function AccessoriesTable({ accessoriesList, setAccessoriesList }: Access
                         <Info className="h-4 w-4" />
                       </Button>
                     </ViewInvoicesList>
+
+                    <ViewConsumptionsList material_id={accessories.id}>
+                      <Button size="icon" variant="ghost"><Calendar className="h-4 w-4" /></Button>
+                    </ViewConsumptionsList>
 
                     <AccessoriesUpdateModal
                       id={accessories.id}

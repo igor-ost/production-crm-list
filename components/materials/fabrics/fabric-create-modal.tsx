@@ -46,11 +46,6 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
         setIsLoading(false)
         return
     }
-    if(type == ""){
-        setError("Поле (Тип) обязательно для заполнения.")
-        setIsLoading(false)
-        return
-    }
     if(unit == ""){
         setError("Поле (Ед. Изм.) обязательно для заполнения.")
         setIsLoading(false)

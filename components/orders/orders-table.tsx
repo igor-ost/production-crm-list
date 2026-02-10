@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, Trash2, Search, Edit3 } from "lucide-react"
+import { Eye, Trash2, Search, Edit3, Calendar } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -34,6 +34,8 @@ import { Staff } from "../staff/staff-table"
 import { Photos } from "./orders-view-photo"
 import { staffsStore } from "@/store/staff-store"
 import { ordersStore } from "@/store/order-store"
+import { OrderConsumptionsList } from "./order-consumptions-list"
+import { MaterialConsumptions, materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface OrderStaffs {
   id:string;
@@ -80,10 +82,12 @@ interface OrdersTableProps {
   templates: Templates[]
   customers: Customers[]
   staff: Staff[]
-  materials: MaterialsTableProps
+  materials: MaterialsTableProps,
+  material_consumptions:MaterialConsumptions[]
 }
 
-export function OrdersTable({ orders,templates,customers,materials,staff }: OrdersTableProps) {
+export function OrdersTable({ orders,templates,customers,materials,staff,material_consumptions }: OrdersTableProps) {
+  const {setMaterialConsumptions} = materialConsumptionsStore()
   const { setStaff,staff:staffList } = staffsStore();
   const { setOrders, orders: orderList } = ordersStore()
   const [search, setSearch] = useState("")
@@ -146,6 +150,11 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
   useEffect(()=>{
     setOrders(orders)
   },[orders])
+  useEffect(()=>{
+    if(material_consumptions){
+      setMaterialConsumptions(material_consumptions)
+    }
+  },[material_consumptions])
 
   return (
     <div className="space-y-4">
@@ -233,6 +242,15 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center gap-2">
+                    <OrderConsumptionsList order_id={order.id}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {}}
+                      >
+                        <Calendar className="h-4 w-4" />
+                      </Button>
+                    </OrderConsumptionsList>
                     <OrdersViewModal photos={order.photos || []} staff={staffList} order={order} materials={materials}>
                       <Button
                         size="sm"

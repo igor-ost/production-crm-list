@@ -42,6 +42,15 @@ const getStaffList = async () => {
 };
 
 
+const getMaterialConsumptions = async () => {
+  const cookieStore = await cookies();  
+  const token = cookieStore.get('token')?.value;
+
+  const data = await Api.materials_consumptions.getList(token);
+  return data;
+
+};
+
 
 
 export default async function Orders() {
@@ -50,10 +59,11 @@ export default async function Orders() {
   const customersList = await getCustomersList();
   const materialsList = await getMaterialsList();
   const staffList = await getStaffList();
+  const materials_consumptions = await getMaterialConsumptions();
   return (
     <div>
       <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
-        <OrdersTable staff={staffList} materials={materialsList} customers={customersList} templates={templatesList} orders={ordersList}/>
+        <OrdersTable material_consumptions={materials_consumptions} staff={staffList} materials={materialsList} customers={customersList} templates={templatesList} orders={ordersList}/>
       </div>
     </div>
   );

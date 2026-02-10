@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { InvoiceList, MaterialsTableProps } from "../materials/materials-table";
+import { InvoiceList, Materials } from "../materials/materials-table";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
@@ -20,12 +20,12 @@ const materialTypes = [
 ];
 
 type MaterialItem =
-  | MaterialsTableProps["zippers"][number]
-  | MaterialsTableProps["fabrics"][number]
-  | MaterialsTableProps["threads"][number]
-  | MaterialsTableProps["buttons"][number]
-  | MaterialsTableProps["accessories"][number]
-  | MaterialsTableProps["velcro"][number];
+  | Materials["zippers"][number]
+  | Materials["fabrics"][number]
+  | Materials["threads"][number]
+  | Materials["buttons"][number]
+  | Materials["accessories"][number]
+  | Materials["velcro"][number];
 
 
 export default function OrdersCreateMaterials({
@@ -44,7 +44,7 @@ export default function OrdersCreateMaterials({
 }: {
   templates: TemplateItems[];
   setTemplates: React.Dispatch<React.SetStateAction<TemplateItems[]>>;
-  currentMaterials: MaterialsTableProps;
+  currentMaterials: Materials;
   buttons:number
   quantity:number
   sewing_price:number
@@ -64,7 +64,7 @@ export default function OrdersCreateMaterials({
   };
   const findMaterialWithType = (id: string) => {
     for (const { key } of materialTypes) {
-      const list = currentMaterials[key as keyof MaterialsTableProps];
+      const list = currentMaterials[key as keyof Materials];
       const material = list?.find(item => item.id === id);
       if (material) return { material, material_type: key };
     }
@@ -73,7 +73,7 @@ export default function OrdersCreateMaterials({
 
   const findMaterial = (id: string) => {
       for (const { key } of materialTypes) {
-        const list = currentMaterials[key as keyof MaterialsTableProps];
+        const list = currentMaterials[key as keyof Materials];
         const material = list?.find(item => item.id === id);
         if (material) return { material};
       }
@@ -103,7 +103,7 @@ export default function OrdersCreateMaterials({
     const items = templates
       .map(m => {
         const info = findMaterialWithType(m.material_id) as any; 
-        const latestInvoice = info.material?.invoices?.reduce(
+        const latestInvoice = info?.material?.invoices?.reduce(
           (latest:any, curr:any) =>
           !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
           ? curr
@@ -113,7 +113,9 @@ export default function OrdersCreateMaterials({
         if (!info || info.material_type !== typeKey) return null;
 
         const usedQty =
-          typeKey === "buttons" ? buttons * buttons : quantity;
+          typeKey === "buttons"
+            ? buttons * m.qty
+            : quantity * m.qty;
 
         return {
           name:
@@ -153,7 +155,6 @@ export default function OrdersCreateMaterials({
       const color = "color" in materialItem ? materialItem.color : "";
       const type = "type" in materialItem ? materialItem.type : "";
       const unit = "unit" in materialItem ? materialItem.unit : "";
-      const price = "price" in materialItem ? materialItem.price : 0;
 
       return (
         <Badge
@@ -166,7 +167,7 @@ export default function OrdersCreateMaterials({
             : typeKey === "accessories" || typeKey === "velcro"
               ? `${name} (${mat.qty} ${unit})`
               : `${color} – ${type} (${mat.qty} ${unit})`}
-          – {mat.qty * (latestInvoice?.price ?? 0)} тг.
+          – {mat.qty * quantity * (latestInvoice?.price ?? 0)} тг.
           <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
             <Trash2
               className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"
@@ -221,7 +222,7 @@ export default function OrdersCreateMaterials({
         </div>
       </div>
       {materialTypes.map(({ key, label, variant }) => {
-        const items = currentMaterials[key as keyof MaterialsTableProps];
+        const items = currentMaterials[key as keyof Materials];
         if (!items || items.length === 0) return null;
 
         const summary = getTypeDetails(key);

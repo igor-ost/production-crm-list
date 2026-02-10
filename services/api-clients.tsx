@@ -15,6 +15,7 @@ import * as order_materials from "@/services/order-materials"
 import * as journal from "@/services/journal"
 import * as photos from "@/services/photos"
 import * as order_staffs from "@/services/order-staffs"
+import * as materials_consumptions from "@/services/materials-consumptions"
 export const Api = {
   auth,
   customers,
@@ -26,6 +27,7 @@ export const Api = {
   accessories,
   velcro,
   materials,
+  materials_consumptions,
   templates,
   template_items,
   orders,

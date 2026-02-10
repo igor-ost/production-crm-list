@@ -101,18 +101,32 @@ export default function OrdersCreateModal({
           if(response_materials.status){
             const check = await Api.orders.findById(response.id);
             if(check){
-              setTemplate("");
-              setCustomer("");
-              setSize("");
-              setStatus("new");
-              setQuantity(0);
-              setButtons(0);
-              setCuttingPrice(0);
-              setSewingPrice(0);
-              setNotes("");
-              setDeadline("")
-              onSubmit(response.id, check);
-              setOpen(false);
+              const consumptionsList = materialOrderList.map(item => {
+                if(item.material_type == "buttons"){
+                  return({
+                      ...item,
+                      qty: item.qty * buttons,
+                      })
+                }
+                return({
+                ...item,
+                qty: item.qty * quantity,
+              })});
+              const consumptions = await Api.materials_consumptions.createMany(response.id,consumptionsList)
+              if(consumptions){
+                setTemplate("");
+                setCustomer("");
+                setSize("");
+                setStatus("new");
+                setQuantity(0);
+                setButtons(0);
+                setCuttingPrice(0);
+                setSewingPrice(0);
+                setNotes("");
+                setDeadline("")
+                onSubmit(response.id, check);
+                setOpen(false);
+              }
             }
           }
         } catch (error) {
@@ -135,9 +149,9 @@ export default function OrdersCreateModal({
 
     if (!template) return;
 
-    setCuttingPrice(template.cuttingPrice);
-    setSewingPrice(template.sewingPrice);
-    setButtonsPrice(template.buttonsPrice);
+    setCuttingPrice(Number(template.cuttingPrice));
+    setSewingPrice(Number(template.sewingPrice));
+    setButtonsPrice(Number(template.buttonsPrice));
 
   }, [template_id, templatesList]);
   return (

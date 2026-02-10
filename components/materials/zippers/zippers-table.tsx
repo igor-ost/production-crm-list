@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare, Info, MinusCircleIcon, Calendar } from "lucide-react"
 import { SetStateAction, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,8 @@ import UpdateQtyModal from "../update-qty-materials"
 import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ViewConsumptionsList } from "../view-consumptions-list"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface Zippers {
   id: string
@@ -37,6 +39,7 @@ interface ZippersTableProps {
 }
 
 export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps) {
+  const {materialConsumptions} = materialConsumptionsStore()
   const [search, setSearch] = useState("")
   const [colorFilter, setColorFilter] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string>("")
@@ -175,9 +178,24 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                 <TableCell className="font-medium">{zipper.color}</TableCell>
                 <TableCell className="font-mono text-sm text-muted-foreground">{zipper.type}</TableCell>
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  <Badge>
-                    {zipper.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{zipper.unit}
-                  </Badge>
+                  {materialConsumptions && (
+                    <Badge>
+                      {(
+                        (zipper.invoices?.reduce(
+                          (sum, item) => sum + (item.qty ?? 0),
+                          0
+                        ) ?? 0)
+                        -
+                        materialConsumptions
+                          .filter(i => i.material_id === zipper.id)
+                          .reduce(
+                            (sum, item) => sum + (Number(item.qty) || 0),
+                            0
+                          )
+                      )}
+                      {zipper.unit}
+                    </Badge>
+                  )}
                 </TableCell>
                 <TableCell className="font-mono text-sm text-muted-foreground">
                     <Badge variant="outline">
@@ -192,6 +210,10 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                   <ViewInvoicesList data={zipper.invoices || []}>
                     <Button size="icon" variant="ghost"><Info className="h-4 w-4" /></Button>
                   </ViewInvoicesList>
+
+                  <ViewConsumptionsList material_id={zipper.id}>
+                    <Button size="icon" variant="ghost"><Calendar className="h-4 w-4" /></Button>
+                  </ViewConsumptionsList>
 
                   <ZippersUpdateModal
                     id={zipper.id} color={zipper.color} type={zipper.type} unit={zipper.unit}

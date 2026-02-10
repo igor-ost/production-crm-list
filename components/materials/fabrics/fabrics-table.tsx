@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare, Info, Calendar } from "lucide-react"
 import { SetStateAction, useMemo, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,8 @@ import FabricsRemoveModal from "./fabric-remove-modal"
 import UpdateQtyModal from "../update-qty-materials"
 import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
+import { ViewConsumptionsList } from "../view-consumptions-list"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface Fabrics {
   id: string;
@@ -36,6 +38,7 @@ interface FabricsTableProps {
 }
 
 export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps) {
+  const {materialConsumptions} = materialConsumptionsStore()
   const [search, setSearch] = useState("")
   const [colorFilter,setColorFilter] = useState("")
 
@@ -178,9 +181,24 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  <Badge>
-                    {fabric.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0} {fabric.unit}
-                  </Badge>
+                  {materialConsumptions && (
+                    <Badge>
+                      {(
+                        (fabric.invoices?.reduce(
+                          (sum, item) => sum + (item.qty ?? 0),
+                          0
+                        ) ?? 0)
+                        -
+                        materialConsumptions
+                          .filter(i => i.material_id === fabric.id)
+                          .reduce(
+                            (sum, item) => sum + (Number(item.qty) || 0),
+                            0
+                          )
+                      )}
+                      {fabric.unit}
+                    </Badge>
+                  )}
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
@@ -205,6 +223,10 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
                       <Info className="h-4 w-4" />
                     </Button>
                   </ViewInvoicesList>
+
+                  <ViewConsumptionsList material_id={fabric.id}>
+                    <Button size="icon" variant="ghost"><Calendar className="h-4 w-4" /></Button>
+                  </ViewConsumptionsList>
 
                   <FabricsUpdateModal
                     id={fabric.id}

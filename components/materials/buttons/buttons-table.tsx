@@ -1,6 +1,6 @@
 "use client"
 
-import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare, Info, Calendar } from "lucide-react"
 import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,8 @@ import UpdateQtyModal from "../update-qty-materials"
 import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { ViewConsumptionsList } from "../view-consumptions-list"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface Buttons {
   id: string;
@@ -37,6 +39,7 @@ interface ButtonsTableProps {
 }
 
 export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps) {
+  const {materialConsumptions} = materialConsumptionsStore()
   const [search, setSearch] = useState("")
   const [colorFilter, setColorFilter] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string>("")
@@ -185,9 +188,24 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  <Badge>
-                    {button.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{button.unit}
-                  </Badge>
+                  {materialConsumptions && (
+                    <Badge>
+                      {(
+                        (button.invoices?.reduce(
+                          (sum, item) => sum + (item.qty ?? 0),
+                          0
+                        ) ?? 0)
+                        -
+                        materialConsumptions
+                          .filter(i => i.material_id === button.id)
+                          .reduce(
+                            (sum, item) => sum + (Number(item.qty) || 0),
+                            0
+                          )
+                      )}
+                      {button.unit}
+                    </Badge>
+                  )}
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
@@ -212,6 +230,10 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
                       <Info className="h-4 w-4" />
                     </Button>
                   </ViewInvoicesList>
+
+                  <ViewConsumptionsList material_id={button.id}>
+                    <Button size="icon" variant="ghost"><Calendar className="h-4 w-4" /></Button>
+                  </ViewConsumptionsList>
 
                   <ButtonsUpdateModal
                     id={button.id}

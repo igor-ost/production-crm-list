@@ -1,5 +1,5 @@
 import { Badge } from "../ui/badge";
-import { InvoiceList, MaterialsTableProps } from "../materials/materials-table";
+import { InvoiceList, Materials, MaterialsTableProps } from "../materials/materials-table";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -70,14 +70,14 @@ export default function OrdersViewMaterials({
 
   const findMaterialWithType = (id: string) => {
     for (const { key } of materialTypes) {
-      const list = currentMaterials[key as keyof MaterialsTableProps];
+      const list = currentMaterials[key as keyof Materials];
       const material = list?.find(item => item.id === id);
       if (material) return { material, material_type: key };
     }
   }
   const findMaterial = (id: string) => {
     for (const { key } of materialTypes) {
-      const list = currentMaterials[key as keyof MaterialsTableProps];
+      const list = currentMaterials[key as keyof Materials];
       const material = list?.find(item => item.id === id);
       if (material) return { material};
     }
@@ -154,7 +154,7 @@ export default function OrdersViewMaterials({
     const items = materialsList
       .map(m => {
         const info = findMaterialWithType(m.material_id) as any;
-        const latestInvoice = info.material?.invoices?.reduce(
+        const latestInvoice = info?.material?.invoices?.reduce(
           (latest:any, curr:any) =>
           !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
           ? curr
@@ -163,7 +163,9 @@ export default function OrdersViewMaterials({
         )
         if (!info || info.material_type !== typeKey) return null;
         const usedQty =
-          typeKey === "buttons" ? m.qty * newbuttons : m.qty * newquantity;
+          typeKey === "buttons"
+            ? buttons * m.qty
+            : quantity * m.qty;
 
         return {
           name:
@@ -172,9 +174,9 @@ export default function OrdersViewMaterials({
               : typeKey === "accessories" || typeKey === "velcro"
               ? info.material.name
               : `${info.material.color} – ${info.material.type}`,
-          qty: usedQty,
-          price: usedQty * (latestInvoice?.price ?? 0),
-        };
+            qty: usedQty,
+            price: usedQty * (latestInvoice?.price ?? 0),
+          };
       })
       .filter(Boolean);
 
@@ -208,7 +210,7 @@ export default function OrdersViewMaterials({
           : typeKey === "accessories" || typeKey === "velcro"
             ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
             : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
-        – {mat.qty * (latestInvoice?.price ?? 0)} тг.
+        – {mat.qty * quantity * (latestInvoice?.price ?? 0)} тг.
         <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
           <Trash2
             className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"

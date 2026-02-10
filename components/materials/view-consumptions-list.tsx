@@ -13,35 +13,40 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { DialogTrigger } from "@radix-ui/react-dialog"
-import { InvoiceList } from "./materials-table"
 
 import { format, parseISO } from "date-fns"
 import { ru } from "date-fns/locale"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 
 interface ArrivalTimelineModalProps {
-  data: InvoiceList[]
   children: React.ReactNode
+  material_id: string;
 }
 
 
-export function ViewInvoicesList({
-  data,
-  children
+export function ViewConsumptionsList({
+  children,
+  material_id
 }: ArrivalTimelineModalProps) {
 
+  const {materialConsumptions} = materialConsumptionsStore()
+
+  const data = useMemo(()=>{
+    return materialConsumptions.filter(i => i.material_id === material_id)
+  },[materialConsumptions])
 
   const [open,setOpen] = useState(false)
 
   const sortedData = useMemo(() => {
     return [...data].sort(
       (a, b) =>
-        new Date(b.dateArrived).getTime() - new Date(a.dateArrived).getTime()
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   }, [data])
 
   const totalQty = useMemo(() => {
-    return data.reduce((sum, item) => sum + item.qty, 0)
+    return data.reduce((sum, item) => sum + parseFloat(item.qty), 0)
   }, [data])
 
   
@@ -73,11 +78,10 @@ export function ViewInvoicesList({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CalendarIcon className="size-5 text-primary" />
-            История поступлений
+            История расходов
           </DialogTitle>
           <DialogDescription>
-            Хронология добавления материала
+            Хронология
           </DialogDescription>
         </DialogHeader>
 
@@ -86,13 +90,9 @@ export function ViewInvoicesList({
           <div className="flex items-center gap-2">
             <PackageIcon className="size-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Всего записей:
+              Всего расходов:
             </span>
-            <Badge variant="secondary">{data.length}</Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Итого:</span>
-            <Badge>{totalQty.toLocaleString("ru-RU")} шт.</Badge>
+            <Badge variant="accessories">-{totalQty.toLocaleString("ru-RU")}</Badge>
           </div>
         </div>
 
@@ -112,7 +112,7 @@ export function ViewInvoicesList({
                     key={item.id}
                     className={cn(
                       "relative flex gap-4 py-3 transition-colors rounded-lg hover:bg-muted/30",
-                      isFirst && "bg-primary/5"
+                      isFirst && "bg-primary-5"
                     )}
                   >
                     {/* Timeline dot */}
@@ -121,7 +121,7 @@ export function ViewInvoicesList({
                         className={cn(
                           "size-6 rounded-full border-2 flex items-center justify-center transition-all",
                           isFirst
-                            ? "border-primary bg-primary text-primary-foreground"
+                            ? "border-red-500 bg-red-400 text-primary-foreground"
                             : "border-border bg-background"
                         )}
                       >
@@ -136,25 +136,17 @@ export function ViewInvoicesList({
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
                           <p className="text-sm font-medium leading-none">
-                            {formatDate(item.dateArrived)}
+                            {formatDate(item.createdAt)}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {formatTime(item.dateArrived) || "—"}
+                            {formatTime(item.createdAt) || "—"}
                           </p>
                         </div>
+                        <p className="font-bold text-sm">{item.order.order_number}</p>
                         <Badge
-                          variant={isFirst ? "default" : "outline"}
-                          className={cn(
-                            "flex-shrink-0 tabular-nums",
-                            isFirst && "animate-in fade-in-0 zoom-in-95"
-                          )}
+                          variant={"accessories"}
                         >
-                          +{item.qty.toLocaleString("ru-RU")}
-                        </Badge>
-                        <Badge
-                          variant={"green"}
-                        >
-                          {item.price} тг.
+                          - {parseFloat(item.qty)}
                         </Badge>
                       </div>
                     </div>
@@ -169,7 +161,7 @@ export function ViewInvoicesList({
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <PackageIcon className="size-12 text-muted-foreground/50 mb-2" />
             <p className="text-sm text-muted-foreground">
-              Нет данных о поступлениях
+              Нет данных о расходах
             </p>
           </div>
         )}

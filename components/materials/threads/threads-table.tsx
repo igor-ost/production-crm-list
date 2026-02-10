@@ -1,6 +1,6 @@
 "use client"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Trash2, Search, Edit, PlusSquare, Info } from "lucide-react"
+import { Trash2, Search, Edit, PlusSquare, Info, Calendar } from "lucide-react"
 import { SetStateAction, useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -21,6 +21,8 @@ import ThreadsRemoveModal from "./thread-remove-modal"
 import UpdateQtyModal from "../update-qty-materials"
 import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
+import { ViewConsumptionsList } from "../view-consumptions-list"
+import { materialConsumptionsStore } from "@/store/material-consumptions"
 
 export interface Threads {
   id: string;
@@ -36,6 +38,7 @@ interface ThreadsTableProps {
 }
 
 export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps) {
+  const {materialConsumptions} = materialConsumptionsStore()
   const [search, setSearch] = useState("")
   const [colorFilter, setColorFilter] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string>("")
@@ -194,9 +197,24 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  <Badge>
-                    {thread.invoices?.reduce((sum, item) => sum + (item.qty), 0) || 0}{thread.unit}
-                  </Badge>
+                  {materialConsumptions && (
+                    <Badge>
+                      {(
+                        (thread.invoices?.reduce(
+                          (sum, item) => sum + (item.qty ?? 0),
+                          0
+                        ) ?? 0)
+                        -
+                        materialConsumptions
+                          .filter(i => i.material_id === thread.id)
+                          .reduce(
+                            (sum, item) => sum + (Number(item.qty) || 0),
+                            0
+                          )
+                      )}
+                      {thread.unit}
+                    </Badge>
+                  )}
                 </TableCell>
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
@@ -222,6 +240,10 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
                     </Button>
                   </ViewInvoicesList>
 
+                  <ViewConsumptionsList material_id={thread.id}>
+                    <Button size="icon" variant="ghost"><Calendar className="h-4 w-4" /></Button>
+                  </ViewConsumptionsList>
+                  
                   <ThreadsUpdateModal
                     id={thread.id}
                     color={thread.color}

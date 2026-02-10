@@ -16,7 +16,18 @@ import { Buttons, ButtonsTable } from "./buttons/buttons-table"
 import { Accessories, AccessoriesTable } from "./accessories/accessories-table"
 import { Velcro, VelcroTable } from "./velcro/velcro-table"
 import * as XLSX from "xlsx"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { materialConsumptionsStore, MaterialConsumptions } from "@/store/material-consumptions"
+
+
+export interface Materials{
+  zippers: Zippers[]
+  fabrics: Fabrics[]
+  threads: Threads[]
+  buttons: Buttons[]
+  accessories: Accessories[]
+  velcro: Velcro[]
+}
 
 export interface MaterialsTableProps{
   zippers: Zippers[]
@@ -25,6 +36,7 @@ export interface MaterialsTableProps{
   buttons: Buttons[]
   accessories: Accessories[]
   velcro: Velcro[]
+  materials_consuptions: MaterialConsumptions[]
 }
 
 export interface InvoiceList {
@@ -35,7 +47,9 @@ export interface InvoiceList {
   createdAt: string
 }
 
-export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro}:MaterialsTableProps) {
+export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro,materials_consuptions}:MaterialsTableProps) {
+
+  const {setMaterialConsumptions} = materialConsumptionsStore()
 
   const [zippersList,setZippersList] = useState(zippers);
   const [fabricsList,setFabricsList] = useState(fabrics);
@@ -43,6 +57,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
   const [buttonsList,setButtonsList] = useState(buttons);
   const [accessoriesList,setAccessoriesList] = useState(accessories);
   const [VelcroList,setVelcroList] = useState(velcro);
+
 
   function createSheet<T>(
     title: string,
@@ -164,6 +179,11 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
 
     XLSX.writeFile(wb, `Материалы_${new Date().toISOString().slice(0,10)}.xlsx`)
   }
+  useEffect(()=>{
+    if(materials_consuptions){
+      setMaterialConsumptions(materials_consuptions)
+    }
+  },[materials_consuptions])
   return (
     <div className="space-y-6">
       <Tabs defaultValue="zippers" className="space-y-4">
