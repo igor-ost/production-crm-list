@@ -29,7 +29,6 @@ export interface Zippers {
   type: string
   unit: string
   invoices?: InvoiceList[]
-  price: number
 }
 
 interface ZippersTableProps {
@@ -43,8 +42,8 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
   const [typeFilter, setTypeFilter] = useState<string>("")
 
   // Для создания новых элементов
-  const handleNew = (id:string,color:string,type:string,unit:string,price:number) => {
-    const updated = { id, color, type, unit, price }
+  const handleNew = (id:string,color:string,type:string,unit:string) => {
+    const updated = { id, color, type, unit }
     setZippersList((prev) => [...prev, updated])
   }
 
@@ -62,11 +61,11 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
     )
   }
 
-  const handleUpdate = (id:string,color:string,type:string,unit:string,price:number) => {
+  const handleUpdate = (id:string,color:string,type:string,unit:string) => {
     setZippersList(prev =>
       prev.map(item =>
         item.id === id
-          ? { ...item, color, type, unit, price }
+          ? { ...item, color, type, unit }
           : item
       )
     )
@@ -162,7 +161,15 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
           </TableHeader>
 
           <TableBody>
-            {filteredZippers.map((zipper, index) => (
+            {filteredZippers.map((zipper, index) => {
+              const latestInvoice = zipper.invoices?.reduce<InvoiceList | null>(
+                (latest, curr) =>
+                  !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                    ? curr
+                    : latest,
+                null
+              )
+              return(
               <TableRow key={zipper.id} className="transition-colors hover:bg-muted/40 even:bg-muted/20">
                 <TableCell className="font-medium text-muted-foreground">{index + 1}</TableCell>
                 <TableCell className="font-medium">{zipper.color}</TableCell>
@@ -173,7 +180,9 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                   </Badge>
                 </TableCell>
                 <TableCell className="font-mono text-sm text-muted-foreground">
-                  <Badge variant="outline">{zipper.price} тг.</Badge>
+                    <Badge variant="outline">
+                        {latestInvoice?.price ?? "---"} тг.
+                    </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   <UpdateQtyModal id={zipper.id} type="zippers" onSubmit={handleQtyUpdate}>
@@ -185,7 +194,7 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                   </ViewInvoicesList>
 
                   <ZippersUpdateModal
-                    id={zipper.id} color={zipper.color} type={zipper.type} unit={zipper.unit} price={zipper.price}
+                    id={zipper.id} color={zipper.color} type={zipper.type} unit={zipper.unit}
                     onSubmit={handleUpdate}
                   >
                     <Button size="icon" variant="ghost"><Edit className="h-4 w-4" /></Button>
@@ -198,7 +207,7 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                   </ZippersRemoveModal>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
 
             {filteredZippers.length === 0 && (
               <TableRow>

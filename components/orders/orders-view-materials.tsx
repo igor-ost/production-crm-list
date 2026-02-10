@@ -1,5 +1,5 @@
 import { Badge } from "../ui/badge";
-import { MaterialsTableProps } from "../materials/materials-table";
+import { InvoiceList, MaterialsTableProps } from "../materials/materials-table";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -8,6 +8,12 @@ import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import { Zippers } from "../materials/zippers/zippers-table";
+import { Fabrics } from "../materials/fabrics/fabrics-table";
+import { Threads } from "../materials/threads/threads-table";
+import { Buttons } from "../materials/buttons/buttons-table";
+import { Accessories } from "../materials/accessories/accessories-table";
+import { Velcro } from "../materials/velcro/velcro-table";
 
 const materialTypes = [
   { key: "zippers", label: "Молнии", variant: "zippers" },
@@ -69,6 +75,14 @@ export default function OrdersViewMaterials({
       if (material) return { material, material_type: key };
     }
   }
+  const findMaterial = (id: string) => {
+    for (const { key } of materialTypes) {
+      const list = currentMaterials[key as keyof MaterialsTableProps];
+      const material = list?.find(item => item.id === id);
+      if (material) return { material};
+    }
+  }
+
 
   const handleAdd = async () => {
     if (!selectedMaterial || qty <= 0) return;
@@ -140,8 +154,14 @@ export default function OrdersViewMaterials({
     const items = materialsList
       .map(m => {
         const info = findMaterialWithType(m.material_id) as any;
+        const latestInvoice = info.material?.invoices?.reduce(
+          (latest:any, curr:any) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+          ? curr
+          : latest,
+          null
+        )
         if (!info || info.material_type !== typeKey) return null;
-
         const usedQty =
           typeKey === "buttons" ? m.qty * newbuttons : m.qty * newquantity;
 
@@ -153,7 +173,7 @@ export default function OrdersViewMaterials({
               ? info.material.name
               : `${info.material.color} – ${info.material.type}`,
           qty: usedQty,
-          price: usedQty * info.material.price,
+          price: usedQty * (latestInvoice?.price ?? 0),
         };
       })
       .filter(Boolean);
@@ -168,8 +188,16 @@ export default function OrdersViewMaterials({
 
   const renderMaterial = (materialItem: any, typeKey: string, variant: string) => {
     const templateMaterials = materialsList?.filter(m => m.material_id === materialItem.id) || [];
-
-    return templateMaterials.map((mat, idx) => (
+    return templateMaterials.map((mat, idx) => {
+      const material = findMaterial(mat.material_id)
+      const latestInvoice = material?.material.invoices?.reduce<InvoiceList | null>(
+          (latest, curr) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+          ? curr
+          : latest,
+          null
+      )
+      return(
       <Badge
         key={`${mat.id}_${idx}`}
         variant={variant as "zippers" | "fabrics" | "threads" | "buttons" | "accessories" | "velcro"}
@@ -180,14 +208,14 @@ export default function OrdersViewMaterials({
           : typeKey === "accessories" || typeKey === "velcro"
             ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
             : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
-        – {mat.qty * materialItem.price} тг.
+        – {mat.qty * (latestInvoice?.price ?? 0)} тг.
         <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
           <Trash2
             className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"
           />
         </div>
       </Badge>
-    ));
+    )});
   };
 
   return (
@@ -204,7 +232,7 @@ export default function OrdersViewMaterials({
           />
         </div>
         <div>
-          <Label>Кол-во (бочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
+          <Label>Кол-во (блочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={newbuttons}
@@ -234,7 +262,7 @@ export default function OrdersViewMaterials({
           />
         </div>
         <div>
-          <Label>Цена бочек-кнопок</Label>
+          <Label>Цена блочек-кнопок</Label>
           <Input
             type="number"
             value={newButtonsPrice}

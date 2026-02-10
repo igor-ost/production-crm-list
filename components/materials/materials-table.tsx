@@ -30,7 +30,9 @@ export interface MaterialsTableProps{
 export interface InvoiceList {
   id:string;
   dateArrived: string
-  qty:number
+  qty:number;
+  price:number;
+  createdAt: string
 }
 
 export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro}:MaterialsTableProps) {

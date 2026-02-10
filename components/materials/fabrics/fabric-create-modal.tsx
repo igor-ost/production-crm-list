@@ -16,12 +16,11 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function FabricsCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,color:string,unit:string,price:number)=>void}) {
+export default function FabricsCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,color:string,unit:string)=>void}) {
   const [name, setName] = useState("")
   const [color, setColor] = useState("");
   const [type, setType] = useState("");
   const [unit, setUnit] = useState("шт");
-  const [price, setPrice] = useState(0);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
@@ -33,7 +32,6 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
       color,
       type,
       unit,
-      price
     };
 
     
@@ -65,8 +63,7 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
             setColor("");
             setType("");
             setUnit("");
-            setPrice(0);
-            onSubmit(response.id,name,color,unit,price)
+            onSubmit(response.id,name,color,unit)
             setIsLoading(false)
             setOpen(false)
         }
@@ -111,18 +108,6 @@ export default function FabricsCreateModal({children,onSubmit}:{children:React.R
           <div className="grid gap-2">
             <Label htmlFor="unit">Ед. Изм.</Label>
             <SelectUnit value={unit} onValueChange={setUnit}/>
-          </div>
-
-
-          <div className="grid gap-2">
-            <Label htmlFor="price">Цена</Label>
-            <Input
-              id="price"
-              placeholder="Введите цену"
-              type="price"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
           </div>
 
         {error && (

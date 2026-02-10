@@ -27,7 +27,6 @@ export interface Velcro {
   id: string;
   name: string;
   unit: string;
-  price: number;
   invoices?: InvoiceList[]
 }
 
@@ -39,12 +38,11 @@ interface VelcroTableProps {
 export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
   const [search, setSearch] = useState("")
 
-  const handleNew = (id: string, name: string, unit: string, price: number) => {
+  const handleNew = (id: string, name: string, unit: string) => {
     const updated = {
       id: id,
       name: name,
       unit: unit,
-      price,
     }
     setVelcroList((prev) => [...prev, updated]);
   }
@@ -67,11 +65,11 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
     );
   };
 
-  const handleUpdate = (id: string, name: string, unit: string, price: number) => {
+  const handleUpdate = (id: string, name: string, unit: string) => {
     setVelcroList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name, unit, price }
+          ? { ...item, name, unit }
           : item
       )
     );
@@ -126,7 +124,15 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
           </TableHeader>
 
           <TableBody>
-            {filteredVelcro.map((velcro, index) => (
+            {filteredVelcro.map((velcro, index) => {
+              const latestInvoice = velcro.invoices?.reduce<InvoiceList | null>(
+                (latest, curr) =>
+                  !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                    ? curr
+                    : latest,
+                null
+              )
+              return(
               <TableRow
                 key={velcro.id}
                 className="transition-colors hover:bg-muted/40 even:bg-muted/20"
@@ -147,7 +153,7 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
                   <Badge variant="outline">
-                    {velcro.price} тг.
+                    {latestInvoice?.price ?? "---"} тг.
                   </Badge>
                 </TableCell>
 
@@ -172,7 +178,6 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
                     id={velcro.id}
                     name={velcro.name}
                     unit={velcro.unit}
-                    price={velcro.price}
                     onSubmit={handleUpdate}
                   >
                     <Button size="icon" variant="ghost">
@@ -194,7 +199,7 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
                   </VelcroRemoveModal>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
 
             {filteredVelcro.length === 0 && (
               <TableRow>

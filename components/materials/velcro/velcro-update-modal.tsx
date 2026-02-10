@@ -16,10 +16,9 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function VelcroUpdateModal({children,onSubmit,name,unit,price,id}:{children:React.ReactNode,id:string,name:string,unit:string,price:number,onSubmit:(id:string,name:string,unit:string,price:number)=>void}) {
+export default function VelcroUpdateModal({children,onSubmit,name,unit,id}:{children:React.ReactNode,id:string,name:string,unit:string,onSubmit:(id:string,name:string,unit:string)=>void}) {
   const [newname, setName] = useState(name);
   const [newunit, setUnit] = useState(unit);
-  const [newprice, setPrice] = useState(price);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
@@ -29,7 +28,6 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,price,id}
     const velcro = {
       name:newname,
       unit:newunit,
-      price:newprice
     };
 
     if(newname == ""){
@@ -47,7 +45,7 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,price,id}
     try {
         const response = await Api.velcro.update(id,velcro)
         if(response.id){
-            onSubmit(id,newname,newunit,newprice)
+            onSubmit(id,newname,newunit)
             setIsLoading(false)
             setOpen(false)
         }
@@ -83,17 +81,6 @@ export default function VelcroUpdateModal({children,onSubmit,name,unit,price,id}
           <div className="grid gap-2">
             <Label htmlFor="unit">Ед. Изм.</Label>
             <SelectUnit value={newunit} onValueChange={setUnit}/>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="price">Цена</Label>
-            <Input
-              id="price"
-              placeholder="Введите цену"
-              type="price"
-              value={newprice}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
           </div>
 
         {error && (

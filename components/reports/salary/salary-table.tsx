@@ -84,6 +84,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
             break;
           case "buttons":
             quantity += j.quantity;
+            salary += j.quantity * j.order.buttonsPrice;
             break;
         }
       });
@@ -126,6 +127,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
           "Заказ №": item.order.order_number || "",
           "Цена пошива": item.order.sewing_price || 0,
           "Цена раскроя": item.order.cutting_price || 0,
+          "Цена блочки": item.order.buttonsPrice || 0,
           "Тип работы": workTypeLabel(item.type) || "",
           "Кол-во": item.quantity || 0,
           "Дата": item.createdAt ? new Date(item.createdAt).toLocaleString() : ""
@@ -134,7 +136,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
     });
 
     const journalSheet = XLSX.utils.json_to_sheet(journalData, {
-      header: ["№", "Работник", "Заказ №", "Цена пошива", "Цена раскроя", "Тип работы", "Кол-во", "Дата"]
+      header: ["№", "Работник", "Заказ №", "Цена пошива", "Цена раскроя","Цена блочки", "Тип работы", "Кол-во", "Дата"]
     });
     if (journalSheet['!ref']) {
       const journalRange = XLSX.utils.decode_range(journalSheet['!ref']);
@@ -147,6 +149,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
     journalSheet['!cols'] = [
       { wch: 5 },
       { wch: 20 },
+      { wch: 15 },
       { wch: 15 },
       { wch: 15 },
       { wch: 15 },
@@ -284,6 +287,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
                             price += j.quantity * j.order.sewing_price;
                             break;
                           case "buttons":
+                            price += j.quantity * j.order.buttonsPrice;
                             break;
                           default:
                             break;

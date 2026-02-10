@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { MaterialsTableProps } from "../materials/materials-table";
+import { InvoiceList, MaterialsTableProps } from "../materials/materials-table";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
@@ -71,6 +71,14 @@ export default function OrdersCreateMaterials({
     return null;
   };
 
+  const findMaterial = (id: string) => {
+      for (const { key } of materialTypes) {
+        const list = currentMaterials[key as keyof MaterialsTableProps];
+        const material = list?.find(item => item.id === id);
+        if (material) return { material};
+      }
+  }
+
   const handleAdd = () => {
     if (!selectedMaterial || qty <= 0) return;
 
@@ -95,6 +103,13 @@ export default function OrdersCreateMaterials({
     const items = templates
       .map(m => {
         const info = findMaterialWithType(m.material_id) as any; 
+        const latestInvoice = info.material?.invoices?.reduce(
+          (latest:any, curr:any) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+          ? curr
+          : latest,
+          null
+        )
         if (!info || info.material_type !== typeKey) return null;
 
         const usedQty =
@@ -108,7 +123,7 @@ export default function OrdersCreateMaterials({
               ? info.material.name
               : `${info.material.color} – ${info.material.type}`,
           qty: usedQty,
-          price: usedQty * info.material.price,
+          price: usedQty * (latestInvoice?.price ?? 0),
         };
       })
       .filter(Boolean);
@@ -124,6 +139,15 @@ export default function OrdersCreateMaterials({
     const templateMaterials = templates.filter(m => m.material_id === materialItem.id);
 
     return templateMaterials.map((mat, idx) => {
+
+      const material = findMaterial(mat.material_id)
+      const latestInvoice = material?.material.invoices?.reduce<InvoiceList | null>(
+          (latest, curr) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+          ? curr
+          : latest,
+          null
+      )
 
       const name = "name" in materialItem ? materialItem.name : "";
       const color = "color" in materialItem ? materialItem.color : "";
@@ -142,7 +166,7 @@ export default function OrdersCreateMaterials({
             : typeKey === "accessories" || typeKey === "velcro"
               ? `${name} (${mat.qty} ${unit})`
               : `${color} – ${type} (${mat.qty} ${unit})`}
-          – {mat.qty * price} тг.
+          – {mat.qty * (latestInvoice?.price ?? 0)} тг.
           <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
             <Trash2
               className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"
@@ -157,7 +181,7 @@ export default function OrdersCreateMaterials({
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-4 p-4 rounded-md bg-green-50">
         <div>
-          <Label>Кол-во (бочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
+          <Label>Кол-во (блочек-кнопок) <span className="text-black">необязательное поле*</span></Label>
           <Input
             type="number"
             value={buttons}
@@ -187,7 +211,7 @@ export default function OrdersCreateMaterials({
           />
         </div>
         <div>
-          <Label>Цена бочек-кнопок</Label>
+          <Label>Цена блочек-кнопок</Label>
           <Input
             type="number"
             value={buttonsPrice}

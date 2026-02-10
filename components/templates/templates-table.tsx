@@ -19,7 +19,7 @@ import TemplatesUpdateModal from "./templates-update-modal"
 import TemplatesRemoveModal from "./templates-remove-modal"
 import { Badge } from "../ui/badge"
 import TemplatesAddItemsModal, { TemplateItems } from "./templates-add-items-modal"
-import { MaterialsTableProps } from "../materials/materials-table"
+import { InvoiceList, MaterialsTableProps } from "../materials/materials-table"
 import TemplatesRemoveItemsModal from "./templates-remove-items-modal"
 
 
@@ -120,8 +120,15 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
 
     return template.materials.reduce((sum, tm) => {
       const material = allMaterials.find(m => m.id === tm.material_id);
+      const latestInvoice = material?.invoices?.reduce<InvoiceList | null>(
+        (latest, curr) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+          ? curr
+          : latest,
+         null
+      )
       if (!material) return sum;
-      return sum + tm.qty * material.price;
+      return sum + tm.qty * (latestInvoice?.price ?? 0);
     }, 0);
   };
 
@@ -237,14 +244,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(zipper =>
                       template.materials
                         ?.filter(m => m.material_id === zipper.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = zipper.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]" variant="zippers" key={`${material.id}_${index}`}>
                             {zipper.color} – {zipper.type}
                             {" "}({material.qty} {zipper.unit}) –{" "}
-                            {material.qty * zipper.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                             <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                     )}
               </div>
             </TableCell>
@@ -262,14 +277,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(fabric =>
                       template.materials
                         ?.filter(m => m.material_id === fabric.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = fabric.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]" variant="fabrics" key={`${material.id}_${index}`}>
                             {fabric.name} – {fabric.color}
                             {" "}({material.qty} {fabric.unit}) –{" "}
-                            {material.qty * fabric.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                   )}
               </div>
             </TableCell>
@@ -287,14 +310,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(thread =>
                       template.materials
                         ?.filter(m => m.material_id === thread.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = thread.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]"  variant="threads" key={`${material.id}_${index}`}>
                             {thread.color} – {thread.type}
                             {" "}({material.qty} {thread.unit}) –{" "}
-                            {material.qty * thread.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                   )}
               </div>
             </TableCell>
@@ -312,14 +343,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(button =>
                       template.materials
                         ?.filter(m => m.material_id === button.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = button.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]"  variant="buttons" key={`${material.id}_${index}`}>
                             {button.color} – {button.type}
                             {" "}({material.qty} {button.unit}) –{" "}
-                            {material.qty * button.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                   )}
               </div>
             </TableCell>
@@ -337,14 +376,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(access =>
                       template.materials
                         ?.filter(m => m.material_id === access.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = access.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]"  variant="accessories" key={`${material.id}_${index}`}>
                             {access.name}
                             {" "}({material.qty} {access.unit}) –{" "}
-                            {material.qty * access.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                   )}
               </div>
             </TableCell>
@@ -362,14 +409,22 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     .flatMap(vel =>
                       template.materials
                         ?.filter(m => m.material_id === vel.id)
-                        .map((material,index) => (
+                        .map((material,index) => {
+                          const latestInvoice = vel.invoices?.reduce<InvoiceList | null>(
+                            (latest, curr) =>
+                              !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                                ? curr
+                                : latest,
+                            null
+                          )
+                          return(
                           <Badge className="group flex items-center gap-2 text-[11px]"  variant="velcro" key={`${material.id}_${index}`}>
                             {vel.name}
                             {" "}({material.qty} {vel.unit}) –{" "}
-                            {material.qty * vel.price} тг.
+                            {material.qty * (latestInvoice?.price ?? 0)} тг.
                              <TemplatesRemoveItemsModal id={material.id} onSubmit={handleDeleteItem}/>
                           </Badge>
-                        )) ?? []
+                        )}) ?? []
                   )}
               </div>
             </TableCell>

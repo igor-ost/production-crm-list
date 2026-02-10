@@ -2,24 +2,24 @@ import { InvoiceList } from "@/components/materials/materials-table";
 import ApiRouter from "./constants";
 import { axiosInstance, axiosInstanceServer } from "./instance";
 
-export const getList = async (token:string | undefined): Promise<{id:string;color:string;type:string,unit:string,price:number}[]> => {
+export const getList = async (token:string | undefined): Promise<{id:string;color:string;type:string,unit:string}[]> => {
     const { data } = await axiosInstanceServer.get(ApiRouter.BUTTONS,{
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
-    return data as {id:string;color:string;type:string,unit:string,price:number}[];
+    return data as {id:string;color:string;type:string,unit:string}[];
 }
 
-export const create = async (req:{color:string;type:string,unit:string,price:number}): Promise<{id:string;color:string;type:string,unit:string,price:number}> => {
+export const create = async (req:{color:string;type:string,unit:string}): Promise<{id:string;color:string;type:string,unit:string}> => {
     const { data } = await axiosInstance.post(ApiRouter.BUTTONS,req);
-    return data as {id:string;color:string;type:string,unit:string,price:number};
+    return data as {id:string;color:string;type:string,unit:string};
 }
 
 
-export const update = async (id:string,req:{color:string;type:string,unit:string,price:number}): Promise<{id:string;color:string;type:string,unit:string,price:number}> => {
+export const update = async (id:string,req:{color:string;type:string,unit:string}): Promise<{id:string;color:string;type:string,unit:string}> => {
     const { data } = await axiosInstance.patch(ApiRouter.BUTTONS + "/" + id,req);
-    return data as {id:string;color:string;type:string,unit:string,price:number};
+    return data as {id:string;color:string;type:string,unit:string};
 }
 
 export const remove = async (id:string): Promise<{status:string}> => {

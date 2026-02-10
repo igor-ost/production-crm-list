@@ -59,6 +59,7 @@ export default function SalaryViewModal({
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Номер заказа</th>
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Цена пошива</th>
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Цена кроя</th>
+                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Цена блочки</th>
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Тип</th>
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Количество</th>
                       <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Дата</th>
@@ -71,6 +72,7 @@ export default function SalaryViewModal({
                         <td className="px-4 py-2 text-sm text-gray-700">{item.order.order_number}</td>
                         <td className="px-4 py-2 text-sm text-gray-700">{item.order.sewing_price}</td>
                         <td className="px-4 py-2 text-sm text-gray-700">{item.order.cutting_price}</td>
+                        <td className="px-4 py-2 text-sm text-gray-700">{item.order.buttonsPrice}</td>
                         <td className="px-4 py-2 text-sm text-gray-700">
                           <Badge className={workTypeColor(item.type)}>
                             {workTypeLabel(item.type)}

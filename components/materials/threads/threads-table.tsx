@@ -27,7 +27,6 @@ export interface Threads {
   color: string;
   type: string;
   unit: string;
-  price: number;
   invoices?: InvoiceList[]
 }
 
@@ -41,13 +40,12 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
   const [colorFilter, setColorFilter] = useState<string>("")
   const [typeFilter, setTypeFilter] = useState<string>("")
 
-  const handleNew = (id: string, color: string, type: string, unit: string, price: number) => {
+  const handleNew = (id: string, color: string, type: string, unit: string) => {
     const updated = {
       id: id,
       color: color,
       type: type,
       unit: unit,
-      price,
     }
     setThreadsList((prev) => [...prev, updated]);
   }
@@ -70,11 +68,11 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
     );
   };
 
-  const handleUpdate = (id: string, color: string, type: string, unit: string, price: number) => {
+  const handleUpdate = (id: string, color: string, type: string, unit: string) => {
     setThreadsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, color, type, unit, price }
+          ? { ...item, color, type, unit }
           : item
       )
     );
@@ -170,7 +168,15 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
           </TableHeader>
 
           <TableBody>
-            {filteredThreads.map((thread, index) => (
+            {filteredThreads.map((thread, index) => {
+              const latestInvoice = thread.invoices?.reduce<InvoiceList | null>(
+                (latest, curr) =>
+                  !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                    ? curr
+                    : latest,
+                null
+              )
+              return(
               <TableRow
                 key={thread.id}
                 className="transition-colors hover:bg-muted/40 even:bg-muted/20"
@@ -195,7 +201,7 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
                   <Badge variant="outline">
-                    {thread.price} тг.
+                    {latestInvoice?.price ?? "---"} тг.
                   </Badge>
                 </TableCell>
 
@@ -221,7 +227,6 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
                     color={thread.color}
                     type={thread.type}
                     unit={thread.unit}
-                    price={thread.price}
                     onSubmit={handleUpdate}
                   >
                     <Button size="icon" variant="ghost">
@@ -243,7 +248,7 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
                   </ThreadsRemoveModal>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
 
             {filteredThreads.length === 0 && (
               <TableRow>

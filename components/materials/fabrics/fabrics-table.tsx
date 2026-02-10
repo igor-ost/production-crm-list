@@ -27,7 +27,6 @@ export interface Fabrics {
   name: string;
   color: string;
   unit: string;
-  price: number;
   invoices?: InvoiceList[]
 }
 
@@ -40,13 +39,12 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
   const [search, setSearch] = useState("")
   const [colorFilter,setColorFilter] = useState("")
 
-  const handleNew = (id: string, name: string, color: string, unit: string, price: number) => {
+  const handleNew = (id: string, name: string, color: string, unit: string) => {
     const updated = {
       id: id,
       name: name,
       color: color,
       unit: unit,
-      price,
     }
     setFabricsList((prev) => [...prev, updated]);
   }
@@ -69,11 +67,11 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
     );
   };
 
-  const handleUpdate = (id: string, name: string, color: string, unit: string, price: number) => {
+  const handleUpdate = (id: string, name: string, color: string, unit: string) => {
     setFabricsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, name, color, unit, price }
+          ? { ...item, name, color, unit }
           : item
       )
     );
@@ -154,7 +152,15 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
           </TableHeader>
 
           <TableBody>
-            {filteredFabrics.map((fabric, index) => (
+            {filteredFabrics.map((fabric, index) => {
+              const latestInvoice = fabric.invoices?.reduce<InvoiceList | null>(
+                (latest, curr) =>
+                  !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                    ? curr
+                    : latest,
+                null
+              )
+              return(
               <TableRow
                 key={fabric.id}
                 className="transition-colors hover:bg-muted/40 even:bg-muted/20"
@@ -179,7 +185,7 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
                   <Badge variant="outline">
-                    {fabric.price} тг.
+                    {latestInvoice?.price ?? "---"} тг.
                   </Badge>
                 </TableCell>
 
@@ -205,7 +211,6 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
                     name={fabric.name}
                     color={fabric.color}
                     unit={fabric.unit}
-                    price={fabric.price}
                     onSubmit={handleUpdate}
                   >
                     <Button size="icon" variant="ghost">
@@ -227,7 +232,7 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
                   </FabricsRemoveModal>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
 
             {filteredFabrics.length === 0 && (
               <TableRow>

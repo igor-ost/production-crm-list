@@ -16,10 +16,9 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function AccessoriesCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,unit:string,price:number,)=>void}) {
+export default function AccessoriesCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,name:string,unit:string)=>void}) {
   const [name, setName] = useState("");
   const [unit, setUnit] = useState("шт");
-  const [price, setPrice] = useState(0);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
@@ -29,7 +28,6 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
     const accessories = {
       name,
       unit,
-      price
     };
 
     if(name == ""){
@@ -49,8 +47,7 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
         if(response.id){
             setName("");
             setUnit("");
-            setPrice(0);
-            onSubmit(response.id,name,unit,price)
+            onSubmit(response.id,name,unit)
             setIsLoading(false)
             setOpen(false)
         }
@@ -88,18 +85,6 @@ export default function AccessoriesCreateModal({children,onSubmit}:{children:Rea
           <div className="grid gap-2">
             <Label htmlFor="unit">Ед. Изм.</Label>
             <SelectUnit value={unit} onValueChange={setUnit}/>
-          </div>
-
-
-          <div className="grid gap-2">
-            <Label htmlFor="price">Цена</Label>
-            <Input
-              id="price"
-              placeholder="Введите цену"
-              type="price"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
           </div>
 
         {error && (

@@ -16,11 +16,10 @@ import { Api } from "@/services/api-clients";
 import SelectUnit from "@/components/ui/select-unit";
 
 
-export default function ZippersCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,color:string,type:string,unit:string,price:number,)=>void}) {
+export default function ZippersCreateModal({children,onSubmit}:{children:React.ReactNode,onSubmit:(id:string,color:string,type:string,unit:string)=>void}) {
   const [color, setColor] = useState("");
   const [type, setType] = useState("");
   const [unit, setUnit] = useState("шт");
-  const [price, setPrice] = useState(0);
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
@@ -31,7 +30,6 @@ export default function ZippersCreateModal({children,onSubmit}:{children:React.R
       color,
       type,
       unit,
-      price
     };
 
     if(color == ""){
@@ -56,8 +54,7 @@ export default function ZippersCreateModal({children,onSubmit}:{children:React.R
             setColor("");
             setType("");
             setUnit("");
-            setPrice(0);
-            onSubmit(response.id,color,type,unit,price)
+            onSubmit(response.id,color,type,unit)
             setIsLoading(false)
             setOpen(false)
         }
@@ -103,17 +100,6 @@ export default function ZippersCreateModal({children,onSubmit}:{children:React.R
           <div className="grid gap-2">
             <Label htmlFor="unit">Ед. Изм.</Label>
             <SelectUnit value={unit} onValueChange={setUnit}/>
-          </div>
-
-          <div className="grid gap-2">
-            <Label htmlFor="price">Цена</Label>
-            <Input
-              id="price"
-              placeholder="Введите цену"
-              type="price"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-            />
           </div>
 
         {error && (

@@ -28,7 +28,6 @@ export interface Buttons {
   color: string;
   type: string;
   unit: string;
-  price: number;
   invoices?: InvoiceList[]
 }
 
@@ -43,13 +42,12 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
   const [typeFilter, setTypeFilter] = useState<string>("")
 
 
-  const handleNew = (id: string, color: string, type: string, unit: string, price: number) => {
+  const handleNew = (id: string, color: string, type: string, unit: string) => {
     const updated = {
       id: id,
       color: color,
       type: type,
       unit: unit,
-      price,
     }
     setButtonsList((prev) => [...prev, updated]);
   }
@@ -71,11 +69,11 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
     );
   };
 
-  const handleUpdate = (id: string, color: string, type: string, unit: string, price: number) => {
+  const handleUpdate = (id: string, color: string, type: string, unit: string) => {
     setButtonsList((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, color, type, unit, price }
+          ? { ...item, color, type, unit }
           : item
       )
     );
@@ -161,7 +159,15 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
           </TableHeader>
 
           <TableBody>
-            {filteredButtons.map((button, index) => (
+            {filteredButtons.map((button, index) => {
+              const latestInvoice = button.invoices?.reduce<InvoiceList | null>(
+                (latest, curr) =>
+                  !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+                    ? curr
+                    : latest,
+                null
+              )
+              return(
               <TableRow
                 key={button.id}
                 className="transition-colors hover:bg-muted/40 even:bg-muted/20"
@@ -186,7 +192,7 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
 
                 <TableCell className="font-mono text-sm text-muted-foreground">
                   <Badge variant="outline">
-                    {button.price} тг.
+                    {latestInvoice?.price ?? "---"} тг.
                   </Badge>
                 </TableCell>
 
@@ -212,7 +218,6 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
                     color={button.color}
                     type={button.type}
                     unit={button.unit}
-                    price={button.price}
                     onSubmit={handleUpdate}
                   >
                     <Button size="icon" variant="ghost">
@@ -234,7 +239,7 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
                   </ButtonsRemoveModal>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
 
             {filteredButtons.length === 0 && (
               <TableRow>

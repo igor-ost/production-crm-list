@@ -24,6 +24,7 @@ const formatDate = (date: Date) => {
 
 export default function UpdateQtyModal({children,onSubmit,id,type}:{children:React.ReactNode,id:string,type:"zippers" | "velcro" | "fabrics" | "threads" | "buttons" | "accessories",onSubmit:(id:string,invoice:InvoiceList)=>void}) {
   const [qty, setQty] = useState(0);
+  const [price,setPrice] = useState(0)
   const [dateArrived, setDateArrived] = useState(new Date());
   const [error,setError] = useState("");
   const [isLoading,setIsLoading] = useState(false)
@@ -34,7 +35,8 @@ export default function UpdateQtyModal({children,onSubmit,id,type}:{children:Rea
     const invoice = {
       material_id:id,
       qty:qty,
-      dateArrived: new Date(dateArrived)
+      dateArrived: new Date(dateArrived),
+      price: price
     };
 
 
@@ -83,6 +85,16 @@ export default function UpdateQtyModal({children,onSubmit,id,type}:{children:Rea
               type="number"
               value={qty}
               onChange={(e) => setQty(Number(e.target.value))}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="price">Цена</Label>
+            <Input
+              id="price"
+              placeholder="Введите Цену"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(Number(e.target.value))}
             />
           </div>
 

@@ -189,7 +189,7 @@ export default function OrdersViewModal({
                   </div>
 
                   <div className="rounded-lg bg-blue-50 border border-blue-100 p-4">
-                    <Label className="text-xs text-blue-600">Кнопки</Label>
+                    <Label className="text-xs text-blue-600">Кол-во Кнопки</Label>
                     <p className="text-xl font-semibold mt-1">
                       {buttons}
                     </p>
@@ -239,7 +239,7 @@ export default function OrdersViewModal({
                   </div>
 
                   <div className="rounded-lg bg-green-50 border border-green-100 p-4">
-                    <Label className="text-xs text-green-700">Цена Боцен-кнопок</Label>
+                    <Label className="text-xs text-green-700">Цена Блочек-кнопок</Label>
                     <p className="text-lg font-semibold mt-1">
                       {buttonsPrice} ₸
                     </p>

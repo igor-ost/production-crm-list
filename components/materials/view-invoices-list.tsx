@@ -152,6 +152,11 @@ export function ViewInvoicesList({
                         >
                           +{item.qty.toLocaleString("ru-RU")}
                         </Badge>
+                        <Badge
+                          variant={"green"}
+                        >
+                          {item.price} тг.
+                        </Badge>
                       </div>
                     </div>
                   </div>

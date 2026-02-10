@@ -192,7 +192,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff }: Orde
               <TableHead>Кол-во</TableHead>
               <TableHead>Пошив</TableHead>
               <TableHead>Крой</TableHead>
-              <TableHead>Бочки-Кнопки</TableHead>
+              <TableHead>Блочки-Кнопки</TableHead>
               <TableHead>Статус</TableHead>
               <TableHead className="text-center">Действия</TableHead>
             </TableRow>
