@@ -8,14 +8,8 @@ import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import { Zippers } from "../materials/zippers/zippers-table";
-import { Fabrics } from "../materials/fabrics/fabrics-table";
-import { Threads } from "../materials/threads/threads-table";
-import { Buttons } from "../materials/buttons/buttons-table";
-import { Accessories } from "../materials/accessories/accessories-table";
-import { Velcro } from "../materials/velcro/velcro-table";
 
-const materialTypes = [
+export const materialTypes = [
   { key: "zippers", label: "Молнии", variant: "zippers" },
   { key: "fabrics", label: "Ткани", variant: "fabrics" },
   { key: "threads", label: "Нитки", variant: "threads" },

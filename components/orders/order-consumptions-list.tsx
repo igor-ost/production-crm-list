@@ -13,25 +13,26 @@ import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { DialogTrigger } from "@radix-ui/react-dialog"
 
-import { format, parseISO } from "date-fns"
-import { ru } from "date-fns/locale"
 import { MaterialConsumptions, materialConsumptionsStore } from "@/store/material-consumptions"
+import { Materials } from "../materials/materials-table"
+import { materialTypes } from "./orders-view-materials"
 
 interface ArrivalTimelineModalProps {
   children: React.ReactNode
   order_id: string
+  materials: Materials
 }
 
-export function OrderConsumptionsList({ children, order_id }: ArrivalTimelineModalProps) {
+type MaterialKey = keyof Materials;
+
+export function OrderConsumptionsList({ children, order_id,materials }: ArrivalTimelineModalProps) {
   const { materialConsumptions } = materialConsumptionsStore()
   const [open, setOpen] = useState(false)
 
-  // Фильтрация по order_id
   const data = useMemo(() => {
     return materialConsumptions.filter(i => i.order.id.toString() === order_id.toString())
   }, [materialConsumptions, order_id])
 
-  // Группировка по material_id с суммированием qty и сохранением последнего createdAt
   const groupedData = useMemo(() => {
     const map = new Map<string, MaterialConsumptions>()
 
@@ -41,40 +42,36 @@ export function OrderConsumptionsList({ children, order_id }: ArrivalTimelineMod
         map.set(item.material_id, {
           ...existing,
           qty: (parseFloat(existing.qty) + parseFloat(item.qty)).toFixed(3),
-          createdAt: item.createdAt // берем последнее событие
+          createdAt: item.createdAt 
         })
       } else {
         map.set(item.material_id, { ...item })
       }
     })
 
-    // Превращаем Map обратно в массив и сортируем по createdAt (сначала новые)
     return Array.from(map.values()).sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     )
   }, [data])
 
-  // Сумма всех qty
+
   const totalQty = useMemo(() => {
     return groupedData.reduce((sum, item) => sum + parseFloat(item.qty), 0)
   }, [groupedData])
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = parseISO(dateString)
-      return format(date, "d MMMM yyyy", { locale: ru })
-    } catch {
-      return dateString
-    }
-  }
 
-  const formatTime = (dateString: string) => {
-    try {
-      const date = parseISO(dateString)
-      return format(date, "HH:mm", { locale: ru })
-    } catch {
-      return ""
+  const findNameMaterials = (id:string,type:string) => {
+    const info = materials[type as keyof Materials]
+      ?.find(i => i.id === id) as any[typeof type][number] | undefined;
+
+    if(type == "fabrics"){
+      return `${info.name} – ${info.color}`
     }
+    if(type === "accessories" || type === "velcro"){
+      return info.name
+    }
+    return `${info.color} – ${info.type}`
+
   }
 
   return (
@@ -133,14 +130,11 @@ export function OrderConsumptionsList({ children, order_id }: ArrivalTimelineMod
                     <div className="flex-1 min-w-0 pr-2">
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
-                          <p className="text-sm font-medium leading-none">
-                            {formatDate(item.createdAt)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {formatTime(item.createdAt) || "—"}
+                          <p className="text-xs font-medium leading-none">
+                            <span className="text-xs">{materialTypes.find(i=>i.key == item.material_type)?.label}</span>
                           </p>
                         </div>
-                        <p className="font-bold text-sm">{item.material_type}</p>
+                        <p className="font-bold text-xs">{findNameMaterials(item.material_id,item.material_type)}</p>
                         <Badge variant={"accessories"}>- {parseFloat(item.qty)}</Badge>
                       </div>
                     </div>

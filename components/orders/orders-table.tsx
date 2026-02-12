@@ -242,7 +242,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center gap-2">
-                    <OrderConsumptionsList order_id={order.id}>
+                    <OrderConsumptionsList materials={materials} order_id={order.id}>
                       <Button
                         size="sm"
                         variant="ghost"
