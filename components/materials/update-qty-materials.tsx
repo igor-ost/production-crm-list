@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,12 @@ export default function UpdateQtyModal({children,onSubmit,id,type}:{children:Rea
   const [isLoading,setIsLoading] = useState(false)
   const [open,setOpen] = useState(false)
 
+  const [qty1, setQty1] = useState(0);
+  const [qty2, setQty2] = useState(0);
+
+  
+  
+
   const handleSubmit = async () => {
     setIsLoading(true)
     const invoice = {
@@ -56,6 +62,10 @@ export default function UpdateQtyModal({children,onSubmit,id,type}:{children:Rea
 
   };
 
+  useEffect(()=>{
+    setQty(qty1 * qty2)
+  },[qty1,qty2])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -77,6 +87,30 @@ export default function UpdateQtyModal({children,onSubmit,id,type}:{children:Rea
                 onChange={(e) => setDateArrived(new Date(e.target.value))}
               />
           </div>
+          {type == "buttons" && (
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label htmlFor="qty1">Кол-во бобин</Label>
+              <Input
+                id="qty1"
+                placeholder="Введите Кол-во бобин"
+                type="number"
+                value={qty1}
+                onChange={(e) => setQty1(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="qty2">Кол-во в 1 бобине</Label>
+              <Input
+                id="qty2"
+                placeholder="Введите Кол-во в 1 бобине"
+                type="number"
+                value={qty2}
+                onChange={(e) => setQty2(Number(e.target.value))}
+              />
+            </div>
+          </div>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="qty">Кол-во</Label>
             <Input
