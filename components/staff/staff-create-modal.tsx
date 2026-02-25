@@ -33,7 +33,12 @@ export default function StaffCreateModal({children,onSubmit}:{children:React.Rea
     const staff = {
       login,
       role,
-      password: role !== "manager" && role !== "technologist" && role !== "accountant" ? password : "g3N27b9idw"
+      password:
+        role === "manager" ||
+        role === "technologist" ||
+        role === "accountant"
+          ? password
+          : "g3N27b9idw"
     };
 
     if(password.length < 8 ){
