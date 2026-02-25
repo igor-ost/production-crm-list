@@ -85,6 +85,7 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
   const filteredFabrics = useMemo(() => {
     return fabricsList.filter(z => {
       const matchesSearch =
+        z.name.toLowerCase().includes(search.toLowerCase()) ||
         z.color.toLowerCase().includes(search.toLowerCase()) ||
         z.id.toString().includes(search)
 
