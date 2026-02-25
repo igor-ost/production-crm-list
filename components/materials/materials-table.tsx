@@ -46,10 +46,12 @@ export interface InvoiceList {
   price:number;
   createdAt: string
 }
+type AllMaterials = Zippers[] | Fabrics[] | Threads[] | Buttons[] | Accessories[] | Velcro[]
+type AllMaterial = Zippers | Fabrics | Threads | Buttons | Accessories | Velcro
 
 export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velcro,materials_consuptions}:MaterialsTableProps) {
 
-  const {setMaterialConsumptions} = materialConsumptionsStore()
+  const {setMaterialConsumptions,materialConsumptions} = materialConsumptionsStore()
 
   const [zippersList,setZippersList] = useState(zippers);
   const [fabricsList,setFabricsList] = useState(fabrics);
@@ -57,6 +59,34 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
   const [buttonsList,setButtonsList] = useState(buttons);
   const [accessoriesList,setAccessoriesList] = useState(accessories);
   const [VelcroList,setVelcroList] = useState(velcro);
+
+  function prepareMaterials(
+    materials: AllMaterials,
+    materialConsumptions?: MaterialConsumptions[]
+  ): (AllMaterial & { qty: number; price: number | null })[] {
+    return materials.map(material => {
+      const latestInvoice = material.invoices?.reduce<InvoiceList | null>(
+        (latest, curr) =>
+          !latest || new Date(curr.createdAt) > new Date(latest.createdAt)
+            ? curr
+            : latest,
+        null
+      );
+      const totalQty =
+        (material.invoices?.reduce((sum, i) => sum + (i.qty ?? 0), 0) ?? 0) -
+        (materialConsumptions
+          ?.filter(mc => mc.material_id === material.id)
+          .reduce((sum, i) => sum + (Number(i.qty) || 0), 0) ?? 0);
+
+      const price = latestInvoice?.price ?? null;
+
+      return {
+        ...material,
+        qty: totalQty,
+        price,
+      };
+    });
+  }
 
 
   function createSheet<T>(
@@ -109,7 +139,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], zippers),
+      ], prepareMaterials(zippers,materialConsumptions)),
       "Молнии"
     )
 
@@ -119,11 +149,10 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "#", title: "#" },
         { key: "name", title: "Название" },
         { key: "color", title: "Цвет" },
-        { key: "type", title: "Тип" },
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], fabrics),
+      ], prepareMaterials(fabrics,materialConsumptions)),
       "Ткани"
     )
 
@@ -136,7 +165,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], threads),
+      ], prepareMaterials(threads,materialConsumptions)),
       "Нитки"
     )
 
@@ -149,7 +178,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], buttons),
+      ], prepareMaterials(buttons,materialConsumptions)),
       "Пуговицы"
     )
 
@@ -161,7 +190,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], accessories),
+      ], prepareMaterials(accessories,materialConsumptions)),
       "Аксессуары"
     )
 
@@ -173,7 +202,7 @@ export function MaterialsTable({zippers,fabrics,threads,buttons,accessories,velc
         { key: "unit", title: "Ед." },
         { key: "qty", title: "Кол-во" },
         { key: "price", title: "Цена" },
-      ], velcro),
+      ], prepareMaterials(velcro,materialConsumptions)),
       "Велькро"
     )
 
