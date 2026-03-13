@@ -146,7 +146,8 @@ export function StaffTable({ staffs }: StaffsTableProps) {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="text-destructive hover:text-destructive"
+                      
+                      className="text-destructive hover:text-destructive hidden"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
