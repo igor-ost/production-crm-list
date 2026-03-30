@@ -134,3 +134,74 @@
   }
 }
 
+
+
+.table-sticky-container {
+  overflow-x: auto;
+  max-height: 700px;
+}
+
+/* Базовые стили для закреплённых ячеек */
+.table-sticky-container th.sticky-col,
+.table-sticky-container td.sticky-col {
+  position: sticky;
+  background-color: hsl(var(--background));
+  z-index: 10;
+}
+
+/* Заголовки выше ячеек при вертикальном скролле */
+.table-sticky-container th.sticky-col {
+  z-index: 20;
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+/* Колонка # — первая */
+.table-sticky-container th.sticky-col-1,
+.table-sticky-container td.sticky-col-1 {
+  left: 0;
+  min-width: 40px;
+  width: 40px;
+}
+
+/* Колонка Название — вторая */
+.table-sticky-container th.sticky-col-2,
+.table-sticky-container td.sticky-col-2 {
+  left: 40px;
+  min-width: 120px;
+  width: 120px;
+}
+
+/* Колонка Описание — третья */
+.table-sticky-container th.sticky-col-3,
+.table-sticky-container td.sticky-col-3 {
+  left: 160px; /* 40 + 120 */
+  min-width: 200px;
+  width: 200px;
+}
+
+/* Тень для визуального разделения (опционально) */
+.table-sticky-container td.sticky-col-3::after,
+.table-sticky-container th.sticky-col-3::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -5px;
+  bottom: 0;
+  width: 5px;
+  background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+  pointer-events: none;
+}
+
+/* Hover эффекты сохраняются */
+.table-sticky-container tr:hover td.sticky-col {
+  background-color: hsl(var(--muted) / 0.4);
+}
+
+/* Чётные строки */
+.table-sticky-container tr:nth-child(even) td.sticky-col {
+  background-color: hsl(var(--muted) / 0.2);
+}
+
+.table-sticky-container tr:nth-child(even):hover td.sticky-col {
+  background-color: hsl(var(--muted) / 0.4);
+}

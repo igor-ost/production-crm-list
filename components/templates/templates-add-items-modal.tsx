@@ -75,7 +75,7 @@ export default function TemplatesAddItemsModal({children,onSubmit,id,materials,t
         {children}
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-106.25">
         <DialogHeader>
           <DialogTitle>Добавление материала</DialogTitle>
         </DialogHeader>

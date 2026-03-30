@@ -6,14 +6,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import TemplatesCreateModal from "./templates-create-modal"
 import TemplatesUpdateModal from "./templates-update-modal"
 import TemplatesRemoveModal from "./templates-remove-modal"
@@ -172,65 +164,73 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
   </div>
 
   {/* Таблица */}
-  <div className="overflow-hidden rounded-xl border bg-background/60 shadow-sm backdrop-blur">
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-muted/50">
-          <TableHead className="w-[80px]">#</TableHead>
-          <TableHead className="text-xs">Название</TableHead>
-          <TableHead className="text-xs">Описание</TableHead>
-          <TableHead className="text-xs">Цена кроя</TableHead>
-          <TableHead className="text-xs">Цена пошива</TableHead>
-          <TableHead className="text-xs">Цена бочек-кнопок</TableHead>
-          <TableHead className="text-center text-xs">Молнии</TableHead>
-          <TableHead className="text-center text-xs">Ткани</TableHead>
-          <TableHead className="text-center text-xs">Нитки</TableHead>
-          <TableHead className="text-center text-xs">Пуговицы</TableHead>
-          <TableHead className="text-center text-xs">Аксессуары</TableHead>
-          <TableHead className="text-center text-xs">Велькро</TableHead>
-          <TableHead className="text-right text-xs">Общая цена</TableHead>
-          <TableHead className="text-right px-4">Действия</TableHead>
-        </TableRow>
-      </TableHeader>
+<div className="overflow-hidden rounded-xl border bg-white shadow-sm backdrop-blur">
+  <div className="overflow-x-auto max-w-full max-h-175">
+    <table className="w-full border-collapse text-sm">
+      <thead>
+        <tr className="bg-muted sticky top-0 z-50">
+          <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+           #</th>
 
-      <TableBody>
+           <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-12.5 bg-amber-300 z-10 min-w-37.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+            Название
+          </th>
+
+           <th className="text-xs font-medium text-left p-3 border-b">
+            Описание
+          </th>
+          <th className="text-xs font-medium text-left p-3 border-b">Цена кроя</th>
+          <th className="text-xs font-medium text-left p-3 border-b">Цена пошива</th>
+          <th className="text-xs font-medium text-left p-3 border-b">Цена бочек-кнопок</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Молнии</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Ткани</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Нитки</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Пуговицы</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Аксессуары</th>
+          <th className="text-xs font-medium text-center p-3 border-b">Велькро</th>
+          <th className="text-xs font-medium text-right p-3 border-b">Общая цена</th>
+          <th className="text-right px-4 p-3 border-b">Действия</th>
+        </tr>
+      </thead>
+
+      <tbody>
         {filteredTemplates.map((template, index) => (
-          <TableRow
+          <tr
             key={template.id}
-            className="transition-colors hover:bg-muted/40 even:bg-muted/20"
+            className="transition-colors hover:bg-muted/40 even:bg-muted/20 group/row"
           >
-            <TableCell className="font-medium text-muted-foreground">
-              {index + 1}
-            </TableCell>
+            <td className="font-bold text-xs text-muted-foreground p-3 border-b sticky top-0 left-0 bg-white z-10 min-w-37.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover/row:bg-white group-even/row:bg-white">
+              {index}
+            </td>
 
-            <TableCell className="font-medium text-xs">
+            <td className="font-bold text-xs text-muted-foreground p-3 border-b sticky left-12.5 bg-white z-10 min-w-37.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover/row:bg-white group-even/row:bg-white">
               {template.name}
-            </TableCell>
+            </td>
 
-            <TableCell className="font-mono text-xs text-muted-foreground">
+             <td className="font-bold text-xs text-muted-foreground p-3 border-b">
               {template.description}
-            </TableCell>
+            </td>
 
-            <TableCell className="font-mono text-xs text-muted-foreground">
+<td className="font-mono text-xs text-muted-foreground p-3 border-b">
               <Badge>
                 {template.cuttingPrice}
               </Badge>
-            </TableCell>
+            </td>
 
-            <TableCell className="font-mono text-xs text-muted-foreground">
+            <td className="font-mono text-xs text-muted-foreground p-3 border-b">
               <Badge>
               {template.sewingPrice}
               </Badge>
-            </TableCell>
+            </td>
 
-            <TableCell className="font-mono text-xs text-muted-foreground">
+            <td className="font-mono text-xs text-muted-foreground p-3 border-b">
               <Badge>
               {template.buttonsPrice}
               </Badge>
-            </TableCell>
+            </td>
 
 
-            <TableCell className="font-medium">
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.zippers} id={template.id} type="zippers">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -262,8 +262,8 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                     )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium">
+            </td>
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.fabrics} id={template.id} type="fabrics">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -295,8 +295,8 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                   )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium">
+            </td>
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.threads} id={template.id} type="threads">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -328,8 +328,8 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                   )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium">
+            </td>
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.buttons} id={template.id} type="buttons">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -361,8 +361,8 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                   )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium">
+            </td>
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.accessories} id={template.id} type="accessories">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -394,8 +394,8 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                   )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium">
+            </td>
+            <td className="font-medium p-3 border-b">
               <div className="text-center">
                 <TemplatesAddItemsModal onSubmit={handleAddItems} materials={materials.velcro} id={template.id} type="velcro">
                   <Button size="sm" variant="ghost"><PlusSquare/></Button>
@@ -427,14 +427,14 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                         )}) ?? []
                   )}
               </div>
-            </TableCell>
-            <TableCell className="font-medium text-right">
+            </td>
+            <td className="font-medium text-right p-3 border-b">
               <Badge variant="default">{calcTotalPrice(template)} тг.</Badge>
-            </TableCell>
+            </td>
             
 
 
-            <TableCell className="text-right">
+            <td className="text-right p-3 border-b">
                 <TemplatesUpdateModal
                   id={template.id}
                   name={template.name}
@@ -461,24 +461,24 @@ export function TemplatesTable({ templates,materials }: TemplatesTableProps) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TemplatesRemoveModal>
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         ))}
 
         {filteredTemplates.length === 0 && (
-          <TableRow>
-            <TableCell
-              colSpan={11}
+          <tr>
+            <td
+              colSpan={14}
               className="py-10 text-center text-muted-foreground"
             >
               Ничего не найдено
-            </TableCell>
-          </TableRow>
+            </td>
+          </tr>
         )}
-      </TableBody>
-    </Table>
+      </tbody>
+    </table>
   </div>
 </div>
-
+</div>
   )
 }

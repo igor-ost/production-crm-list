@@ -8,6 +8,8 @@ import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import OrdersEditMaterialModal from "./order-edit-materials-modal";
+
 
 export const materialTypes = [
   { key: "zippers", label: "Молнии", variant: "zippers" },
@@ -106,7 +108,7 @@ export default function OrdersViewMaterials({
     }
   }
 
-  const handleRemove = async (id: string) => {
+const handleRemove = async (id: string) => {
     try {
       const response = await Api.order_materials.remove(id)
       if (response.status) {
@@ -119,7 +121,23 @@ export default function OrdersViewMaterials({
     } catch (error) {
       console.log(error)
     }
+  }
 
+  const handleUpdateQty = async (id: string, newQty: number) => {
+    try {
+      const data = {
+        qty: newQty
+      }
+      const response = await Api.order_materials.update(id,data)
+      if(response){
+        const updatedArray = materialsList.map(item =>
+        item.id === id ? { ...item, qty: newQty } : item
+      )
+      setMaterialsList(updatedArray)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
   
   const handleUpdate = async () => {
@@ -196,6 +214,7 @@ export default function OrdersViewMaterials({
       return(
       <Badge
         key={`${mat.id}_${idx}`}
+        onClick={()=>console.log(mat.id)}
         variant={variant as "zippers" | "fabrics" | "threads" | "buttons" | "accessories" | "velcro"}
         className="group flex items-center gap-2 text-[12px] p-2 border rounded-md shadow-sm hover:shadow-md transition"
       >
@@ -204,7 +223,19 @@ export default function OrdersViewMaterials({
           : typeKey === "accessories" || typeKey === "velcro"
             ? `${materialItem.name} (${mat.qty} ${materialItem.unit})`
             : `${materialItem.color} – ${materialItem.type} (${mat.qty} ${materialItem.unit})`}
-        – {mat.qty * quantity * (latestInvoice?.price ?? 0)} тг.
+– {mat.qty * quantity * (latestInvoice?.price ?? 0)} тг.
+        <OrdersEditMaterialModal
+          materialId={mat.id}
+          currentQty={mat.qty}
+          materialName={
+            typeKey === "fabrics"
+              ? `${materialItem.name} – ${materialItem.color}`
+              : typeKey === "accessories" || typeKey === "velcro"
+                ? materialItem.name
+                : `${materialItem.color} – ${materialItem.type}`
+          }
+          onUpdate={handleUpdateQty}
+        />
         <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
           <Trash2
             className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"

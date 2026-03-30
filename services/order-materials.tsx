@@ -24,7 +24,7 @@ export const create = async (req:{material_id:string;material_type:string;order_
 
 
 
-export const update = async (id:string,req:{material_id: string;order_id : string;material_type: string;qty: number;}): Promise<{id:string;material_id: string;order_id : string;material_type: string;qty: number;}> => {
+export const update = async (id:string,req:{material_id?: string;order_id?: string;material_type?: string;qty?: number;}): Promise<{id:string;material_id: string;order_id : string;material_type: string;qty: number;}> => {
     const { data } = await axiosInstance.patch(ApiRouter.ORDER_MATERIALS + "/" + id,req);
     return data as {id:string;material_id: string;order_id : string;material_type: string;qty: number;};
 }
