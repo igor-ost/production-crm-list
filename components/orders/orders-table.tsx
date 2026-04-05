@@ -96,10 +96,10 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
     const update = orderList.filter(i => i.id != id)
     setOrders(update)
   }
-  const handleUpdate = (id: string, size:string, status:"new" | "in-progress" | "completed",sewing_price:number,cutting_price:number,buttons:number,quantity:number,notes:string,deadline:string) => {
+  const handleUpdate = (id: string, size:string, status:"new" | "in-progress" | "completed",sewing_price:number,cutting_price:number,buttons:number,quantity:number,notes:string,deadline:string,customer:Customers,template:Templates) => {
     const newOrders = orderList.map(item =>
         item.id === id
-          ? { ...item, size, status, sewing_price, cutting_price, buttons, quantity, notes, deadline }
+          ? { ...item, size, status, sewing_price, cutting_price, buttons, quantity, notes, deadline,customer,template }
           : item
       );
 
@@ -261,12 +261,16 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
                       </Button>
                     </OrdersViewModal>
                     <OrdersUpdateModal 
+                    customer={order.customer.id}
+                    customerList={customers}
                     size={order.size}
                     sewing_price={order.sewing_price}
                     cutting_price={order.cutting_price}
                     buttons={order.buttons}
                     quantity={order.quantity}
                     status={order.status} 
+                    template_id={order.template.id}
+                    templates={templates}
                     notes={order.notes} 
                     deadline={order.deadline ? order.deadline : ""}
                     onSubmit={handleUpdate} id={order.id}>

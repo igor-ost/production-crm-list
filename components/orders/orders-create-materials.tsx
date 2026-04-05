@@ -55,8 +55,8 @@ export default function OrdersCreateMaterials({
   setCuttingPrice: (cuttin_price:number)=>void
   setButtonsPrice: (buttonsPrice:number)=>void
 }) {
-  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
-  const [qty, setQty] = useState<number>(1);
+  const [selectedMaterials, setSelectedMaterials] = useState<Record<string, string>>({});
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const handleRemove = (id: string) => {
 
@@ -79,25 +79,29 @@ export default function OrdersCreateMaterials({
       }
   }
 
-  const handleAdd = () => {
-    if (!selectedMaterial || qty <= 0) return;
+const handleAdd = (typeKey: string) => {
+  const selectedMaterial = selectedMaterials[typeKey] || "";
+  const qty = quantities[typeKey] || 1;
 
-    const materialInfo = findMaterialWithType(selectedMaterial);
-    if (!materialInfo) return;
+  if (!selectedMaterial || qty <= 0) return;
 
-    setTemplates(prev => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        material_id: selectedMaterial,
-        material_type: materialInfo.material_type,
-        qty,
-      },
-    ]);
+  const materialInfo = findMaterialWithType(selectedMaterial);
+  if (!materialInfo) return;
 
-    setSelectedMaterial("");
-    setQty(1);
-  };
+  setTemplates(prev => [
+    ...prev,
+    {
+      id: Date.now().toString(),
+      material_id: selectedMaterial,
+      material_type: materialInfo.material_type,
+      qty,
+    },
+  ]);
+
+  // Очищаем только текущую секцию
+  setSelectedMaterials(prev => ({ ...prev, [typeKey]: "" }));
+  setQuantities(prev => ({ ...prev, [typeKey]: 1 }));
+};
 
    const getTypeDetails = (typeKey: string) => {
     const items = templates
@@ -234,21 +238,21 @@ export default function OrdersCreateMaterials({
               <div className="flex flex-wrap items-center gap-4 mb-2">
                 <h3 className="text-sm font-semibold">{label}</h3>
                 <div className="flex gap-2 flex-wrap">
-                  <SelectMaterials
+                 <SelectMaterials
                     placeholder="Выберите материал"
-                    value={selectedMaterial}
-                    onValueChange={setSelectedMaterial}
+                    value={selectedMaterials[key] || ""}
+                    onValueChange={(val) => setSelectedMaterials(prev => ({ ...prev, [key]: val }))}
                     materials={items}
                   />
                   <Input
                     type="number"
                     min={1}
                     className="w-16"
-                    value={qty}
-                    onChange={e => setQty(Number(e.target.value))}
+                    value={quantities[key] || 1}
+                    onChange={e => setQuantities(prev => ({ ...prev, [key]: Number(e.target.value) }))}
                     placeholder="Кол-во"
                   />
-                  <Button size="sm" onClick={handleAdd}>Добавить</Button>
+                  <Button size="sm" onClick={() => handleAdd(key)}>Добавить</Button>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">

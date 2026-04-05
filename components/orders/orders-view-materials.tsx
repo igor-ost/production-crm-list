@@ -53,8 +53,8 @@ export default function OrdersViewMaterials({
 
   const [materialsList, setMaterialsList] = useState<TemplateItems[]>([])
 
-  const [selectedMaterial, setSelectedMaterial] = useState<string>("");
-  const [qty, setQty] = useState<number>(1);
+const [selectedMaterials, setSelectedMaterials] = useState<Record<string, string>>({});
+const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const [isUpdated,setIsUpdated] = useState(false)
   const [newsewing_price, setSewingPrice] = useState<number>(sewing_price);
@@ -80,8 +80,11 @@ export default function OrdersViewMaterials({
   }
 
 
-  const handleAdd = async () => {
-    if (!selectedMaterial || qty <= 0) return;
+const handleAdd = async (typeKey: string) => {
+  const selectedMaterial = selectedMaterials[typeKey] || "";
+  const qty = quantities[typeKey] || 1;
+  
+  if (!selectedMaterial || qty <= 0) return;
 
     const materialInfo = findMaterialWithType(selectedMaterial);
     if (!materialInfo) return;
@@ -100,8 +103,8 @@ export default function OrdersViewMaterials({
         if (setMaterials) {
           setMaterials(newArray)
         }
-        setSelectedMaterial("");
-        setQty(1);
+        setSelectedMaterials(prev => ({ ...prev, [typeKey]: "" }));
+        setQuantities(prev => ({ ...prev, [typeKey]: 1 }));
       }
     } catch (error) {
 
@@ -319,18 +322,18 @@ const handleRemove = async (id: string) => {
               <div className="flex flex-wrap items-center gap-3 mb-2">
                 <h3 className="text-sm font-semibold">{label}</h3>
                 <SelectMaterials
-                  value={selectedMaterial}
-                  onValueChange={setSelectedMaterial}
+                  value={selectedMaterials[key] || ""}
+                  onValueChange={(val) => setSelectedMaterials(prev => ({ ...prev, [key]: val }))}
                   materials={currentMaterials[key as keyof MaterialsTableProps]}
                 />
                 <Input
                   type="number"
                   className="w-16"
-                  value={qty}
-                  onChange={e => setQty(Number(e.target.value))}
+                  value={quantities[key] || 1}
+                  onChange={e => setQuantities(prev => ({ ...prev, [key]: Number(e.target.value) }))}
                 />
-                <Button size="sm" onClick={handleAdd}>
-                  Добавить
+                <Button size="sm" onClick={() => handleAdd(key)}>
+                Добавить
                 </Button>
               </div>
 
