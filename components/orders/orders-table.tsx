@@ -171,7 +171,7 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
           </div>
 
           <Select value={status} onValueChange={(v) => setStatus(v as any)}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder="Статус" />
             </SelectTrigger>
             <SelectContent>
@@ -188,59 +188,60 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
       </div>
 
       {/* Таблица */}
-      <div className="rounded-lg border border-black/20 shadow-xl backdrop-blur-sm">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-b border-black/20">
-              <TableHead>#</TableHead>
-              <TableHead>№</TableHead>
-              <TableHead>Изделие</TableHead>
-              <TableHead>Заказчик</TableHead>
-              <TableHead>Срок Исп.</TableHead>
-              <TableHead>Размер</TableHead>
-              <TableHead>Кол-во</TableHead>
-              <TableHead>Пошив</TableHead>
-              <TableHead>Крой</TableHead>
-              <TableHead>Блочки-Кнопки</TableHead>
-              <TableHead>Статус</TableHead>
-              <TableHead className="text-center">Действия</TableHead>
-            </TableRow>
-          </TableHeader>
+<div className="overflow-hidden rounded-xl border bg-white shadow-sm backdrop-blur">
+  <div className="overflow-x-auto max-w-full max-h-175">
+    <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-black/20">
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">#</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">№</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Изделие</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Заказчик</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Срок Исп.</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Размер</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Кол-во</th>
+              <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Пошив</th>
+               <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Крой</th>
+               <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Блочки-Кнопки</th>
+               <th className="text-xs font-medium text-left p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Статус</th>
+              <th className="text-xs font-medium p-3 border-b sticky top-0 left-0 bg-amber-300 z-10 min-w-12.5 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] text-center">Действия</th>
+            </tr>
+          </thead>
 
-          <TableBody>
+          <tbody>
             {filteredOrders.map((order,index) => (
-              <TableRow key={order.id} className="hover:bg-black/5">
-              <TableCell className="font-medium text-muted-foreground">
+              <tr key={order.id} className="hover:bg-black/5">
+              <td className="font-medium text-muted-foreground">
                 {index + 1}
-              </TableCell>
-                <TableCell>{order.order_number}</TableCell>
-               <TableCell className="font-bold text-xs text-black">{order.template.name}</TableCell>
-                <TableCell className="font-bold text-xs text-black">{order.customer.name}</TableCell>
-                <TableCell className="font-bold text-xs text-black">{order.deadline ? order.deadline : "---"}</TableCell>
-                <TableCell>
+              </td>
+                <td>{order.order_number}</td>
+               <td className="font-bold text-xs text-black">{order.template.name}</td>
+                <td className="font-bold text-xs text-black">{order.customer.name}</td>
+                <td className="font-bold text-xs text-black">{order.deadline ? order.deadline : "---"}</td>
+                <td>
                   <Badge>{order.size}</Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <div className="gap-2 flex">
                     <Badge variant="outline">{order.quantity}шт.</Badge>
                     <Badge variant="outline">{order.buttons}п.</Badge>
                   </div>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Badge variant="fabrics">{order.sewing_price}тг.</Badge>
-                </TableCell>
-               <TableCell>
+                </td>
+               <td>
                   <Badge variant="fabrics">{order.cutting_price}тг.</Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Badge variant="fabrics">{order.buttonsPrice}тг.</Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <Badge className={`${statusColors[order.status]} border`}>
                     {statusLabels[order.status]}
                   </Badge>
-                </TableCell>
-                <TableCell>
+                </td>
+                <td>
                   <div className="flex justify-center gap-2">
                     <OrderConsumptionsList materials={materials} order_id={order.id}>
                       <Button
@@ -294,8 +295,8 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
                         </Button>
                     </OrdersRemoveModal>
                   </div>
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ))}
 
             {filteredOrders.length === 0 && (
@@ -308,8 +309,9 @@ export function OrdersTable({ orders,templates,customers,materials,staff,materia
                 </TableCell>
               </TableRow>
             )}
-          </TableBody>
-        </Table>
+          </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

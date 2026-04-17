@@ -62,7 +62,7 @@ export default async function Orders() {
   const materials_consumptions = await getMaterialConsumptions();
   return (
     <div>
-      <div className="bg-[#63adff] rounded-md p-4 min-h-screen">
+      <div className="bg-[#63adff] rounded-md p-4 min-h-[80vh]">
         <OrdersTable material_consumptions={materials_consumptions} staff={staffList} materials={materialsList} customers={customersList} templates={templatesList} orders={ordersList}/>
       </div>
     </div>

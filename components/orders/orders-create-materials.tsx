@@ -129,15 +129,24 @@ const handleAdd = (typeKey: string) => {
               ? info.material.name
               : `${info.material.color} – ${info.material.type}`,
           qty: usedQty,
+           unit: info.material.unit,
           price: usedQty * (latestInvoice?.price ?? 0),
         };
       })
       .filter(Boolean);
 
-    const totalQty = items.reduce((acc, i) => acc + i!.qty, 0);
+    const totalQtyByUnit = items.reduce((acc, i) => {
+      if (!i) return acc;
+      const unit = i.unit || "шт";
+
+      if (!acc[unit]) acc[unit] = 0;
+      acc[unit] += i.qty;
+
+      return acc;
+    }, {} as Record<string, number>);
     const totalPrice = items.reduce((acc, i) => acc + i!.price, 0);
 
-    return { items, totalQty, totalPrice };
+    return { items, totalQtyByUnit, totalPrice };
   };
   
 
@@ -267,12 +276,18 @@ const handleAdd = (typeKey: string) => {
                   {summary.items.map((i, idx) => (
                     <div key={idx} className="flex justify-between text-[12px]">
                       <span className="truncate">{i!.name}</span>
-                      <span>{i!.qty} шт. – {i!.price} тг</span>
+                      <span>
+                          {i!.qty} {i!.unit} – {i!.price} тг
+                      </span>
                     </div>
                   ))}
                   <div className="border-t mt-1 pt-1 flex justify-between font-semibold text-xs">
                     <span>Итого</span>
-                    <span>{summary.totalQty} шт. – {summary.totalPrice} тг</span>
+                    <span>
+                      {Object.entries(summary.totalQtyByUnit)
+                        .map(([unit, qty]) => `${qty} ${unit}`)
+                        .join(", ")} – {summary.totalPrice} тг
+                    </span>
                   </div>
                   {key === "buttons" && (
                     <div className="text-[10px] text-muted-foreground mt-1">
