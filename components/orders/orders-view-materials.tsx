@@ -138,10 +138,12 @@ const handleRemove = async (id: string) => {
       }
       const response = await Api.order_materials.update(id,data)
       if(response){
-        const updatedArray = materialsList.map(item =>
-        item.id === id ? { ...item, qty: newQty } : item
-      )
-      setMaterialsList(updatedArray)
+        const mat_id = materialsList.find(i=>i.id == id)?.material_id || ""
+        const updatedArray = materialsList.map(item =>item.id === id ? { ...item, qty: newQty } : item)
+        const response_2 = await Api.materials_consumptions.update(order_id,mat_id,newQty)
+        if(response_2){
+          setMaterialsList(updatedArray)
+        }
       }
     } catch (error) {
       console.log(error)

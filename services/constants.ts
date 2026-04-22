@@ -12,6 +12,7 @@ const ApiRouter = {
     MATERIALS: "materials",
     MATERIALS_CONSUPTIONS: "material-consumptions",
     MATERIALS_CONSUPTIONS_REMOVE: "material-consumptions/remove",
+    MATERIALS_CONSUPTIONS_UPDATE: "material-consumptions/update",
     TEMPLATES: "templates",
     TEMPLATE_ITEMS: "template-items",
     ORDERS: "orders",

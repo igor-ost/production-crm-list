@@ -32,3 +32,13 @@ export const remove = async (order_id:string,material_id:string): Promise<{statu
     const { data } = await axiosInstance.post(ApiRouter.MATERIALS_CONSUPTIONS_REMOVE,response);
     return data as {status:string};
 }
+
+export const update = async (order_id:string,material_id:string,qty:number): Promise<{status:string}> => {
+    const response = {
+        order_id:order_id,
+        material_id: material_id,
+        qty: qty
+    }
+    const { data } = await axiosInstance.patch(ApiRouter.MATERIALS_CONSUPTIONS_UPDATE,response);
+    return data as {status:string};
+}
