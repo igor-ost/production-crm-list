@@ -98,13 +98,21 @@ const handleAdd = async (typeKey: string) => {
       })
 
       if (response) {
-        const newArray = [...materialsList, response]
-        setMaterialsList(newArray);
-        if (setMaterials) {
-          setMaterials(newArray)
+        const response_2 = await Api.materials_consumptions.createMany(order_id,[{
+        id: order_id,
+        material_id: selectedMaterial,
+        material_type: materialInfo.material_type,
+        qty: qty
+      }])
+        if(response_2){
+          const newArray = [...materialsList, response]
+          setMaterialsList(newArray);
+          if (setMaterials) {
+            setMaterials(newArray)
+          }
+          setSelectedMaterials(prev => ({ ...prev, [typeKey]: "" }));
+          setQuantities(prev => ({ ...prev, [typeKey]: 1 }));
         }
-        setSelectedMaterials(prev => ({ ...prev, [typeKey]: "" }));
-        setQuantities(prev => ({ ...prev, [typeKey]: 1 }));
       }
     } catch (error) {
 
