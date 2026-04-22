@@ -118,7 +118,10 @@ const handleRemove = async (id: string) => {
         const updatedArray = materialsList.filter(i => i.id !== id)
         setMaterialsList(updatedArray)
         if (setMaterials) {
-          setMaterials(updatedArray)
+          const response_2 = await Api.materials_consumptions.remove(order_id,id)
+          if(response_2){
+            setMaterials(updatedArray)
+          }
         }
       }
     } catch (error) {

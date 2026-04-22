@@ -11,6 +11,7 @@ const ApiRouter = {
     VELCRO: "velcro",
     MATERIALS: "materials",
     MATERIALS_CONSUPTIONS: "material-consumptions",
+    MATERIALS_CONSUPTIONS_REMOVE: "material-consumptions/remove",
     TEMPLATES: "templates",
     TEMPLATE_ITEMS: "template-items",
     ORDERS: "orders",

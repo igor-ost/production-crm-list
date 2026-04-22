@@ -24,7 +24,11 @@ export const create = async (req:{material_id:string;material_type:string;order_
 }
 
 
-export const remove = async (id:string): Promise<{status:string}> => {
-    const { data } = await axiosInstance.delete(ApiRouter.MATERIALS_CONSUPTIONS + "/" +id);
+export const remove = async (order_id:string,material_id:string): Promise<{status:string}> => {
+    const response = {
+        order_id:order_id,
+        material_id: material_id
+    }
+    const { data } = await axiosInstance.post(ApiRouter.MATERIALS_CONSUPTIONS_REMOVE,response);
     return data as {status:string};
 }
