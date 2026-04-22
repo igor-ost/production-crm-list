@@ -111,17 +111,16 @@ const handleAdd = async (typeKey: string) => {
     }
   }
 
-const handleRemove = async (id: string,typeKey:string) => {
+const handleRemove = async (id: string) => {
     try {
-      const selectedMaterial = selectedMaterials[typeKey] || "";
-      const materialInfo = findMaterialWithType(selectedMaterial);
       const response = await Api.order_materials.remove(id)
+      const mat_id = materialsList.find(i=>i.id == id)?.material_id || ""
       if (response.status) {
         const updatedArray = materialsList.filter(i => i.id !== id)
         setMaterialsList(updatedArray)
         if (setMaterials) {
-          const response_2 = await Api.materials_consumptions.remove(order_id,selectedMaterial)
-          console.log(materialInfo)
+          console.log(mat_id)
+          const response_2 = await Api.materials_consumptions.remove(order_id,mat_id)
           if(response_2){
             setMaterials(updatedArray)
           }
@@ -254,7 +253,7 @@ const totalQtyByUnit = items.reduce((acc, i) => {
           }
           onUpdate={handleUpdateQty}
         />
-        <div onClick={() => handleRemove(mat.id, typeKey)} className="cursor-pointer">
+        <div onClick={() => handleRemove(mat.id)} className="cursor-pointer">
           <Trash2
             className="w-3 h-3 cursor-pointer opacity-0 group-hover:opacity-100 text-red-600"
           />
