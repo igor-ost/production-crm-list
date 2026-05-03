@@ -31,3 +31,15 @@ export const createInvoice = async (req: {material_id:string;qty:number;dateArri
     return data as InvoiceList;
 }
 
+export const removeInvoice = async (id:string): Promise<{status:string}> => {
+    const { data } = await axiosInstance.delete(ApiRouter.ZIPPERS_INVOICE + "/" + id);
+    return data as {status:string};
+}
+
+export const updateInvoce = async (id:string,req:{qty?:number,price?:number}): Promise<{id:string;color:string;type:string,unit:string}> => {
+    const { data } = await axiosInstance.patch(ApiRouter.ZIPPERS_INVOICE + "/" + id,req);
+    return data as {id:string;color:string;type:string,unit:string};
+}
+
+
+

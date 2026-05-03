@@ -24,6 +24,7 @@ import { ViewInvoicesList } from "../view-invoices-list"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 export interface Zippers {
   id: string
@@ -73,6 +74,30 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
       )
     )
   }
+
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.zippers.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleDeleteInvoice = async (id:string) => {
+    try {
+      const response = await Api.zippers.removeInvoice(id);
+      if(response){
+         setZippersList((prev) => prev.filter(i=>i.id != id))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   const uniqueColors = useMemo(() => [...new Set(zippersList.map(z => z.color))], [zippersList])
   const uniqueTypes = useMemo(() => [...new Set(zippersList.map(z => z.type))], [zippersList])
@@ -203,11 +228,11 @@ export function ZippersTable({ zippersList, setZippersList }: ZippersTableProps)
                     </Badge>
                 </TableCell>
                 <TableCell className="text-right">
-                  <UpdateQtyModal id={zipper.id} type="zippers" onSubmit={handleQtyUpdate}>
+                  <UpdateQtyModal name={zipper.color + " " + zipper.type} id={zipper.id} type="zippers" onSubmit={handleQtyUpdate}>
                     <Button size="icon" variant="ghost"><PlusSquare className="h-4 w-4" /></Button>
                   </UpdateQtyModal>
 
-                  <ViewInvoicesList data={zipper.invoices || []}>
+                  <ViewInvoicesList onUpdate={handleUpdateInvoice} onDelete={handleDeleteInvoice} data={zipper.invoices || []}>
                     <Button size="icon" variant="ghost"><Info className="h-4 w-4" /></Button>
                   </ViewInvoicesList>
 

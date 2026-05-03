@@ -23,6 +23,7 @@ import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 export interface Threads {
   id: string;
@@ -81,6 +82,28 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
     );
   }
 
+  const handleDeleteInvoice = async (id:string) => {
+        try {
+          const response = await Api.threads.removeInvoice(id);
+          if(response){
+             setThreadsList((prev) => prev.filter(i=>i.id != id))
+          }
+        } catch (error) {
+          console.log(error)
+        }
+  }
+  
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.threads.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const uniqueColors = useMemo(() => [...new Set(threadsList.map(z => z.color))], [threadsList])
   const uniqueTypes = useMemo(() => [...new Set(threadsList.map(z => z.type))], [threadsList])
@@ -225,6 +248,7 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
 
                 <TableCell className="text-right">
                   <UpdateQtyModal
+                   name={thread.color + " " + thread.type}
                     id={thread.id}
                     type="threads"
                     onSubmit={handleQtyUpdate}
@@ -234,7 +258,7 @@ export function ThreadsTable({ threadsList, setThreadsList }: ThreadsTableProps)
                     </Button>
                   </UpdateQtyModal>
 
-                  <ViewInvoicesList data={thread.invoices || []}>
+                  <ViewInvoicesList onDelete={handleDeleteInvoice} onUpdate={handleUpdateInvoice} data={thread.invoices || []}>
                     <Button size="icon" variant="ghost">
                       <Info className="h-4 w-4" />
                     </Button>

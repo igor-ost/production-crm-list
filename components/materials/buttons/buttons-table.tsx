@@ -24,6 +24,7 @@ import { ViewInvoicesList } from "../view-invoices-list"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 export interface Buttons {
   id: string;
@@ -82,7 +83,28 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
     );
   }
 
+  const handleDeleteInvoice = async (id:string) => {
+      try {
+        const response = await Api.buttons.removeInvoice(id);
+        if(response){
+           setButtonsList((prev) => prev.filter(i=>i.id != id))
+        }
+      } catch (error) {
+        console.log(error)
+      }
+  }
 
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.buttons.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const uniqueColors = useMemo(() => [...new Set(buttonsList.map(z => z.color))], [buttonsList])
   const uniqueTypes = useMemo(() => [...new Set(buttonsList.map(z => z.type))], [buttonsList])
@@ -216,6 +238,7 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
 
                 <TableCell className="text-right">
                   <UpdateQtyModal
+                    name={button.color + " " + button.type}
                     id={button.id}
                     type="buttons"
                     onSubmit={handleQtyUpdate}
@@ -225,7 +248,7 @@ export function ButtonsTable({ buttonsList, setButtonsList }: ButtonsTableProps)
                     </Button>
                   </UpdateQtyModal>
 
-                  <ViewInvoicesList data={button.invoices || []}>
+                  <ViewInvoicesList onDelete={handleDeleteInvoice} onUpdate={handleUpdateInvoice} data={button.invoices || []}>
                     <Button size="icon" variant="ghost">
                       <Info className="h-4 w-4" />
                     </Button>

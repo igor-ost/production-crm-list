@@ -23,6 +23,7 @@ import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 export interface Accessories {
   id: string;
@@ -73,6 +74,30 @@ export function AccessoriesTable({ accessoriesList, setAccessoriesList }: Access
           : item
       )
     );
+  }
+
+  
+    const handleDeleteInvoice = async (id:string) => {
+        try {
+          const response = await Api.accessories.removeInvoice(id);
+          if(response){
+             setAccessoriesList((prev) => prev.filter(i=>i.id != id))
+          }
+        } catch (error) {
+          console.log(error)
+        }
+    }
+  
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.accessories.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const filteredAccessories = useMemo(() => {
@@ -172,6 +197,7 @@ export function AccessoriesTable({ accessoriesList, setAccessoriesList }: Access
 
                   <TableCell className="text-right">
                     <UpdateQtyModal
+                      name={accessories.name}
                       id={accessories.id}
                       type="accessories"
                       onSubmit={handleQtyUpdate}
@@ -181,7 +207,7 @@ export function AccessoriesTable({ accessoriesList, setAccessoriesList }: Access
                       </Button>
                     </UpdateQtyModal>
 
-                    <ViewInvoicesList data={accessories.invoices || []}>
+                    <ViewInvoicesList onDelete={handleDeleteInvoice} onUpdate={handleUpdateInvoice} data={accessories.invoices || []}>
                       <Button size="icon" variant="ghost">
                         <Info className="h-4 w-4" />
                       </Button>

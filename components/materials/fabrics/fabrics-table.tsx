@@ -23,6 +23,7 @@ import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 export interface Fabrics {
   id: string;
@@ -80,6 +81,29 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
     );
   }
 
+  const handleDeleteInvoice = async (id:string) => {
+      try {
+        const response = await Api.fabrics.removeInvoice(id);
+        if(response){
+           setFabricsList((prev) => prev.filter(i=>i.id != id))
+        }
+      } catch (error) {
+        console.log(error)
+      }
+  }
+
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.fabrics.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   const uniqueColors = useMemo(() => [...new Set(fabricsList.map(z => z.color))], [fabricsList])
 
   const filteredFabrics = useMemo(() => {
@@ -210,6 +234,7 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
 
                 <TableCell className="text-right">
                   <UpdateQtyModal
+                    name={fabric.color + " " + fabric.name}
                     id={fabric.id}
                     type="fabrics"
                     onSubmit={handleQtyUpdate}
@@ -219,7 +244,7 @@ export function FabricsTable({ fabricsList, setFabricsList }: FabricsTableProps)
                     </Button>
                   </UpdateQtyModal>
 
-                  <ViewInvoicesList data={fabric.invoices || []}>
+                  <ViewInvoicesList onDelete={handleDeleteInvoice} onUpdate={handleUpdateInvoice} data={fabric.invoices || []}>
                     <Button size="icon" variant="ghost">
                       <Info className="h-4 w-4" />
                     </Button>

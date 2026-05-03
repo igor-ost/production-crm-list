@@ -23,6 +23,7 @@ import { InvoiceList } from "../materials-table"
 import { ViewInvoicesList } from "../view-invoices-list"
 import { ViewConsumptionsList } from "../view-consumptions-list"
 import { materialConsumptionsStore } from "@/store/material-consumptions"
+import { Api } from "@/services/api-clients"
 
 
 export interface Velcro {
@@ -77,6 +78,31 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
       )
     );
   }
+
+  const handleDeleteInvoice = async (id:string) => {
+      try {
+        const response = await Api.velcro.removeInvoice(id);
+        if(response){
+           setVelcroList((prev) => prev.filter(i=>i.id != id))
+        }
+      } catch (error) {
+        console.log(error)
+      }
+  }
+
+  const handleUpdateInvoice = async (id: string, qty: number, price: number) => {
+    try {
+      const data = {
+        qty: qty,
+        price:price
+      }
+      await Api.velcro.updateInvoce(id,data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  
 
   const filteredVelcro = useMemo(() => {
     return VelcroList.filter((zipper) => {
@@ -177,6 +203,7 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
 
                 <TableCell className="text-right">
                   <UpdateQtyModal
+                    name={velcro.name}
                     id={velcro.id}
                     type="velcro"
                     onSubmit={handleQtyUpdate}
@@ -186,7 +213,7 @@ export function VelcroTable({ VelcroList, setVelcroList }: VelcroTableProps) {
                     </Button>
                   </UpdateQtyModal>
 
-                  <ViewInvoicesList data={velcro.invoices || []}>
+                  <ViewInvoicesList onDelete={handleDeleteInvoice} onUpdate={handleUpdateInvoice} data={velcro.invoices || []}>
                     <Button size="icon" variant="ghost">
                       <Info className="h-4 w-4" />
                     </Button>
