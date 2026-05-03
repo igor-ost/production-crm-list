@@ -43,6 +43,7 @@ export function ViewInvoicesList({
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [localData, setLocalData] = useState<InvoiceList[]>(data)
 
+  // Sync local data with prop changes
   useEffect(() => {
     setLocalData(data)
   }, [data])
@@ -90,11 +91,12 @@ const totalQty = useMemo(() => {
 
 const saveEdit = () => {
     if (editingId && onUpdate) {
-      onUpdate(editingId, editQty, editPrice)
-      setLocalData((prev) =>
+      onUpdate(editingId, Number(editQty), Number(editPrice))
+      // Update local data immediately
+setLocalData((prev) =>
         prev.map((item) =>
           item.id === editingId
-            ? { ...item, qty: editQty, price: editPrice }
+            ? { ...item, qty: Number(editQty), price: Number(editPrice) }
             : item
         )
       )
@@ -105,6 +107,7 @@ const saveEdit = () => {
 const confirmDelete = () => {
     if (deleteId && onDelete) {
       onDelete(deleteId)
+      // Remove from local data immediately
       setLocalData((prev) => prev.filter((item) => item.id !== deleteId))
     }
     setDeleteId(null)
@@ -125,6 +128,7 @@ const confirmDelete = () => {
             </DialogDescription>
           </DialogHeader>
 
+          {/* Summary Stats */}
           <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
             <div className="flex items-center gap-2">
               <PackageIcon className="size-4 text-muted-foreground" />
@@ -139,8 +143,10 @@ const confirmDelete = () => {
             </div>
           </div>
 
+          {/* Timeline */}
           <ScrollArea className="h-[320px] pr-4">
             <div className="relative">
+              {/* Vertical line */}
               <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-border" />
 
               <div className="space-y-1">
@@ -156,7 +162,7 @@ const confirmDelete = () => {
                         isFirst && "bg-primary/5"
                       )}
                     >
-       
+                      {/* Timeline dot */}
                       <div className="relative z-10 flex-shrink-0">
                         <div
                           className={cn(
@@ -172,7 +178,7 @@ const confirmDelete = () => {
                         </div>
                       </div>
 
-   
+                      {/* Content */}
                       <div className="flex-1 min-w-0 pr-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-1">
@@ -277,6 +283,7 @@ const confirmDelete = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
@@ -298,3 +305,4 @@ const confirmDelete = () => {
     </>
   )
 }
+
