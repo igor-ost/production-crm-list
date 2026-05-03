@@ -48,12 +48,12 @@ export function ViewInvoicesList({
     setLocalData(data)
   }, [data])
 
-  const sortedData = useMemo(() => {
+const sortedData = useMemo(() => {
     return [...localData].sort(
       (a, b) =>
         new Date(b.dateArrived).getTime() - new Date(a.dateArrived).getTime()
     )
-  }, [data])
+  }, [localData])
 
 const totalQty = useMemo(() => {
     return localData.reduce((sum, item) => sum + item.qty, 0)
@@ -91,12 +91,13 @@ const totalQty = useMemo(() => {
 
 const saveEdit = () => {
     if (editingId && onUpdate) {
-      onUpdate(editingId, Number(editQty), Number(editPrice))
-      // Update local data immediately
-setLocalData((prev) =>
+      const qty = Number(editQty)
+      const price = Number(editPrice)
+      onUpdate(editingId, qty, price)
+      setLocalData((prev) =>
         prev.map((item) =>
           item.id === editingId
-            ? { ...item, qty: Number(editQty), price: Number(editPrice) }
+            ? { ...item, qty, price }
             : item
         )
       )
@@ -107,7 +108,6 @@ setLocalData((prev) =>
 const confirmDelete = () => {
     if (deleteId && onDelete) {
       onDelete(deleteId)
-      // Remove from local data immediately
       setLocalData((prev) => prev.filter((item) => item.id !== deleteId))
     }
     setDeleteId(null)
