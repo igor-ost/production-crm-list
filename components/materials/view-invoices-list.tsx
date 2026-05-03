@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { CalendarIcon, PackageIcon, Pencil, Trash2, Check, X } from "lucide-react"
 import {
   Dialog,
@@ -41,17 +41,22 @@ export function ViewInvoicesList({
   const [editQty, setEditQty] = useState(0)
   const [editPrice, setEditPrice] = useState(0)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [localData, setLocalData] = useState<InvoiceList[]>(data)
+
+  useEffect(() => {
+    setLocalData(data)
+  }, [data])
 
   const sortedData = useMemo(() => {
-    return [...data].sort(
+    return [...localData].sort(
       (a, b) =>
         new Date(b.dateArrived).getTime() - new Date(a.dateArrived).getTime()
     )
   }, [data])
 
-  const totalQty = useMemo(() => {
-    return data.reduce((sum, item) => sum + item.qty, 0)
-  }, [data])
+const totalQty = useMemo(() => {
+    return localData.reduce((sum, item) => sum + item.qty, 0)
+  }, [localData])
 
   const formatDate = (dateString: string) => {
     try {
@@ -83,16 +88,24 @@ export function ViewInvoicesList({
     setEditPrice(0)
   }
 
-  const saveEdit = () => {
+const saveEdit = () => {
     if (editingId && onUpdate) {
       onUpdate(editingId, editQty, editPrice)
+      setLocalData((prev) =>
+        prev.map((item) =>
+          item.id === editingId
+            ? { ...item, qty: editQty, price: editPrice }
+            : item
+        )
+      )
     }
     cancelEdit()
   }
 
-  const confirmDelete = () => {
+const confirmDelete = () => {
     if (deleteId && onDelete) {
       onDelete(deleteId)
+      setLocalData((prev) => prev.filter((item) => item.id !== deleteId))
     }
     setDeleteId(null)
   }
@@ -112,14 +125,13 @@ export function ViewInvoicesList({
             </DialogDescription>
           </DialogHeader>
 
-          {/* Summary Stats */}
           <div className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
             <div className="flex items-center gap-2">
               <PackageIcon className="size-4 text-muted-foreground" />
               <span className="text-sm text-muted-foreground">
                 Всего записей:
               </span>
-              <Badge variant="secondary">{data.length}</Badge>
+              <Badge variant="secondary">{localData.length}</Badge>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Итого:</span>
@@ -127,10 +139,8 @@ export function ViewInvoicesList({
             </div>
           </div>
 
-          {/* Timeline */}
           <ScrollArea className="h-[320px] pr-4">
             <div className="relative">
-              {/* Vertical line */}
               <div className="absolute left-[11px] top-3 bottom-3 w-0.5 bg-border" />
 
               <div className="space-y-1">
@@ -146,7 +156,7 @@ export function ViewInvoicesList({
                         isFirst && "bg-primary/5"
                       )}
                     >
-                      {/* Timeline dot */}
+       
                       <div className="relative z-10 flex-shrink-0">
                         <div
                           className={cn(
@@ -162,7 +172,7 @@ export function ViewInvoicesList({
                         </div>
                       </div>
 
-                      {/* Content */}
+   
                       <div className="flex-1 min-w-0 pr-2">
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-1">
@@ -256,7 +266,7 @@ export function ViewInvoicesList({
             </div>
           </ScrollArea>
 
-          {data.length === 0 && (
+          {localData.length === 0 && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <PackageIcon className="size-12 text-muted-foreground/50 mb-2" />
               <p className="text-sm text-muted-foreground">
@@ -267,7 +277,6 @@ export function ViewInvoicesList({
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
