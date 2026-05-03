@@ -2,7 +2,7 @@ import { Badge } from "../ui/badge";
 import { InvoiceList, Materials, MaterialsTableProps } from "../materials/materials-table";
 import { TemplateItems } from "../templates/templates-add-items-modal";
 import { Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Api } from "@/services/api-clients";
 import SelectMaterials from "../ui/select-materials";
 import { Input } from "../ui/input";
@@ -227,6 +227,14 @@ const totalQtyByUnit = items.reduce((acc, i) => {
 
   useEffect(() => { if (materials) setMaterialsList(materials) }, [materials])
 
+  // Общий расход по всем материалам
+  const totalExpenseAllMaterials = useMemo(() => {
+    return materialTypes.reduce((total, { key }) => {
+      const summary = getTypeDetails(key);
+      return total + summary.totalPrice;
+    }, 0);
+  }, [materialsList, newquantity, newbuttons])
+
   const renderMaterial = (materialItem: any, typeKey: string, variant: string) => {
     const templateMaterials = materialsList?.filter(m => m.material_id === materialItem.id) || [];
     return templateMaterials.map((mat, idx) => {
@@ -326,7 +334,15 @@ const totalQtyByUnit = items.reduce((acc, i) => {
         </div>
       </div>
 
-      <Button disabled={isUpdated} onClick={handleUpdate} variant="yellow" className={`${isUpdated == true ? "bg-green-700 " : null} transition-all duration-75`}>{isUpdated ? "Успех!" : "Обновить кол-во/цену"}</Button>
+<Button disabled={isUpdated} onClick={handleUpdate} variant="yellow" className={`${isUpdated == true ? "bg-green-700 " : null} transition-all duration-75`}>{isUpdated ? "Успех!" : "Обновить кол-во/цену"}</Button>
+
+      {/* Общий расход по всем материалам */}
+      <div className="rounded-lg border bg-muted/50 p-4">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-muted-foreground">Общий расход по всем материалам</span>
+          <span className="text-xl font-bold">{totalExpenseAllMaterials.toLocaleString("ru-RU")} тг</span>
+        </div>
+      </div>
 
       {materialTypes.map(({ key, label, variant }) => {
         const items = (currentMaterials as any)[key]?.filter((item: any) =>
