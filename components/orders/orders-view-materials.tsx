@@ -341,6 +341,7 @@ const totalQtyByUnit = items.reduce((acc, i) => {
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">Общий расход по всем материалам</span>
           <span className="text-xl font-bold">{totalExpenseAllMaterials.toLocaleString("ru-RU")} тг</span>
+          <span className="text-xl font-bold">{(totalExpenseAllMaterials / quantity).toLocaleString("ru-RU")} тг (за единицу)</span>
         </div>
       </div>
 
