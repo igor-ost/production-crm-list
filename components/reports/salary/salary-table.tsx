@@ -124,6 +124,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
         journalData.push({
           "№": index + 1,
           "Работник": staff.login || "",
+          "Изделие": item.order.template.name || "",
           "Заказ №": item.order.order_number || "",
           "Цена пошива": item.order.sewing_price || 0,
           "Цена раскроя": item.order.cutting_price || 0,
@@ -136,7 +137,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
     });
 
     const journalSheet = XLSX.utils.json_to_sheet(journalData, {
-      header: ["№", "Работник", "Заказ №", "Цена пошива", "Цена раскроя","Цена блочки", "Тип работы", "Кол-во", "Дата"]
+      header: ["№", "Работник","Изделие", "Заказ №", "Цена пошива", "Цена раскроя","Цена блочки", "Тип работы", "Кол-во", "Дата"]
     });
     if (journalSheet['!ref']) {
       const journalRange = XLSX.utils.decode_range(journalSheet['!ref']);
@@ -149,6 +150,7 @@ export function SalaryTable({ staffs }: SalaryTableProps) {
     journalSheet['!cols'] = [
       { wch: 5 },
       { wch: 20 },
+      { wch: 15 },
       { wch: 15 },
       { wch: 15 },
       { wch: 15 },
