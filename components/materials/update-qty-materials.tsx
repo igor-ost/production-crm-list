@@ -34,6 +34,11 @@ export default function UpdateQtyModal({children,onSubmit,id,type,name}:{childre
   const [qty1, setQty1] = useState(0);
   const [qty2, setQty2] = useState(0);
 
+  const pricePerMeter =
+  type === "threads" && qty > 0
+    ? price / qty
+    : price;
+
     // Dragging state
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -84,30 +89,56 @@ export default function UpdateQtyModal({children,onSubmit,id,type,name}:{childre
   
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const invoice = {
-      material_id:id,
-      qty:qty,
-      dateArrived: new Date(dateArrived),
-      price: price
-    };
+  setError("");
 
+  if (qty <= 0) {
+    setError("Количество должно быть больше нуля");
+    return;
+  }
 
-    try {
-        const response = await Api[type].createInvoice(invoice as any)
-        if(response){
-            onSubmit(id,response)
-            setIsLoading(false)
-            setOpen(false)
-            setQty(0)
-            setDateArrived(new Date())
-        }
-    } catch (error:unknown) {
-        setIsLoading(false)
-        setError(error instanceof Error ? error.message : "Произошла ошибка")
-    }
+  if (price <= 0) {
+    setError("Цена должна быть больше нуля");
+    return;
+  }
 
+  setIsLoading(true);
+
+  const backendPrice =
+    type === "threads"
+      ? price / qty
+      : price;
+
+  const invoice = {
+    material_id: id,
+    qty,
+    dateArrived: new Date(dateArrived),
+
+    price: backendPrice,
   };
+
+  try {
+    const response = await Api[type].createInvoice(invoice as any);
+
+    if (response) {
+      onSubmit(id, response);
+
+      setOpen(false);
+      setQty(0);
+      setQty1(0);
+      setQty2(0);
+      setPrice(0);
+      setDateArrived(new Date());
+    }
+  } catch (error: unknown) {
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Произошла ошибка"
+    );
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(()=>{
     setQty(qty1 * qty2)
@@ -206,6 +237,25 @@ export default function UpdateQtyModal({children,onSubmit,id,type,name}:{childre
                 onChange={(e) => setPrice(Number(e.target.value))}
               />
             </div>
+
+            {type === "threads" && (
+                <div className="grid gap-2">
+                  <Label htmlFor="pricePerMeter">
+                    Цена за 1 метр
+                  </Label>
+
+                  <Input
+                    id="pricePerMeter"
+                    type="number"
+                    value={
+                      qty > 0 && price > 0
+                        ? Number(pricePerMeter.toFixed(4))
+                        : 0
+                    }
+                    disabled
+                  />
+                </div>
+            )}
 
             {error && (
               <div className="p-2">
